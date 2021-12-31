@@ -1,0 +1,85 @@
+
+{%- set style_index_value = style_index_value or '' -%}
+
+{%- set n_headers = df.index.names.__len__() + df.columns.__len__() -%}
+{%- set n_indexes = df.index.names|length -%}
+{%- set is_multi_index = df.index.nlevels > 1 -%}
+{%- set is_multi_columns = df.columns.nlevels > 1 -%}
+
+<table style="border-collapse: collapse; {{style_table}}">
+    <thead style="{{ style_thead }}">
+
+        {%- set column_tuples = df.columns.tolist() -%}
+        {#- Fill first with empty values (placeholder for index names below) -#}
+        {%- for n_level in range(df.columns.nlevels) -%}
+            {%- set level = df.columns.get_level_values(n_level) %}
+            <tr>
+                {# Fill first with empty values (placeholder for index names below) #}
+                {%- for _ in range(n_indexes-1) -%}
+                    <th></th>
+                {% endfor -%}
+                
+                {#- Set the actual column values -#}
+                
+                <th style="{{ style_column_name }}">{% if level.name is not none %}{{ level.name }}{% endif %}</th>
+                {% for header in level -%}
+                    {%- set span = get_span(column_tuples, loc=loop.index0, width=n_level if is_multi_columns else none) -%}
+                    {%- set is_last_group_column = is_last_group_row(loop.index0, df.columns, level=n_level) -%}
+
+                    {%- if span > 0 %}
+                        <th style="{{ style_column_value }}
+                                   {{ style_column_value_last_column_group if is_last_group_column else ''}}" colspan="{{ span }}">{{ header }}</th>
+                    {%- endif -%}
+
+                {% endfor %}
+                
+            </tr>
+        {% endfor %}
+        <tr>
+            {# Last header row is the index names #}
+            {%- for index_header in df.index.names -%}
+                <th style="{{ style_index_name }}{{ style_index_name_last if loop.last else ''}}">{% if index_header is not none %}{{ index_header }}{% endif %}</th>
+            {% endfor %}
+
+            {#- Fill rest to empty values -#}
+            {%- for _ in df.columns -%}
+                {%- set is_last_group_column = is_last_group_row(loop.index0, df.columns) -%}
+                <th style="{{ style_index_name }}
+                           {{ style_column_value_last_column_group if is_last_group_column else ''}}"></th>
+            {% endfor %}
+        </tr>
+    </thead>
+
+   <tbody style="{{ style_tbody }}">
+        {%- set index_tuples = df.index.tolist() -%}
+        {% for idx, row in df.iterrows() -%}
+            {%- set idx = [idx] if df.index.nlevels == 1 else idx -%}
+            {%- set row_loop = loop -%}
+            
+            <tr style="{{ loop.cycle(style_row_odd, style_row_even) }}">
+                {% for value in idx -%}
+                    {%- set index_width = loop.index0 if is_multi_index else none -%}
+                    {%- set is_last_group_index = is_last_group_row(row_loop.index0, df.index, level=index_width) -%}
+                    {%- set span = get_span(index_tuples, loc=row_loop.index0, width=index_width) -%}
+
+                    {%- if span > 0 %}
+                        <th style="{{ style_index_value }}
+                                {{ style_index_value_last if loop.last else '' }}
+                                {{ row_loop.cycle(style_row_value_odd, style_row_value_even) }}
+                                {{ style_index_value_last_index_group if is_last_group_index else ''}}" 
+                                rowspan="{{ span }}">{{ value }}</th>
+                    {%- endif -%}
+
+                {% endfor %}
+                {%- for value in row -%}
+                    {%- set is_last_group_index = is_last_group_row(row_loop.index0, df.index) -%}
+                    {%- set is_last_group_column = is_last_group_row(loop.index0, df.columns) -%}
+                    <td style="{{ style_value }}
+                               {{ row_loop.cycle(style_row_value_odd, style_row_value_even) }}
+                               {{ style_value_last_index_group if is_last_group_index else ''}}
+                               {{ style_value_last_column_group if is_last_group_column else ''}}">{{ value }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

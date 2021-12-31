@@ -1,0 +1,223 @@
+from email.message import EmailMessage
+import mimetypes
+from io import BytesIO
+from pathlib import Path
+from typing import Dict, Union, ByteString
+from pathlib import Path
+
+
+from redmail.utils import is_filelike, is_bytes, is_pathlike
+from redmail.utils import import_from_string
+
+from email.utils import make_msgid
+
+from jinja2.environment import Template, Environment
+import pandas as pd
+
+from markupsafe import Markup
+
+# We try to import matplotlib and PIL but if fails, they will be None
+plt = import_from_string("matplotlib.pyplot", if_missing="ignore")
+PIL = import_from_string("PIL", if_missing="ignore")
+
+class Body:
+
+    def __init__(self, template:Template=None, table_template:Template=None):
+        self.template = template
+        self.table_template = table_template
+
+    def render_body(self, body:str, jinja_params:dict):
+        if body is not None and self.template is not None:
+            raise ValueError("Either body or template must be specified but not both.")
+            
+        if body is not None:
+            template = Environment().from_string(body)
+        else:
+            template = self.template
+        return template.render(**jinja_params)
+
+    def render_table(self, tbl, extra=None):
+        # TODO: Nicer tables. 
+        #   https://stackoverflow.com/a/55356741/13696660
+        #   Email HTML (generally) does not support CSS
+        extra = {} if extra is None else extra
+        df = pd.DataFrame(tbl)
+
+        tbl_html = self.table_template.render({"df": df, **extra})
+        return Markup(tbl_html)
+
+    def render(self, cont:str, tables=None, jinja_params=None):
+        tables = {} if tables is None else tables
+        jinja_params = {} if jinja_params is None else jinja_params
+        tables = {
+            name: self.render_table(tbl)
+            for name, tbl in tables.items()
+        }
+        return self.render_body(cont, jinja_params={**tables, **jinja_params})
+
+
+class TextBody(Body):
+
+    def attach(self, msg:EmailMessage, text:str, **kwargs):
+        text = self.render(text, **kwargs)
+        msg.set_content(text)
+
+
+class HTMLBody(Body):
+
+    def __init__(self, domain:str=None, **kwargs):
+        super().__init__(**kwargs)
+        self.domain = domain
+
+    def attach(self, 
+               msg:EmailMessage, 
+               html:str, 
+               images: Dict[str, Union[Path, str, bytes]]=None, 
+               **kwargs):
+        """Render email HTML
+        
+        Parameters
+        ----------
+            msg : EmailMessage
+                Message of the email.
+            html : str
+                HTML that may contain Jinja syntax.
+            body_images : dict of path-likes, bytes
+                Images to embed to the HTML. The dict keys correspond to variables in the html.
+            body_tables : dict of pd.DataFrame
+                Tables to embed to the HTML
+            jinja_params : dict
+                Extra Jinja parameters for the HTML.
+        """
+        domain = msg["from"].split("@")[-1] if self.domain is None else self.domain
+        html, cids = self.render(
+            html, 
+            images=images,
+            domain=domain,
+            **kwargs
+        )
+        msg.add_alternative(html, subtype='html')
+
+        if images is not None:
+            # https://stackoverflow.com/a/49098251/13696660
+            html_msg = msg.get_payload()[-1]
+            cid_path_mapping = {cids[name]: path for name, path in images.items()}
+            
+            self.attach_imgs(html_msg, cid_path_mapping)
+
+    def render(self, html:str, images:Dict[str, Union[dict, bytes, Path]]=None, tables:Dict[str, pd.DataFrame]=None, jinja_params:dict=None, domain=None):
+        """Render Email HTML body (sets cid for image sources and adds data as other parameters)
+
+        Parameters
+        ----------
+        html : str
+            HTML (template) to be rendered with images,
+            tables etc. May contain...
+        images : list-like, optional
+            A list-like of images to be rendered to the HTML.
+            Values represent the Jinja variables found in the html
+            and the images are rendered on those positions.
+        tables : dict, optional
+            A dict of tables to render to the HTML. The keys
+            should represent variables in ``html`` and values
+            should be Pandas dataframes to be rendered to the HTML.
+        extra : dict, optional
+            Extra items to be passed to the HTML Jinja template.
+        table_theme : str, optional
+            Theme to use for generating the HTML version of the
+            table dataframes. See included files in the 
+            environment pybox.jinja2.envs.inline. The themes
+            are stems of the files in templates/inline/table.
+
+        Returns
+        -------
+        str, dict
+            Rendered HTML and Content-IDs to the images.
+
+        Example
+        -------
+            render_html('''
+            <html>
+                <body>
+                    <h1>Date {{ pic_date }}</h1>
+                    <img src={{ cat_picture }}>
+                </body>
+            </html>
+            ''', {'cat_picture': 'path/to/cat_picture.jpg'}, {'pic_date': '2021-01-01'})
+        """
+        
+        images = {} if images is None else images
+
+        # Define CIDs for images
+        cids = {
+            name: make_msgid(domain=domain)
+            for name in images
+        }
+        cids_html = {
+            name: f'cid:{cid[1:-1]}' # taking "<" and ">" from beginning and end 
+            for name, cid in cids.items()
+        }
+
+        # Tables to HTML
+        jinja_params = {**jinja_params, **cids_html}
+        html = super().render(html, tables=tables, jinja_params=jinja_params)
+        return html, cids
+
+    def attach_imgs(self, msg_body:EmailMessage, imgs:Dict[str, Union[ByteString, str, Dict[str, Union[ByteString, str]]]]):
+        """Attach CID images to Message Body
+        
+        Examples:
+        ---------
+            attach_imgs(..., {"<>"})
+        """
+
+        for cid, img in imgs.items():
+            if is_bytes(img) or isinstance(img, BytesIO):
+                # We just assume the user meant PNG. If not, it should have been specified
+                img_content = img.read() if hasattr(img, "read") else img
+                maintype = "image"
+                subtype  = "png"
+
+            elif isinstance(img, dict):
+                # Expecting dict explanation of bytes
+                # ie. {"maintype": "image", "subtype": "png", "content"}
+                required_keys = ("content", "maintype", "subtype")
+                if any(key not in img for key in required_keys):
+                    missing_keys = tuple(key for key in required_keys if key not in img)
+                    raise KeyError(f"Image {img:!r} missing keys: {missing_keys:!r}")
+                img_content = img["content"]
+                maintype = "image"
+                subtype = "png"
+
+            elif is_filelike(img):
+                path = img
+                maintype, subtype = mimetypes.guess_type(str(path))[0].split('/')
+                
+                with open(path, "rb") as img:
+                    img_content = img.read()
+            elif plt is not None and isinstance(img, plt.Figure):
+                buf = BytesIO()
+                img.savefig(buf, format='png')
+                buf.seek(0)
+                img_content = buf.read()
+                maintype = "image"
+                subtype  = "png"
+            elif PIL is not None and isinstance(img, PIL.Image.Image):
+                buf = BytesIO()
+                img.save(buf, format='PNG')
+                buf.seek(0)
+                img_content = buf.read()
+                maintype = "image"
+                subtype  = "png"
+            else:
+                # Cannot be figured out
+                if isinstance(img, str):
+                    raise ValueError(f"Unknown image string '{img}'. Maybe incorrect path?")
+                raise TypeError(f"Unknown image {repr(img)}")
+
+            msg_body.add_related(
+                img_content,
+                maintype=maintype,
+                subtype=subtype,
+                cid=cid
+            )
