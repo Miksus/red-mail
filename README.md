@@ -57,7 +57,7 @@ from redmail import EmailSender
 email = EmailSender(host="localhost", port=0)
 
 email.send(
-    subject="The contents of myfile",
+    subject="An example email",
     receivers=['first.last@example.com'],
     text="Hello!",
     html="<h1>Hello!</h1>"
@@ -75,17 +75,25 @@ email.send(
     subject="An example email",
     sender="me@example.com",
     receivers=['first.last@example.com'],
-    text="Hello!",
     html="""<h1>Hello {{ friend }}!</h1>
         <p>Have you seen this thing</p>
         {{ awesome_image }}
         <p>Or this:</p>
         {{ pretty_table }}
+        <p>Or this plot:</p>
+        {{ a_plot }}
         <p>Kind regards, {{ sender.full_name }}</p>
     """,
+
+    # Content that is embed to the body
     body_params={'friend': 'Jack'},
-    body_images={'awesome_image': 'path/to/image.png'},
+    body_images={
+        'awesome_image': 'path/to/image.png',
+        'a_plot': plt.Figure(...)
+    },
     body_tables={'pretty_table': pd.DataFrame(...)},
+
+    # Attachments of the email
     attachments={
         'some_data.csv': pd.DataFrame(...),
         'file_content.html': '<h1>This is an attachment</h1>',
