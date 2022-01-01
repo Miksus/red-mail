@@ -2,6 +2,12 @@
 :red:`Red` Mail
 ===============
 
+.. image:: https://badgen.net/pypi/v/redmail
+   :target: https://pypi.org/project/redmail/
+
+.. image:: https://badgen.net/pypi/python/redmail
+   :target: https://pypi.org/project/redmail/
+
 Red Mail is a Python library for sending emails. 
 It makes sending emails a breeze regardless of if 
 you need to include HTML, embed images or tables or
@@ -14,6 +20,9 @@ include more than basic text. Red Mail aims to
 fix this and it makes sending emails a breeze 
 regardless of if you need to include attachments,
 images or prettier HTML.
+
+Visit the `source code from Github <https://github.com/Miksus/red-mail>`_
+or `releases in Pypi page <https://pypi.org/project/redmail/>`_.
 
 
 Why Red Mail?

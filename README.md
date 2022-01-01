@@ -20,7 +20,8 @@ has a lot of advanced features such as:
 - Prettified tables
 - Embedded images
 
-See more from the [documentations](https://red-mail.readthedocs.io/en/latest/).
+See more from the [documentations](https://red-mail.readthedocs.io/en/latest/)
+or see [release from PyPI](https://pypi.org/project/redmail/).
 
 ## Why Red Mail?
 
