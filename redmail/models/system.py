@@ -29,6 +29,13 @@ class Error:
             return self.as_html_inline()
         elif self.content_type == "html":
             return self.as_html()
+        else:
+            raise ValueError(f"Invalid content_type: {self.content_type}")
+
+    def __bool__(self):
+        "Return true if there is an error, false if not"
+        exc_type, _, _ = self.exc_format()
+        return exc_type is not None
 
     def as_text(self):
         "Format traceback as text"
@@ -96,7 +103,7 @@ class Error:
             exc_value = self.exception
             exc_type = type(self.exception)
             tb = self.exception.__traceback__
-        tb_list = traceback.format_tb(tb)
-        exc_str = str(exc_value)
-        exc_type_str = exc_type.__name__
+        tb_list = traceback.format_tb(tb) if tb is not None else None
+        exc_str = str(exc_value) if exc_value is not None else None
+        exc_type_str = exc_type.__name__ if exc_type is not None else None
         return exc_type_str, exc_str, tb_list
