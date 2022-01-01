@@ -29,7 +29,7 @@ message but simply sending emails **SHOULD NOT** look like this:
     from email.mime.text import MIMEText
 
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = f'The contents of {textfile}'
+    msg['Subject'] = 'An example email'
     msg['From'] = 'first.last@gmail.com'
     msg['To'] = 'first.last@example.com'
 
@@ -54,7 +54,7 @@ It should look like this:
     email = EmailSender(host="localhost", port=0)
 
     email.send(
-        subject="The contents of myfile",
+        subject="An example email",
         receivers=['first.last@example.com'],
         text="Hello!",
         html="<h1>Hello!</h1>"
