@@ -7,7 +7,7 @@ from convert import remove_extra_lines
 from getpass import getpass, getuser
 from platform import node
 
-from redmail.tests.helpers.convert import remove_email_extra
+from convert import remove_email_extra
 
 def test_text_message():
     text = "Hi, nice to meet you."
