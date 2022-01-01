@@ -1,3 +1,5 @@
 include versioneer.py
 include redmail/_version.py
 recursive-include redmail/email/templates *.html
+recursive-include redmail/email/templates *.txt
+recursive-include redmail/test/test_files *
