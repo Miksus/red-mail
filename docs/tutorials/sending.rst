@@ -53,3 +53,20 @@ You can also include both to your email:
             <p>this is an email.</p>
         """
     )
+
+.. _send-cc-bcc:
+
+Sending Email with cc and bcc
+-----------------------------
+
+You can also include carbon copy (cc) and blind carbon copy (bcc)
+to your emails:
+
+.. code-block:: python
+
+    email.send(
+        subject='email subject',
+        receivers=['first.last@example.com'],
+        cc=['also@example.com'],
+        bcc=['outsider@example.com']
+    )

@@ -68,6 +68,7 @@ Here are also other reasons to use Red Mail:
 - :ref:`It has Jinja support <jinja-support>`
 - :ref:`You can reuse your HTML templates <templating>`
 - :ref:`Gmail pre-configured <config-gmail>`
+- :ref:`Send with cc and bcc <send-cc-bcc>`
 
 In addition, normally tables in emails look like this:
 
