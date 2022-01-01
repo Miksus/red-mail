@@ -33,7 +33,7 @@ class EmailSender:
     Examples
     --------
     .. code-block:: python
-    
+
         mymail = EmailSender(server="smtp.mymail.com", port=123)
         mymail.set_credentials(
             user=lambda: read_yaml("C:/config/email.yaml")["mymail"]["user"],
@@ -50,11 +50,11 @@ class EmailSender:
     default_html_theme = "modest.html"
     default_text_theme = "pandas.txt"
 
-    templates_html = jinja2.Environment(loader=jinja2.FileSystemLoader(Path(__file__).parent / "templates/html"))
-    templates_html_table = jinja2.Environment(loader=jinja2.FileSystemLoader(Path(__file__).parent / "templates/html/table"))
+    templates_html = jinja2.Environment(loader=jinja2.FileSystemLoader(str(Path(__file__).parent / "templates/html")))
+    templates_html_table = jinja2.Environment(loader=jinja2.FileSystemLoader(str(Path(__file__).parent / "templates/html/table")))
 
-    templates_text = jinja2.Environment(loader=jinja2.FileSystemLoader(Path(__file__).parent / "templates/text"))
-    templates_text_table = jinja2.Environment(loader=jinja2.FileSystemLoader(Path(__file__).parent / "templates/text/table"))
+    templates_text = jinja2.Environment(loader=jinja2.FileSystemLoader(str(Path(__file__).parent / "templates/text")))
+    templates_text_table = jinja2.Environment(loader=jinja2.FileSystemLoader(str(Path(__file__).parent / "templates/text/table")))
 
     # Set globals
     templates_html_table.globals["get_span"] = get_span
