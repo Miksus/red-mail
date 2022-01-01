@@ -187,7 +187,6 @@ def test_dict_matplotlib_no_error():
     assert str(base64.b64encode(bytes_fig), 'ascii') == data.replace('\n', '')
 
 def test_dict_invalid():
-    fig, bytes_fig = get_mpl_fig()
 
     sender = EmailSender(host=None, port=1234)
     with pytest.raises(TypeError):
@@ -196,6 +195,18 @@ def test_dict_invalid():
             receivers="you@gmail.com",
             subject="Some news",
             attachments={'myimg.png': sender}
+        )
+
+def test_dict_invalid_key():
+    fig, bytes_fig = get_mpl_fig()
+
+    sender = EmailSender(host=None, port=1234)
+    with pytest.raises(TypeError):
+        msg = sender.get_message(
+            sender="me@gmail.com",
+            receivers="you@gmail.com",
+            subject="Some news",
+            attachments={sender: 'something'}
         )
 
 def test_dict_multiple(tmpdir):
@@ -289,6 +300,17 @@ def test_list_multiple(tmpdir):
         data = payload.get_payload()
         assert filename == expected[0]
         assert to_encoded(expected[1]) == data.replace('\n', '')
+
+def test_list_invalid():
+
+    sender = EmailSender(host=None, port=1234)
+    with pytest.raises(TypeError):
+        msg = sender.get_message(
+            sender="me@gmail.com",
+            receivers="you@gmail.com",
+            subject="Some news",
+            attachments=[sender]
+        )
 
 def test_string_path(tmpdir):
     file = tmpdir.join("data.txt")
