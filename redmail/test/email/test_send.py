@@ -12,7 +12,7 @@ def test_send():
             receivers=['koli.mikael@example.com']
         )
 
-def test_send():
-    email = EmailSender(host="localhost", port=0)
+def test_send_function():
     # This should fail but we test everything else goes through
-    send_email(host="localhost", port=0, )
+    with pytest.raises(ConnectionRefusedError):
+        send_email(host="localhost", port=0, subject="An example")
