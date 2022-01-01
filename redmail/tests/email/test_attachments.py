@@ -73,20 +73,21 @@ def test_dict_dataframe_csv():
     pytest.importorskip("pandas")
     import pandas as pd
 
+    df = pd.DataFrame({'a': [1,2,3], 'b': ['1', '2', '3']})
+
     sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
         sender="me@gmail.com",
         receivers="you@gmail.com",
         subject="Some news",
-        attachments={'myfile.csv': pd.DataFrame({'a': [1,2,3], 'b': ['1', '2', '3']})}
+        attachments={'myfile.csv': df}
     )
-    expected = ',a,b\r\n0,1,1\r\n1,2,2\r\n2,3,3\r\n'
 
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
     assert filename == 'myfile.csv'
-    assert to_encoded(expected) == data.replace('\n', '')
+    assert to_encoded(df.to_csv()) == data.replace('\n', '')
 
 def test_dict_dataframe_html():
     pytest.importorskip("pandas")
