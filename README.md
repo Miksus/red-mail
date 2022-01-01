@@ -7,7 +7,7 @@
 [![Pypi version](https://badgen.net/pypi/v/redmail)](https://pypi.org/project/redmail/)
 [![build](https://github.com/Miksus/red-mail/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/Miksus/red-mail/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/Miksus/red-mail/branch/master/graph/badge.svg?token=IMR1CQT9PY)](https://codecov.io/gh/Miksus/red-mail)
-[![Documentation Status](https://readthedocs.org/projects/red-mail/badge/?version=latest)](https://red-engine.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/red-mail/badge/?version=latest)](https://red-mail.readthedocs.io/en/latest/)
 [![PyPI pyversions](https://badgen.net/pypi/python/redmail)](https://pypi.org/project/redmail/)
 
 
@@ -19,6 +19,8 @@ has a lot of advanced features such as:
 - Templating (via Jinja)
 - Prettified tables
 - Embedded images
+
+See more from the [documentations](https://red-mail.readthedocs.io/en/latest/).
 
 ## Why Red Mail?
 
