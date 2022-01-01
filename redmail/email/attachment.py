@@ -63,10 +63,6 @@ class Attachments:
                 raise ValueError(f"Unknown attachment '{item}'. Perhaps a mistyped path?")
         elif isinstance(item, PurePath):
             return item.read_bytes()
-        elif isinstance(item, (pd.DataFrame, pd.Series)):
-            return item.to_csv().encode(self.encoding)
-        elif isinstance(item, (bytes, bytearray)):
-            return item
         else:
             raise TypeError(f"Unknown attachment {type(item)}")
 
