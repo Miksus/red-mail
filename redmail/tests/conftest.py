@@ -12,7 +12,7 @@ def copy_file_to_tmpdir(tmpdir, source_file, target_path=None):
 
     fh = tmpdir.join(Path(target_path).name if target_path is not None else source_path.name)
     with open(source_path, 'rb') as f:
-        fh.write(f.read())
+        fh.write_binary(f.read())
     return fh
 
 @pytest.fixture
