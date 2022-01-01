@@ -174,3 +174,13 @@ def test_set_defaults():
         'Content-Transfer-Encoding': '7bit', 
         'MIME-Version': '1.0'
     } == dict(msg.items())
+
+def test_cc_bcc():
+    email = EmailSender(host=None, port=1234)
+    msg = email.get_message(sender="me@example.com", subject="Something", cc=['you@example.com'], bcc=['he@example.com', 'she@example.com'])
+    assert dict(msg.items()) == {'from': 'me@example.com', 'subject': 'Something', 'cc': 'you@example.com', 'bcc': 'he@example.com, she@example.com'}
+
+def test_missing_subject():
+    email = EmailSender(host=None, port=1234)
+    with pytest.raises(ValueError):
+        email.get_message(sender="me@example.com", receivers=['you@example.com'])
