@@ -56,10 +56,3 @@ def is_last_group_row(n, index:list, level=None):
     # ie. ("blue", "car"), ("green", "car") --> True
     # ("blue", "car"), ("blue", "red") --> False
     return curr[0] != next[0]
-
-inline = Environment(loader=FileSystemLoader(Path(__file__).parent / "templates/inline"))
-inline.globals["get_span"] = get_span
-inline.globals["is_last_group_row"] = is_last_group_row
-
-master = Environment(loader=FileSystemLoader(Path(__file__).parent / "templates"))
-master.globals["get_span"] = get_span
