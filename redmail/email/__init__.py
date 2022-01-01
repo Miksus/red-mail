@@ -1,17 +1,17 @@
 from .sender import EmailSender
 
 gmail = EmailSender(
-    server="smtp.gmail.com",
+    host="smtp.gmail.com",
     port=587,
 )
 
-def send_email(*args, server:str, port:int, user_name:str, password:str, **kwargs):
+def send_email(*args, host:str, port:int, user_name:str, password:str, **kwargs):
     """Send email
 
     Parameters
     ----------
-    server : str
-        Address of the SMTP server
+    host : str
+        Address of the SMTP host
     port : int
         Port of the SMTP server
     user_name : str
@@ -19,12 +19,12 @@ def send_email(*args, server:str, port:int, user_name:str, password:str, **kwarg
     password : str
         Password of the user to send the email with
     **kwargs : dict
-        See redmail.EmailSender.send_email
+        See redmail.EmailSender.send
     """
     sender = EmailSender(
-        server=server, 
+        host=host, 
         port=port, 
         user_name=user_name,
         password=password
     )
-    return sender.send_email(*args, **kwargs)
+    return sender.send(*args, **kwargs)

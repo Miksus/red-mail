@@ -42,12 +42,12 @@ def test_with_image_file(get_image_obj, dummy_png):
         dummy_bytes = f.read()
     image_obj = get_image_obj(dummy_png)
 
-    sender = EmailSender(server=None, port=1234)
+    sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
         sender="me@gmail.com",
-        receiver="you@gmail.com",
+        receivers="you@gmail.com",
         subject="Some news",
-        html_body='<h1>Hi,</h1> Nice to meet you. Look at this shit: <img src="{{ my_image }}">',
+        html='<h1>Hi,</h1> Nice to meet you. Look at this: {{ my_image }}',
         body_images={"my_image": image_obj}
     )
     
@@ -78,12 +78,12 @@ def test_with_image_file(get_image_obj, dummy_png):
 def test_with_image_obj(get_image_obj):
     image_obj, image_bytes = get_image_obj()
 
-    sender = EmailSender(server=None, port=1234)
+    sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
         sender="me@gmail.com",
-        receiver="you@gmail.com",
+        receivers="you@gmail.com",
         subject="Some news",
-        html_body='<h1>Hi,</h1> Nice to meet you. Look at this shit: <img src="{{ my_image }}">',
+        html='<h1>Hi,</h1> Nice to meet you. Look at this: <img src="{{ my_image }}">',
         body_images={"my_image": image_obj}
     )
     
@@ -158,12 +158,12 @@ def test_with_image_obj(get_image_obj):
 )
 def test_with_html_table_no_error(df, tmpdir):
 
-    sender = EmailSender(server=None, port=1234)
+    sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
         sender="me@gmail.com",
-        receiver="you@gmail.com",
+        receivers="you@gmail.com",
         subject="Some news",
-        html_body='The table {{my_table}}',
+        html='The table {{my_table}}',
         body_tables={"my_table": df}
     )
     

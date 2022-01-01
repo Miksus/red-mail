@@ -17,8 +17,22 @@ import pandas as pd
 from markupsafe import Markup
 
 # We try to import matplotlib and PIL but if fails, they will be None
-plt = import_from_string("matplotlib.pyplot", if_missing="ignore")
-PIL = import_from_string("PIL", if_missing="ignore")
+from .utils import PIL, plt
+
+class BodyImage:
+    "Utility class to represent image on HTML"
+
+    def __init__(self, cid, obj, name=None):
+        self.cid = cid
+        self.obj = obj
+        self.name = name
+
+    def __str__(self):
+        return f'<img src="{self.src}">'
+
+    @property
+    def src(self):
+        return f'cid:{ self.cid }'
 
 class Body:
 
@@ -134,16 +148,6 @@ class HTMLBody(Body):
         str, dict
             Rendered HTML and Content-IDs to the images.
 
-        Example
-        -------
-            render_html('''
-            <html>
-                <body>
-                    <h1>Date {{ pic_date }}</h1>
-                    <img src={{ cat_picture }}>
-                </body>
-            </html>
-            ''', {'cat_picture': 'path/to/cat_picture.jpg'}, {'pic_date': '2021-01-01'})
         """
         
         images = {} if images is None else images
@@ -153,13 +157,13 @@ class HTMLBody(Body):
             name: make_msgid(domain=domain)
             for name in images
         }
-        cids_html = {
-            name: f'cid:{cid[1:-1]}' # taking "<" and ">" from beginning and end 
+        html_images = {
+            name: BodyImage(cid=cid[1:-1], name=name, obj=images[name]) # taking "<" and ">" from beginning and end 
             for name, cid in cids.items()
         }
 
         # Tables to HTML
-        jinja_params = {**jinja_params, **cids_html}
+        jinja_params = {**jinja_params, **html_images}
         html = super().render(html, tables=tables, jinja_params=jinja_params)
         return html, cids
 
@@ -189,7 +193,7 @@ class HTMLBody(Body):
                 maintype = "image"
                 subtype = "png"
 
-            elif is_filelike(img):
+            elif isinstance(img, Path) or (isinstance(img, str) and Path(img).is_file()):
                 path = img
                 maintype, subtype = mimetypes.guess_type(str(path))[0].split('/')
                 
