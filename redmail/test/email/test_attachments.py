@@ -33,6 +33,21 @@ def test_dict_string():
     assert filename == 'data.txt'
     assert to_encoded("Some content") == data.replace('\n', '')
 
+def test_dict_bytes():
+
+    sender = EmailSender(host=None, port=1234)
+    msg = sender.get_message(
+        sender="me@gmail.com",
+        receivers="you@gmail.com",
+        subject="Some news",
+        attachments={'data.bin': bytes(10)}
+    )
+    payload = msg.get_payload(0)
+    filename = payload.get_filename()
+    data = payload.get_payload()
+    assert filename == 'data.bin'
+    assert base64.b64encode(bytes(10)).decode() == data.replace('\n', '')
+
 def test_dict_path(tmpdir):
     file = tmpdir.join("data.txt")
     file.write("Some content")
@@ -109,6 +124,19 @@ def test_dict_dataframe_html():
     assert filename == 'myfile.html'
     assert to_encoded(expected) == data
 
+def test_dict_dataframe_invalid():
+    pytest.importorskip("pandas")
+    import pandas as pd
+
+    sender = EmailSender(host=None, port=1234)
+    with pytest.raises(ValueError):
+        msg = sender.get_message(
+            sender="me@gmail.com",
+            receivers="you@gmail.com",
+            subject="Some news",
+            attachments={'myfile.something': pd.DataFrame({'a': [1,2,3], 'b': ['1', '2', '3']})}
+        )
+
 def test_dict_dataframe_excel_no_error():
     pytest.importorskip("pandas")
     pytest.importorskip("openpyxl")
@@ -157,6 +185,18 @@ def test_dict_matplotlib_no_error():
     data = payload.get_payload()
     assert filename == 'myimg.png'
     assert str(base64.b64encode(bytes_fig), 'ascii') == data.replace('\n', '')
+
+def test_dict_invalid():
+    fig, bytes_fig = get_mpl_fig()
+
+    sender = EmailSender(host=None, port=1234)
+    with pytest.raises(TypeError):
+        msg = sender.get_message(
+            sender="me@gmail.com",
+            receivers="you@gmail.com",
+            subject="Some news",
+            attachments={'myimg.png': sender}
+        )
 
 def test_dict_multiple(tmpdir):
     file1 = tmpdir.join("file_1.txt")
