@@ -6,7 +6,7 @@ from typing import Dict, Union, ByteString
 from pathlib import Path
 
 
-from redmail.utils import is_filelike, is_bytes, is_pathlike
+from redmail.utils import is_bytes
 from redmail.utils import import_from_string
 
 from email.utils import make_msgid
