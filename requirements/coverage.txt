@@ -1,0 +1,11 @@
+# Testing
+pytest
+pytest-cov
+
+# Package requirements
+pandas
+jinja2
+
+# Optional
+matplotlib
+Pillow

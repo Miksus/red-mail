@@ -1,2 +1,4 @@
+pytest
+
 matplotlib
 Pillow
