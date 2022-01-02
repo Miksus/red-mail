@@ -1,2 +1,7 @@
+# Hard dep
 jinja2
+
+# Soft dep
 pandas
+matplotlib
+Pillow
