@@ -166,6 +166,7 @@ and read further.
 
    tutorials/index
    references
+   versions
 
 
 Indices and tables
