@@ -1,7 +1,6 @@
 from redmail import EmailSender
 
 import pytest
-import pandas as pd
 
 from convert import remove_email_extra
 from getpass import getpass, getuser

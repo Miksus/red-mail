@@ -8,8 +8,7 @@ import io
 from pathlib import Path, PurePath
 from typing import Union
 
-from .utils import PIL, plt
-import pandas as pd
+from .utils import PIL, plt, pd
 
 
 class Attachments:
@@ -67,12 +66,17 @@ class Attachments:
             raise TypeError(f"Unknown attachment {type(item)}")
 
     def _get_bytes_named(self, item, name:str) -> bytes:
+
+        has_pandas = pd is not None
+        has_pillow = PIL is not None
+        has_matplotlib = plt is not None
+
         if isinstance(item, str):
             # Considered as raw document
             return item
         elif isinstance(item, PurePath):
             return item.read_bytes()
-        elif isinstance(item, (pd.DataFrame, pd.Series)):
+        elif has_pandas and isinstance(item, (pd.DataFrame, pd.Series)):
             buff = io.BytesIO()
             if name.endswith(".xlsx"):
                 item.to_excel(buff)
@@ -87,12 +91,12 @@ class Attachments:
                 raise ValueError(f"Unknown dataframe conversion for '{name}'")
         elif isinstance(item, (bytes, bytearray)):
             return item
-        elif PIL is not None and isinstance(item, PIL.Image.Image):
+        elif has_pillow and isinstance(item, PIL.Image.Image):
             buf = io.BytesIO()
             item.save(buf, format='PNG')
             buf.seek(0)
             return buf.read()
-        elif plt is not None and isinstance(item, plt.Figure):
+        elif has_matplotlib and isinstance(item, plt.Figure):
             buf = io.BytesIO()
             item.savefig(buf, format=Path(name).suffix[1:])
             buf.seek(0)

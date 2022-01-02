@@ -1,4 +1,9 @@
 pytest
 
+# Package requirements
+jinja2
+
+# Optional
+pandas
 matplotlib
 Pillow

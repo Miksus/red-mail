@@ -1,5 +1,4 @@
 
-import numpy as np
 from io import BytesIO
 
 import pytest
@@ -8,10 +7,8 @@ def get_mpl_fig():
     pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
     # Data for plotting
-    t = np.arange(0.0, 2.0, 0.01)
-    s = 1 + np.sin(2 * np.pi * t)
     fig, ax = plt.subplots()
-    ax.plot(t, s)
+    ax.plot([1, 2, 3])
 
     buf = BytesIO()
     fig.savefig(buf, format='png')

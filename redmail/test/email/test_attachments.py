@@ -1,15 +1,10 @@
 
 from redmail import EmailSender
 
-import re
 import base64
 
 from pathlib import Path
-from io import BytesIO
 import pytest
-import pandas as pd
-
-import numpy as np
 
 from resources import get_mpl_fig, get_pil_image
 from convert import remove_extra_lines

@@ -3,9 +3,9 @@ pytest
 pytest-cov
 
 # Package requirements
-pandas
 jinja2
 
 # Optional
+pandas
 matplotlib
 Pillow
