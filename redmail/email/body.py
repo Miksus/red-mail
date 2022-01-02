@@ -2,7 +2,7 @@ from email.message import EmailMessage
 import mimetypes
 from io import BytesIO
 from pathlib import Path
-from typing import Dict, Union, ByteString
+from typing import TYPE_CHECKING, Dict, Union, ByteString
 from pathlib import Path
 
 
@@ -12,12 +12,15 @@ from redmail.utils import import_from_string
 from email.utils import make_msgid
 
 from jinja2.environment import Template, Environment
-import pandas as pd
 
 from markupsafe import Markup
 
 # We try to import matplotlib and PIL but if fails, they will be None
-from .utils import PIL, plt
+from .utils import PIL, plt, pd
+
+if TYPE_CHECKING:
+    # For type hinting
+    from pandas import DataFrame
 
 class BodyImage:
     "Utility class to represent image on HTML"
@@ -54,6 +57,9 @@ class Body:
         # TODO: Nicer tables. 
         #   https://stackoverflow.com/a/55356741/13696660
         #   Email HTML (generally) does not support CSS
+        if pd is None:
+            raise ImportError("Missing package 'pandas'. Prettifying tables requires Pandas.")
+        
         extra = {} if extra is None else extra
         df = pd.DataFrame(tbl)
 
@@ -119,7 +125,7 @@ class HTMLBody(Body):
             
             self.attach_imgs(html_msg, cid_path_mapping)
 
-    def render(self, html:str, images:Dict[str, Union[dict, bytes, Path]]=None, tables:Dict[str, pd.DataFrame]=None, jinja_params:dict=None, domain=None):
+    def render(self, html:str, images:Dict[str, Union[dict, bytes, Path]]=None, tables:Dict[str, 'DataFrame']=None, jinja_params:dict=None, domain=None):
         """Render Email HTML body (sets cid for image sources and adds data as other parameters)
 
         Parameters
