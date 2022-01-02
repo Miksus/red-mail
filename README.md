@@ -23,6 +23,12 @@ has a lot of advanced features such as:
 See more from the [documentations](https://red-mail.readthedocs.io/en/latest/)
 or see [release from PyPI](https://pypi.org/project/redmail/).
 
+Install it from PyPI:
+
+```shell
+pip install redmail
+```
+
 ## Why Red Mail?
 
 Sending emails should not be this complicated:
