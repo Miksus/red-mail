@@ -6,9 +6,9 @@ import re
 from pathlib import Path
 from io import BytesIO
 import pytest
-import pandas as pd
 
-import numpy as np
+# Importing Pandas from utils (is None if missing package)
+from redmail.email.utils import pd
 
 from resources import get_mpl_fig, get_pil_image
 from convert import remove_extra_lines
@@ -108,23 +108,23 @@ def test_with_image_obj(get_image_obj):
 
 
 @pytest.mark.parametrize(
-    "df,", [
+    "get_df,", [
         pytest.param(
-            pd.DataFrame(
+            lambda: pd.DataFrame(
                 [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
                 columns=pd.Index(["first", "second", "third"]),
             ), 
             id="Simple dataframe"
         ),
         pytest.param(
-            pd.DataFrame(
+            lambda: pd.DataFrame(
                 [[1], [2], [3]],
                 columns=pd.Index(["first"]),
             ), 
             id="Single column datafram"
         ),
         pytest.param(
-            pd.DataFrame(
+            lambda: pd.DataFrame(
                 [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
                 columns=pd.Index(["first", "second", "third"]),
                 index=pd.Index(["a", "b", "c"], name="category")
@@ -132,7 +132,7 @@ def test_with_image_obj(get_image_obj):
             id="Simple dataframe with index"
         ),
         pytest.param(
-            pd.DataFrame(
+            lambda: pd.DataFrame(
                 [[1, 2, 3, "a"], [4, 5, 6, "b"], [7, 8, 9, "c"], [10, 11, 12, "d"]],
                 columns=pd.MultiIndex.from_tuples([("parent a", "child a"), ("parent a", "child b"), ("parent b", "child a"), ("parent c", "child a")], names=["lvl 1", "lvl 2"]),
                 index=pd.MultiIndex.from_tuples([("row a", "sub a"), ("row a", "sub b"), ("row b", "sub a"), ("row c", "sub a")], names=["cat 1", "cat 2"]),
@@ -140,7 +140,7 @@ def test_with_image_obj(get_image_obj):
             id="Complex dataframe"
         ),
         pytest.param(
-            pd.DataFrame(
+            lambda: pd.DataFrame(
                 [[1, 2], [4, 5]],
                 columns=pd.MultiIndex.from_tuples([("col a", "child b", "subchild a"), ("col a", "child b", "subchild a")]),
                 index=pd.MultiIndex.from_tuples([("row a", "child b", "subchild a"), ("row a", "child b", "subchild a")]),
@@ -148,7 +148,7 @@ def test_with_image_obj(get_image_obj):
             id="Multiindex end with spanned"
         ),
         pytest.param(
-            pd.DataFrame(
+            lambda: pd.DataFrame(
                 [],
                 columns=pd.Index(["first", "second", "third"]),
             ), 
@@ -156,8 +156,9 @@ def test_with_image_obj(get_image_obj):
         ),
     ]
 )
-def test_with_html_table_no_error(df, tmpdir):
-
+def test_with_html_table_no_error(get_df, tmpdir):
+    pytest.importorskip("pandas")
+    df = get_df()
     sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
         sender="me@gmail.com",
