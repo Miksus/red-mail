@@ -21,7 +21,14 @@ template path to a custom folder and
     If you are dissatisfied with default HTML and text
     table templates, you can also pass ``html_table``
     and ``text_table`` to specify the templates used
-    to render embedded tables.
+    to render embedded tables:
+
+    .. code-block:: python
+
+        email.set_template_paths(
+            html_table="path/html/tables",
+            text_table="path/text/tables",
+        )
 
 Next we will make a simple template, let's call it 
 ``event_card.html``:

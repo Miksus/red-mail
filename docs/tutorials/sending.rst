@@ -4,8 +4,32 @@ Sending Emails
 ==============
 
 This section covers the basics of sending emails.
-We use an ``EmailSender`` configured in :ref:`configure`.
+See :ref:`configure` to revise how ``EmailSender``
+is configured. At minimum, sending an email requires:
 
+.. code-block:: python
+
+    from email import EmailSender
+    email = EmailSender(host='localhost', port=0)
+
+    email.send(
+        subject='email subject',
+        sender="me@example.com",
+        receivers=['you@example.com']
+    )
+
+.. note::
+
+    If you don't spesify the ``sender``, the sender is considered to 
+    be ``email.sender``. If ``email.sender`` is also missing, the sender
+    is then set to be ``email.user_name``. Ensure that any of these is a 
+    valid email address. 
+
+.. note::
+
+    Some email providers (such as Gmail) do not allow specifying
+    sender. For example, Gmail will outright ignore it and always
+    use your own email address.
 
 Sending Email with Text Body
 ----------------------------
@@ -16,7 +40,8 @@ To send an email with plain text message:
 
    email.send(
        subject='email subject',
-       receivers=['first.last@example.com'],
+       sender="me@example.com",
+       receivers=['you@example.com'],
        text="Hi, this is an email."
    )
 
@@ -29,7 +54,8 @@ To send an email with html content:
 
     email.send(
         subject='email subject',
-        receivers=['first.last@example.com'],
+        sender="me@example.com",
+        receivers=['you@example.com'],
         html="""
             <h1>Hi,</h1>
             <p>this is an email.</p>
@@ -46,7 +72,8 @@ You can also include both to your email:
 
     email.send(
         subject='email subject',
-        receivers=['first.last@example.com'],
+        sender="me@example.com",
+        receivers=['you@example.com'],
         text="Hi, this is an email.",
         html="""
             <h1>Hi,</h1>
@@ -66,7 +93,8 @@ to your emails:
 
     email.send(
         subject='email subject',
-        receivers=['first.last@example.com'],
+        sender="me@example.com",
+        receivers=['you@example.com'],
         cc=['also@example.com'],
         bcc=['outsider@example.com']
     )

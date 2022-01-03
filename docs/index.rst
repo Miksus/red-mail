@@ -158,7 +158,12 @@ There is much more to offer. Install the package:
 
     pip install redmail
 
-and read further.
+and read further. Here are some example use cases:
+
+- :ref:`cookbook-campaign`
+- :ref:`cookbook-alerts`
+- :ref:`cookbook-stats`
+- :ref:`examples-mega`
 
 .. toctree::
    :maxdepth: 2

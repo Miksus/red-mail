@@ -16,7 +16,6 @@ Configuring Email
 
 You can configure your sender by:
 
-
 .. code-block:: python
 
    from redmail import EmailSender
@@ -28,18 +27,17 @@ You can configure your sender by:
        password='<PASSWORD>'
    )
 
-If your SMTP server does not require login to send emails then 
-just don't pass ``user_name`` and ``password`` to ``EmailSender``.
-
-Alternatively, if you use Gmail there is a pre-configured sender
-which you can just import and set user name and password:
-
 .. code-block:: python
 
-   from redmail import gmail
+   # Or if your SMTP server does not require credentials
+   email = EmailSender(
+       host='<SMTP HOST>',
+       port='<SMTP PORT>',
+   )
 
-   gmail.user_name = 'me@gmail.com'
-   gmail.password = '<PASSWORD>'
+Alternatively, there is a pre-configured sender for Gmail. 
+Please see :ref:`how to configure Gmail <config-gmail>` for more.
+
 
 Sending Emails
 --------------
@@ -50,7 +48,8 @@ You can just send emails by calling the method ``send``:
 
    email.send(
        subject='email subject',
-       receivers=['first.last@example.com'],
+       sender="me@example.com",
+       receivers=['you@example.com'],
        text="Hi, this is an email."
    )
 

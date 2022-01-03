@@ -1,35 +1,65 @@
 .. _cookbook:
 
-Cook Book
+Cookbook
 =========
 
-This section provides various handy tips.
+This section provides various examples for various 
+needs.
 
-.. _config-gmail:
 
-Gmail
------
+.. _cookbook-campaign:
 
-You need to make an app password `see this Google's answer <https://support.google.com/accounts/answer/185833>`_. 
-When that is done you can use Red Mail's gmail object that has the Gmail
-server pre-configured:
+Email Campaign
+--------------
+
+In case you have a list of clients or customers you 
+wish to send personalized emails, you may benefit from
+templating. It may help to make the templates to an HTML
+file, polish them and after then send:
 
 .. code-block:: python
 
-    from redmail import gmail
-    gmail.user_name = 'example@gmail.com' # Your Gmail user
-    gmail.password = '<APP PASSWORD>'
-
-    # And then you can send emails
-    gmail.send(
-        subject="Example email",
-        receivers=['example@gmail.com']
-        text="Hi, this is an email."
+    from redmail import EmailSender
+    
+    email = EmailSender(...)
+    email.receivers = ['we@example.com']
+    email.set_template_paths(
+        html="path/to/campaigns"
     )
 
-.. note::
+Then make a HTML file, for example ``path/to/campaigns/summer_sale.html``:
 
-    You can only send emails using your Gmail email address. Changing ``sender`` has no effect.
+.. code-block:: html
+
+    <h1>Thank you, {{ customer }}, for being awesome!</h1>
+    <p>
+        We are pleased to inform you that we have a lot of products
+        in huge discounts.
+    </p>
+    <ul>
+    {% for product, discount, in discounts.items() %}
+        <li>{{ product }}: {{ '{:.0f} %'.format(discount * 100) }}</li>
+    {% endfor %}
+    </ul>
+    <p>Kind regards, We Ltd.</p>
+
+Finally send the emails:
+
+.. code-block:: python
+
+    discounts = {'shoes': 0.2, 'shirts': 0.4}
+    customers = ['cust1@example.com', 'cust2@example.com', ...]
+    for customer in customers:
+        email.send(
+            subject="Summer Sale!",
+            html_template="summer_sale.html",
+            body_params={
+                "customer": customer,
+                "discounts": discounts
+            }
+        )
+
+.. _cookbook-alerts:
 
 Error Alerts
 ------------
@@ -42,11 +72,71 @@ templated error alerts that include the full traceback:
     from redmail import EmailSender
     
     error_email = EmailSender(...)
+    error_email.sender = 'me@example.com'
     error_email.receivers = ['me@example.com']
-    error_email.html = """<h2>An error encountered</h2>{{ error }}"""
+    error_email.html = """
+        <h2>An error encountered</h2>
+        {{ error }}
+    """
 
     try:
         raise RuntimeError("Oops")
     except:
         # Send an email including the traceback
         error_email.send(subject="Fail: doing stuff failed")
+
+.. note::
+
+    The ``error`` formatting object identifies which body it is being
+    attached to. If you wish to use text body, ``error`` will show up
+    similarly as Python errors you see on terminals. See more from
+    :class:`redmail.models.Error`
+
+.. _cookbook-stats:
+
+Stats Reports
+-------------
+
+As demonstrated :ref:`here <embedding-plt>`, embedding Matplotlib 
+figures to the HTML bodies is trivial. Therefore you can easily
+create diagnostic reports or automatic analyses. Just create 
+the plots and let Red Mail send them to you:
+
+.. code-block:: python
+
+    from redmail import EmailSender
+    
+    stats_report = EmailSender(...)
+    stats_report.sender = 'no-reply@example.com'
+    stats_report.receivers = ['me@example.com']
+
+    # Create a plot
+    import matplotlib.pyplot as plt
+    fig_performance = plt.Figure()
+    plt.plot([1,2,3,2,3])
+
+    # Create summary table
+    import pandas as pd
+    df = pd.DataFrame(...)
+    df_summary = df.describe()
+
+    # Send the report
+    stats_report.send(
+        subject="System Diagnostics",
+        html="""
+            <h1>System Diagnostics ({{ now }})</h1>
+            <hr>
+            <h2>Performance</h2>
+            {{ perf_plot }}
+            <h2>Summary Statistics</h2>
+            {{ tbl_summary }}
+            <hr>
+            <p>System running on {{ node }}</p>
+        """,
+        body_images={
+            "perf_plot": fig_performance,
+        },
+        body_tables={
+            "tbl_summary": df_summary
+        }
+    )

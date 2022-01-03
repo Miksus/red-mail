@@ -65,7 +65,7 @@ some of them:
 Here is a list of default parameters:
 
 ================ ==================================== =========================================================
-Parameter Name   Class                                Description
+Parameter Name   Type                                 Description
 ================ ==================================== =========================================================
 sender           :class:`redmail.models.EmailAddress` Format class of the email sender
 error            :class:`redmail.models.Error`        Format class of the current exception (if any)
