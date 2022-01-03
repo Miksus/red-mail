@@ -71,6 +71,7 @@ html_theme_options = {
 #
 html_title = "Advanced Email Sender for Python"
 html_theme = 'sphinx_rtd_theme'
+html_favicon = 'favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
