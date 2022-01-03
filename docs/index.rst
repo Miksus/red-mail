@@ -1,4 +1,8 @@
 
+.. meta::
+   :description: Red Mail is an advanced email sender for Python. It is open source and well tested.
+   :keywords: send, email, Python
+
 :red:`Red` Mail
 ===============
 
