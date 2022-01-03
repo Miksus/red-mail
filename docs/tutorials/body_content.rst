@@ -22,7 +22,7 @@ of the email:
 .. code-block:: python
 
     email.send(
-        subject='Some attachments',
+        subject='An image',
         receivers=['first.last@example.com'],
         html="""<h1>This is an image:</h1> 
                 {{ my_image }}
@@ -44,7 +44,7 @@ you can also create the ``img`` tag yourself:
 .. code-block:: python
 
     email.send(
-        subject='Some attachments',
+        subject='An image',
         receivers=['first.last@example.com'],
         html='<h1>This is an image:</h1> <img src="{{ my_image.src }}" width=500 height=350>',
         body_images={
@@ -78,7 +78,7 @@ A simple example to include a figure:
 
     # Send the plot
     email.send(
-        subject='Some attachments',
+        subject='A plot',
         receivers=['first.last@example.com'],
         html="""<h1>This is a plot:</h1> 
                 {{ my_plot }}
@@ -133,7 +133,7 @@ to the send function as Pandas dataframes:
 
     # Let Red Mail to render the dataframe for you:
     email.send(
-        subject='Some attachments',
+        subject='A prettified table',
         receivers=['first.last@example.com'],
         html="<h1>This is a table:</h1> {{ mytable }}",
         body_tables={
