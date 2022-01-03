@@ -15,10 +15,12 @@
 Red Mail is an advanced email sender library. It makes sending emails trivial and 
 has a lot of advanced features such as:
 
-- Attachments
-- Templating (via Jinja)
-- Prettified tables
-- Embedded images
+- [Attachments](https://red-mail.readthedocs.io/en/latest/tutorials/attachments.html)
+- [Templating (with Jinja)](https://red-mail.readthedocs.io/en/latest/tutorials/jinja_support.html)
+- [Embedded images](https://red-mail.readthedocs.io/en/latest/tutorials/body_content.html#embedded-images)
+- [Prettified tables](https://red-mail.readthedocs.io/en/latest/tutorials/body_content.html#embedded-tables)
+- [Send as cc or bcc](https://red-mail.readthedocs.io/en/latest/tutorials/sending.html#sending-email-with-cc-and-bcc)
+- [Gmail preconfigured](https://red-mail.readthedocs.io/en/latest/tutorials/config.html#gmail)
 
 See more from the [documentations](https://red-mail.readthedocs.io/en/latest/)
 or see [release from PyPI](https://pypi.org/project/redmail/).
@@ -31,7 +33,7 @@ pip install redmail
 
 ## Why Red Mail?
 
-Sending emails should not be this complicated:
+Sending emails **SHOULD NOT** be this complicated:
 
 ```python
 import smtplib
@@ -55,7 +57,7 @@ s.send_message(msg)
 s.quit()
 ```
 
-With Red Mail, it's simple as this:
+With Red Mail, it is simple as this:
 
 ```python
 from redmail import EmailSender
@@ -64,6 +66,7 @@ email = EmailSender(host="localhost", port=0)
 
 email.send(
     subject="An example email",
+    sender="me@example.com",
     receivers=['first.last@example.com'],
     text="Hello!",
     html="<h1>Hello!</h1>"
@@ -75,14 +78,23 @@ You can also do more advanced things easily with it:
 ```python
 from redmail import EmailSender
 
-email = EmailSender(host="localhost", port=0)
+email = EmailSender(
+    host="localhost", port=0,
+    user_name="me@example.com", password="<PASSWORD>"
+)
 
 email.send(
     subject="An example email",
     sender="me@example.com",
+
+    # Recipients
     receivers=['first.last@example.com'],
+    cc=["also@example.com"],
+    bcc=["external@example.com"],
+
+    # Body of the email
     html="""<h1>Hello {{ friend }}!</h1>
-        <p>Have you seen this thing</p>
+        <p>Have you seen this thing:</p>
         {{ awesome_image }}
         <p>Or this:</p>
         {{ pretty_table }}
@@ -97,7 +109,9 @@ email.send(
         'awesome_image': 'path/to/image.png',
         'a_plot': plt.Figure(...)
     },
-    body_tables={'pretty_table': pd.DataFrame(...)},
+    body_tables={
+        'pretty_table': pd.DataFrame(...)
+    },
 
     # Attachments of the email
     attachments={
@@ -107,6 +121,8 @@ email.send(
     }
 )
 ```
+
+See more practical example in [cookbook](https://red-mail.readthedocs.io/en/latest/tutorials/cookbook.html).
 
 ---
 
