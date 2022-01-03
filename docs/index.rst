@@ -68,6 +68,7 @@ It should look like this:
 
     email.send(
         subject="An example email",
+        sender="me@example.com",
         receivers=['first.last@example.com'],
         text="Hello!",
         html="<h1>Hello!</h1>"
@@ -96,7 +97,7 @@ Red Email styles them like this:
 More Examples
 -------------
 
-You could attach things to your email:
+You can include attachments with your email:
 
 .. code-block:: python
 
@@ -105,8 +106,9 @@ You could attach things to your email:
 
     email.send(
         subject="Email subject",
-        receivers=["me@gmail.com"],
-        text_body="Hi, this is a simple email.",
+        sender="me@example.com",
+        receivers=["me@example.com"],
+        text="Hi, this is a simple email.",
         attachments={
             'myfile.csv': Path("path/to/data.csv"),
             'myfile.xlsx': pd.DataFrame({'A': [1, 2, 3]}),
@@ -114,10 +116,7 @@ You could attach things to your email:
         }
     )
 
-
-By default, HTML tables in emails look ugly. Red Mail has premade templates
-to turn them more visually pleasing. Just include them as Jinja parameters 
-in body and pass them as Pandas dataframes:
+You can also embed images to the HTML body:
 
 .. code-block:: python
 
@@ -125,7 +124,26 @@ in body and pass them as Pandas dataframes:
 
     email.send(
         subject="Email subject",
-        receivers=["me@gmail.com"],
+        sender="me@example.com",
+        receivers=["you@example.com"],
+        html="""
+            <h1>Hi,</h1> 
+            <p>have you seen this?</p> 
+            {{ myimg }}
+        """,
+        body_images={"myimg": "path/to/my/image.png"}
+    )
+
+You can also embed prettified tables to the body (using Pandas):
+
+.. code-block:: python
+
+    import pandas as pd
+
+    email.send(
+        subject="Email subject",
+        sender="me@example.com",
+        receivers=["you@example.com"],
         html="""
             <h1>Hi,</h1> 
             <p>have you seen this?</p> 
@@ -134,22 +152,21 @@ in body and pass them as Pandas dataframes:
         body_tables={"mytable": pd.DataFrame({'a': [1,2,3], 'b': [1,2,3]})}
     )
 
-You can also include images similarly:
+You can also parametrize and template the bodies with Jinja:
 
-.. code-block: python
+.. code-block:: python
 
-    from pathlib import Path
     import pandas as pd
 
     email.send(
         subject="Email subject",
-        receivers=["me@gmail.com"],
-        html="""
-            <h1>Hi,</h1> 
-            <p>have you seen this?</p> 
-            {{ myimg }}
-        """,
-        body_images={"myimg": "path/to/my/image.png"}
+        sender="me@example.com",
+        receivers=["you@example.com"],
+        text="Hi {{ friend }}, nice to meet you.",
+        html="<h1>Hi {{ friend }}, nice to meet you</h1>",
+        body_params={
+            "friend": "Jack"
+        }
     )
 
 
