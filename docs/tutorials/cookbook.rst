@@ -31,6 +31,7 @@ Then make a HTML file, for example ``path/to/campaigns/summer_sale.html``:
 
 .. code-block:: html
 
+    <img src="{{ company_logo }}" width=200 height=100>
     <h1>Thank you, {{ customer }}, for being awesome!</h1>
     <p>
         We are pleased to inform you that we have a lot of products
@@ -56,6 +57,9 @@ Finally send the emails:
             body_params={
                 "customer": customer,
                 "discounts": discounts
+            },
+            body_images={
+                "company_logo": "path/to/logo.png"
             }
         )
 
