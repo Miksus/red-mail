@@ -43,8 +43,8 @@ message but simply sending emails **SHOULD NOT** look like this:
 
     msg = MIMEMultipart('alternative')
     msg['Subject'] = 'An example email'
-    msg['From'] = 'first.last@gmail.com'
-    msg['To'] = 'first.last@example.com'
+    msg['From'] = 'me@example.com'
+    msg['To'] = 'you@example.com'
 
     part1 = MIMEText("Hello!", 'plain')
     part2 = MIMEText("<h1>Hello!</h1>", 'html')
@@ -69,7 +69,7 @@ It should look like this:
     email.send(
         subject="An example email",
         sender="me@example.com",
-        receivers=['first.last@example.com'],
+        receivers=['you@example.com'],
         text="Hello!",
         html="<h1>Hello!</h1>"
     )
@@ -107,7 +107,7 @@ You can include attachments with your email:
     email.send(
         subject="Email subject",
         sender="me@example.com",
-        receivers=["me@example.com"],
+        receivers=["you@example.com"],
         text="Hi, this is a simple email.",
         attachments={
             'myfile.csv': Path("path/to/data.csv"),
