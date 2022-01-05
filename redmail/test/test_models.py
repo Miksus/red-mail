@@ -5,9 +5,9 @@ import pytest
 
 @pytest.mark.parametrize("addr,expected",
     [
-        pytest.param('info@company.com', {'first_name': None, 'last_name': None, 'full_name': 'Info', 'organization': 'Company'}, id="Not personal"),
-        pytest.param('first.last@company.com', {'first_name': "First", 'last_name': "Last", 'full_name': 'First Last', 'organization': 'Company'}, id="Personal"),
-        pytest.param('no-reply@en.company.com', {'first_name': None, 'last_name': None, 'full_name': 'No-reply', 'organization': 'Company'}, id="Multi-domain-part"),
+        pytest.param('info@company.com', {'first_name': None, 'last_name': None, 'full_name': 'Info', 'organization': 'Company', 'top_level_domain': '.com'}, id="Not personal"),
+        pytest.param('first.last@company.com', {'first_name': "First", 'last_name': "Last", 'full_name': 'First Last', 'organization': 'Company', 'top_level_domain': '.com'}, id="Personal"),
+        pytest.param('no-reply@en.company.com', {'first_name': None, 'last_name': None, 'full_name': 'No-reply', 'organization': 'Company', 'top_level_domain': '.com'}, id="Multi-domain-part"),
     ]
 )
 def test_address(addr, expected):
@@ -17,6 +17,7 @@ def test_address(addr, expected):
     assert expected['last_name'] == address.last_name
     assert expected['full_name'] == address.full_name
     assert expected['organization'] == address.organization
+    assert expected['top_level_domain'] == address.top_level_domain
     assert str(address) == addr
 
 @pytest.mark.parametrize("exc_as", ['current stack', 'passed exception'])
