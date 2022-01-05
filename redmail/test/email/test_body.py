@@ -183,3 +183,23 @@ def test_missing_subject():
     email = EmailSender(host=None, port=1234)
     with pytest.raises(ValueError):
         email.get_message(sender="me@example.com", receivers=['you@example.com'])
+
+
+def test_no_table_templates():
+    email = EmailSender(host="localhost", port=0)
+
+    assert email.default_html_theme == "modest.html"
+    assert email.default_text_theme == "pandas.txt"
+
+    email.default_html_theme = None
+    email.default_text_theme = None
+    msg = email.get_message(
+        sender="me@gmail.com",
+        receivers="you@gmail.com",
+        subject="Some news",
+    )
+    assert dict(msg.items()) == {
+        'from': 'me@gmail.com', 
+        'subject': 'Some news', 
+        'to': 'you@gmail.com', 
+    }
