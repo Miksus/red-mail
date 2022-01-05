@@ -197,9 +197,13 @@ def test_no_table_templates():
         sender="me@gmail.com",
         receivers="you@gmail.com",
         subject="Some news",
+        text="An example",
+        html="<h1>An example</h1>"
     )
     assert dict(msg.items()) == {
         'from': 'me@gmail.com', 
         'subject': 'Some news', 
         'to': 'you@gmail.com', 
+        'MIME-Version': '1.0', 
+        'Content-Type': 'multipart/alternative',
     }
