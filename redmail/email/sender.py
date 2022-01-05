@@ -65,6 +65,8 @@ class EmailSender:
 
     attachment_encoding = 'UTF-8'
 
+    _cls_smtp_server = smtplib.SMTP
+
     def __init__(self, host:str, port:int, user_name:str=None, password:str=None):
         self.host = host
         self.port = port
@@ -229,7 +231,7 @@ class EmailSender:
         user = self.user_name
         password = self.password
         
-        server = smtplib.SMTP(self.host, self.port)
+        server = self._cls_smtp_server(self.host, self.port)
         server.starttls()
         if user is not None or password is not None:
             server.login(user, password)
