@@ -194,7 +194,7 @@ class HTMLBody(Body):
                 required_keys = ("content", "maintype", "subtype")
                 if any(key not in img for key in required_keys):
                     missing_keys = tuple(key for key in required_keys if key not in img)
-                    raise KeyError(f"Image {img:!r} missing keys: {missing_keys:!r}")
+                    raise KeyError(f"Image {repr(img)} missing keys: {missing_keys}")
                 img_content = img["content"]
                 maintype = "image"
                 subtype = "png"
