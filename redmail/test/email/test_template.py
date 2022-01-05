@@ -46,3 +46,34 @@ def test_template(tmpdir):
 
     assert expected_html == html
     assert expected_text == text
+
+def test_body_and_template_error(tmpdir):
+
+    html_templates = tmpdir.mkdir("html_tmpl")
+    html_templates.join("example.html").write("""<h1>Hi {{ friend }},</h1><p>have you checked this open source project '{{ project_name }}'?</p><p>- {{ sender.full_name }}</p>""")
+
+    text_templates = tmpdir.mkdir("text_tmpl")
+    text_templates.join("example.txt").write("""Hi {{ friend }}, \nhave you checked this open source project '{{ project_name }}'? \n- {{ sender.full_name }}""")
+
+    sender = EmailSender(host="localhost", port=0)
+    sender.set_template_paths(
+        html=str(html_templates),
+        text=str(text_templates),
+    )
+
+    with pytest.raises(ValueError):
+        msg = sender.get_message(
+            sender="me@gmail.com",
+            receivers="you@gmail.com",
+            subject="Some news",
+            html='This is some body',
+            html_template="example.html"
+        )
+    with pytest.raises(ValueError):
+        msg = sender.get_message(
+            sender="me@gmail.com",
+            receivers="you@gmail.com",
+            subject="Some news",
+            text='This is some body',
+            text_template="example.txt"
+        )

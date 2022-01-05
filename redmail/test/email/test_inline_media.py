@@ -105,6 +105,35 @@ def test_with_image_obj(get_image_obj):
         'Content-Type': 'multipart/alternative'
     } == headers
 
+def test_with_image_error():
+    sender = EmailSender(host=None, port=1234)
+    with pytest.raises(ValueError):
+        msg = sender.get_message(
+            sender="me@gmail.com",
+            receivers="you@gmail.com",
+            subject="Some news",
+            html='<h1>Hi,</h1> Nice to meet you. Look at this: <img src="{{ my_image }}">',
+            body_images={"my_image": "this is invalid"}
+        )
+
+    invalid_type_obj = type("TempClass", (), {})()
+    with pytest.raises(TypeError):
+        msg = sender.get_message(
+            sender="me@gmail.com",
+            receivers="you@gmail.com",
+            subject="Some news",
+            html='<h1>Hi,</h1> Nice to meet you. Look at this: <img src="{{ my_image }}">',
+            body_images={"my_image": invalid_type_obj}
+        )
+
+    with pytest.raises(KeyError):
+        msg = sender.get_message(
+            sender="me@gmail.com",
+            receivers="you@gmail.com",
+            subject="Some news",
+            html='<h1>Hi,</h1> Nice to meet you. Look at this:>',
+            body_images={"my_image": {}}
+        )
 
 
 @pytest.mark.parametrize(
@@ -177,3 +206,23 @@ def test_with_html_table_no_error(get_df, tmpdir):
     # TODO: Test the HTML is as required
 
     assert html
+
+
+def test_embed_tables_pandas_missing():
+    sender = EmailSender(host=None, port=1234)
+
+    from redmail.email import body
+    pd_mdl = body.pd # This may be already None if env does not have Pandas
+    try:
+        # src uses this to reference Pandas (if missing --> None)
+        body.pd = None
+        with pytest.raises(ImportError):
+            msg = sender.get_message(
+                sender="me@gmail.com",
+                receivers="you@gmail.com",
+                subject="Some news",
+                html='The table {{my_table}}',
+                body_tables={"my_table": [{"col1": 1, "col2": "a"}, {"col1": 2, "col2": "b"}]}
+            )
+    finally:
+        body.pd = pd_mdl
