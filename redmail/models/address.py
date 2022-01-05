@@ -47,7 +47,7 @@ class EmailAddress:
         
         Ie. john.smith@en.example.com --> com"""
         domain = self.domain.split(".")
-        return domain[-1] if len(domain) > 1 else None
+        return '.' + domain[-1] if len(domain) > 1 else None
 
     @property
     def second_level_domain(self):
