@@ -1,11 +1,12 @@
 
-.. _examples-simple:
+
 
 Examples
 ========
 
-Simple Example
---------------
+This is a collection of various examples of 
+sending emails. Remember to initiate the 
+sender object as:
 
 .. code-block:: python
 
@@ -17,12 +18,125 @@ Simple Example
         user_name='me@example.com', 
         password='<PASSWORD>'
     )
+
+.. _examples-simple:
+
+Simple Example
+--------------
+
+.. code-block:: python
+
     email.send(
         subject="An email",
         sender="me@example.com",
         receivers=['you@example.com'],
         test="Hi, this is an email.",
         html="<h1>Hi, </h1><p>this is an email.</p>"
+    )
+
+.. _examples-attachments:
+
+Attachments
+-----------
+
+.. code-block:: python
+
+    from pathlib import Path
+    import pandas as pd
+
+    email.send(
+        subject="Email subject",
+        sender="me@example.com",
+        receivers=["you@example.com"],
+        text="Hi, this is a simple email.",
+        attachments={
+            'myfile.csv': Path("path/to/data.csv"),
+            'myfile.xlsx': pd.DataFrame({'A': [1, 2, 3]}),
+            'myfile.html': '<h1>This is content of an attachment</h1>'
+        }
+    )
+
+.. _examples-embed-image:
+
+Embedded Images
+---------------
+
+.. code-block:: python
+
+    import pandas as pd
+
+    email.send(
+        subject="Email subject",
+        sender="me@example.com",
+        receivers=["you@example.com"],
+        html="""
+            <h1>Hi,</h1> 
+            <p>have you seen this?</p> 
+            {{ myimg }}
+        """,
+        body_images={"myimg": "path/to/my/image.png"}
+    )
+
+.. _examples-embed-plot:
+
+Embedded Plots
+--------------
+
+.. code-block:: python
+
+    import matplotlib.pyplot as plt
+    fig = plt.figure()
+    plt.plot([1,2,3,2,3])
+
+    email.send(
+        subject="Email subject",
+        sender="me@example.com",
+        receivers=["you@example.com"],
+        html="""
+            <h1>Hi,</h1> 
+            <p>have you seen this?</p> 
+            {{ myplot }}
+        """,
+        body_images={"myplot": fig}
+    )
+
+.. _examples-embed-table:
+
+Embedded Tables
+---------------
+
+.. code-block:: python
+
+    import pandas as pd
+
+    email.send(
+        subject="Email subject",
+        sender="me@example.com",
+        receivers=["you@example.com"],
+        html="""
+            <h1>Hi,</h1> 
+            <p>have you seen this?</p> 
+            {{ mytable }}
+        """,
+        body_tables={"mytable": pd.DataFrame({'a': [1,2,3], 'b': [1,2,3]})}
+    )
+
+.. _examples-parametrized:
+
+Parametrization
+---------------
+
+.. code-block:: python
+
+    email.send(
+        subject="Email subject",
+        sender="me@example.com",
+        receivers=["you@example.com"],
+        text="Hi {{ friend }}, nice to meet you.",
+        html="<h1>Hi {{ friend }}, nice to meet you</h1>",
+        body_params={
+            "friend": "Jack"
+        }
     )
 
 .. _examples-mega:
@@ -49,14 +163,6 @@ features of Red Mail:
 
     byte_content = Path("a_file.bin").read_bytes()
 
-    email = EmailSender(
-        host='localhost', 
-        port=0, 
-        user_name='me@example.com', 
-        password='<PASSWORD>'
-    )
-
-    # Send an email
     email.send(
         subject="A lot of stuff!",
         sender="me@example.com",

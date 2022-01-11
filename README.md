@@ -1,5 +1,5 @@
 
-# Red Mail
+# Red Mail: Advanced Email Sender
 > Next generation email sender
 
 ---
@@ -122,7 +122,9 @@ email.send(
 )
 ```
 
-See more practical example in [cookbook](https://red-mail.readthedocs.io/en/latest/tutorials/cookbook.html).
+Short examples from [here](https://red-mail.readthedocs.io/en/latest/tutorials/example.html).
+
+Practical example in [cookbook](https://red-mail.readthedocs.io/en/latest/tutorials/cookbook.html).
 
 ---
 
