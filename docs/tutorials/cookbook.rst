@@ -209,8 +209,5 @@ You can also accomplish this without subclassing to limited extent:
 
     # Send an email to the developers
     developers.send(
-        subject="Important news",
-        receivers="developers",
-        cc="managers",
-        ...
+        subject="Important news"
     )
