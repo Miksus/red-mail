@@ -135,6 +135,7 @@ def test_dict_dataframe_invalid():
 def test_dict_dataframe_excel_no_error():
     pytest.importorskip("pandas")
     pytest.importorskip("openpyxl")
+    import pandas as pd
 
     sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
@@ -146,7 +147,7 @@ def test_dict_dataframe_excel_no_error():
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
-    assert filename == 'myfile.html'
+    assert filename == 'myfile.xlsx'
     # Excels are harder to verify
 
 def test_dict_pil_no_error():
