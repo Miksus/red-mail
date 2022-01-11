@@ -1,6 +1,6 @@
 
 from email.message import EmailMessage
-from typing import Callable, Dict, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 
 import jinja2
 from redmail.email.attachment import Attachments
@@ -77,6 +77,8 @@ class EmailSender:
         # Defaults
         self.sender = None
         self.receivers = None
+        self.cc = None
+        self.bcc = None
         self.subject = None
 
         self.text = None
@@ -165,7 +167,10 @@ class EmailSender:
 
         subject = subject or self.subject
         sender = sender or self.sender or self.user_name
-        receivers = receivers or self.receivers
+
+        receivers = self.get_receivers(receivers)
+        cc = self.get_cc(cc)
+        bcc = self.get_bcc(bcc)
 
         html = html or self.html
         text = text or self.text
@@ -211,6 +216,18 @@ class EmailSender:
             att = Attachments(attachments, encoding=self.attachment_encoding)
             att.attach(msg)
         return msg
+
+    def get_receivers(self, receivers:Union[list, str]) -> List[str]:
+        """Get receivers of the email"""
+        return receivers or self.receivers
+
+    def get_cc(self, cc:Union[list, str]) -> Union[List[str], None]:
+        """Get carbon copy (cc) of the email"""
+        return cc or self.cc
+
+    def get_bcc(self, bcc:Union[list, str]) -> List[str]:
+        """Get blind carbon copy (bcc) of the email"""
+        return bcc or self.bcc
 
     def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None) -> EmailMessage:
         msg = EmailMessage()
