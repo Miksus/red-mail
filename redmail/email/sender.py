@@ -217,7 +217,7 @@ class EmailSender:
             att.attach(msg)
         return msg
 
-    def get_receivers(self, receivers:Union[list, str]) -> List[str]:
+    def get_receivers(self, receivers:Union[list, str]) -> Union[List[str], None]:
         """Get receivers of the email"""
         return receivers or self.receivers
 
@@ -225,7 +225,7 @@ class EmailSender:
         """Get carbon copy (cc) of the email"""
         return cc or self.cc
 
-    def get_bcc(self, bcc:Union[list, str]) -> List[str]:
+    def get_bcc(self, bcc:Union[list, str]) -> Union[List[str], None]:
         """Get blind carbon copy (bcc) of the email"""
         return bcc or self.bcc
 
