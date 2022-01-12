@@ -3,8 +3,8 @@
    :description: Red Mail is an advanced email sender for Python. It is open source and well tested.
    :keywords: send, email, Python
 
-:red:`Red` Mail
-===============
+:red:`Red` Mail: Send Emails in Python
+=============================================
 
 .. image:: https://badgen.net/pypi/v/redmail
    :target: https://pypi.org/project/redmail/
@@ -13,17 +13,11 @@
    :target: https://pypi.org/project/redmail/
 
 Red Mail is a Python library for sending emails. 
-It makes sending emails a breeze regardless of if 
-you need to include HTML, embed images or tables or
-attach documents. 
-
-Sending emails is a pretty straight forward task.
-However, the standard SMTP libraries don't make 
-it particularly easy especially if you want to 
-include more than basic text. Red Mail aims to 
-fix this and it makes sending emails a breeze 
-regardless of if you need to include attachments,
-images or prettier HTML.
+It makes sending emails very trivial regardless of whether 
+you need to embed images, plots, tables or
+attach documents. It also provides you convenient 
+templating options and it is easy to create email alerts, 
+email reports or client notifications with it.
 
 Visit the `source code from Github <https://github.com/Miksus/red-mail>`_
 or `releases in Pypi page <https://pypi.org/project/redmail/>`_.
@@ -32,8 +26,10 @@ or `releases in Pypi page <https://pypi.org/project/redmail/>`_.
 Why Red Mail?
 -------------
 
-Standard SMTP libraries are not very convenient to use. They let you modify any part of the 
-message but simply sending emails **SHOULD NOT** look like this:
+Sending emails is a pretty straight forward task.
+However, the standard SMTP libraries don't make 
+it particularly easy and sending emails **SHOULD NOT** 
+look like this:
 
 .. code-block:: python
 
@@ -74,7 +70,7 @@ It should look like this:
         html="<h1>Hello!</h1>"
     )
 
-Here are also other reasons to use Red Mail:
+There are also other reasons to use Red Mail:
 
 - :ref:`You can put attachments to the email <attachments>`
 - :ref:`You can include images to the body <embedding-images>`
@@ -83,108 +79,39 @@ Here are also other reasons to use Red Mail:
 - :ref:`You can reuse your HTML templates <templating>`
 - :ref:`Gmail pre-configured <config-gmail>`
 - :ref:`Send with cc and bcc <send-cc-bcc>`
+- And it is well tested and documented
 
-In addition, normally tables in emails look like this:
-
-.. image:: /imgs/table_without_style.png
-   :width: 200px
-   
-Red Email styles them like this:
-
-.. image:: /imgs/table_with_style.png
-   :width: 200px
 
 More Examples
 -------------
 
-You can include attachments with your email:
+Interested in more? 
+Here are some more quick examples:
 
-.. code-block:: python
-
-    from pathlib import Path
-    import pandas as pd
-
-    email.send(
-        subject="Email subject",
-        sender="me@example.com",
-        receivers=["you@example.com"],
-        text="Hi, this is a simple email.",
-        attachments={
-            'myfile.csv': Path("path/to/data.csv"),
-            'myfile.xlsx': pd.DataFrame({'A': [1, 2, 3]}),
-            'myfile.html': '<h1>This is content of an attachment</h1>'
-        }
-    )
-
-You can also embed images to the HTML body:
-
-.. code-block:: python
-
-    import pandas as pd
-
-    email.send(
-        subject="Email subject",
-        sender="me@example.com",
-        receivers=["you@example.com"],
-        html="""
-            <h1>Hi,</h1> 
-            <p>have you seen this?</p> 
-            {{ myimg }}
-        """,
-        body_images={"myimg": "path/to/my/image.png"}
-    )
-
-You can also embed prettified tables to the body (using Pandas):
-
-.. code-block:: python
-
-    import pandas as pd
-
-    email.send(
-        subject="Email subject",
-        sender="me@example.com",
-        receivers=["you@example.com"],
-        html="""
-            <h1>Hi,</h1> 
-            <p>have you seen this?</p> 
-            {{ mytable }}
-        """,
-        body_tables={"mytable": pd.DataFrame({'a': [1,2,3], 'b': [1,2,3]})}
-    )
-
-You can also parametrize and template the bodies with Jinja:
-
-.. code-block:: python
-
-    import pandas as pd
-
-    email.send(
-        subject="Email subject",
-        sender="me@example.com",
-        receivers=["you@example.com"],
-        text="Hi {{ friend }}, nice to meet you.",
-        html="<h1>Hi {{ friend }}, nice to meet you</h1>",
-        body_params={
-            "friend": "Jack"
-        }
-    )
+- :ref:`examples-simple`
+- :ref:`examples-attachments`
+- :ref:`examples-embed-image`
+- :ref:`examples-embed-plot`
+- :ref:`examples-embed-table`
+- :ref:`examples-parametrized`
+- :ref:`examples-mega`
 
 
 Interested?
 -----------
 
-There is much more to offer. Install the package:
+Install the package:
 
 .. code-block:: console
 
     pip install redmail
 
-and read further. Here are some example use cases:
+
+Some more practical examples:
 
 - :ref:`cookbook-campaign`
 - :ref:`cookbook-alerts`
 - :ref:`cookbook-stats`
-- :ref:`examples-mega`
 
 .. toctree::
    :maxdepth: 2
