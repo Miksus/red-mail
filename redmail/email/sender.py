@@ -1,6 +1,6 @@
 
 from email.message import EmailMessage
-from typing import Callable, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 import jinja2
 from redmail.email.attachment import Attachments
@@ -15,6 +15,13 @@ from pathlib import Path
 from platform import node
 from getpass import getuser
 import datetime
+import os
+
+if TYPE_CHECKING:
+    # These are never imported but just for linters
+    import pandas as pd
+    from PIL.Image import Image
+    import matplotlib.pyplot as plt
 
 class EmailSender:
     """Email sender
@@ -86,7 +93,7 @@ class EmailSender:
         self.html_template = None
         self.text_template = None
         
-    def send(self, **kwargs):
+    def send(self, **kwargs) -> EmailMessage:
         """Send an email message.
 
         Parameters
@@ -151,18 +158,18 @@ class EmailSender:
         
     def get_message(self, 
                   subject:str=None,
-                  receivers:list=None,
+                  receivers:List[str]=None,
                   sender:str=None,
-                  cc:list=None,
-                  bcc:list=None,
+                  cc:List[str]=None,
+                  bcc:List[str]=None,
                   html:str=None,
                   text:str=None,
-                  html_template=None,
-                  text_template=None,
-                  body_images:Dict[str, str]=None, 
-                  body_tables:Dict[str, str]=None, 
-                  body_params:dict=None,
-                  attachments:dict=None) -> EmailMessage:
+                  html_template:str=None,
+                  text_template:str=None,
+                  body_images:Dict[str, Union[str, bytes, 'plt.Figure', 'Image']]=None, 
+                  body_tables:Dict[str, 'pd.DataFrame']=None, 
+                  body_params:Dict[str, Any]=None,
+                  attachments:Dict[str, Union[str, os.PathLike, 'pd.DataFrame', bytes]]=None) -> EmailMessage:
         """Get the email message."""
 
         subject = subject or self.subject
@@ -243,7 +250,7 @@ class EmailSender:
             msg['bcc'] = bcc
         return msg
 
-    def send_message(self, msg):
+    def send_message(self, msg:EmailMessage):
         "Send the created message"
         user = self.user_name
         password = self.password
@@ -284,29 +291,33 @@ class EmailSender:
             params.update(extra)
         return params
 
-    def get_html_table_template(self, layout=None) -> jinja2.Template:
+    def get_html_table_template(self, layout:str=None) -> jinja2.Template:
         layout = self.default_html_theme if layout is None else layout
         if layout is None:
             return None
         return self.templates_html_table.get_template(layout)
 
-    def get_html_template(self, layout=None) -> jinja2.Template:
+    def get_html_template(self, layout:str=None) -> jinja2.Template:
         if layout is None:
             return None
         return self.templates_html.get_template(layout)
 
-    def get_text_table_template(self, layout=None) -> jinja2.Template:
+    def get_text_table_template(self, layout:str=None) -> jinja2.Template:
         layout = self.default_text_theme if layout is None else layout
         if layout is None:
             return None
         return self.templates_text_table.get_template(layout)
 
-    def get_text_template(self, layout=None) -> jinja2.Template:
+    def get_text_template(self, layout:str=None) -> jinja2.Template:
         if layout is None:
             return None
         return self.templates_text.get_template(layout)
 
-    def set_template_paths(self, html=None, text=None, html_table=None, text_table=None):
+    def set_template_paths(self, 
+                           html:Union[str, os.PathLike]=None, 
+                           text:Union[str, os.PathLike]=None, 
+                           html_table:Union[str, os.PathLike]=None, 
+                           text_table:Union[str, os.PathLike]=None):
         """Create Jinja envs for body templates using given paths
         
         This is a shortcut for manually setting them like:
