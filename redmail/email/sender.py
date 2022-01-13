@@ -173,7 +173,7 @@ class EmailSender:
         """Get the email message."""
 
         subject = subject or self.subject
-        sender = sender or self.sender or self.user_name
+        sender = self.get_sender(sender)
 
         receivers = self.get_receivers(receivers)
         cc = self.get_cc(cc)
@@ -235,6 +235,10 @@ class EmailSender:
     def get_bcc(self, bcc:Union[list, str]) -> Union[List[str], None]:
         """Get blind carbon copy (bcc) of the email"""
         return bcc or self.bcc
+
+    def get_sender(self, sender:str) -> str:
+        """Get sender of the email"""
+        return sender or self.sender or self.user_name
 
     def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None) -> EmailMessage:
         msg = EmailMessage()
