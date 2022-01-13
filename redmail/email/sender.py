@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     import matplotlib.pyplot as plt
 
 class EmailSender:
-    """Email sender
+    """Red Mail Email Sender
 
     Parameters
     ----------
@@ -32,25 +32,20 @@ class EmailSender:
         SMTP host address.
     port : int
         Port to the SMTP server.
-    user : str, callable
+    user_name : str, optional
         User name to authenticate on the server.
-    password : str, callable
+    password : str, optional
         User password to authenticate on the server.
 
     Examples
     --------
     .. code-block:: python
 
-        mymail = EmailSender(server="smtp.mymail.com", port=123)
-        mymail.set_credentials(
-            user=lambda: read_yaml("C:/config/email.yaml")["mymail"]["user"],
-            password=lambda: read_yaml("C:/config/email.yaml")["mymail"]["password"]
-        )
-        mymail.send(
-            subject="Important email",
-            html="<h1>Important</h1><img src={{ nice_pic }}>",
-            body_images={'nice_pic': 'path/to/pic.jpg'},
-
+        email = EmailSender(server="smtp.mymail.com", port=123)
+        email.send(
+            subject="Example Email",
+            sender="me@example.com",
+            receivers=["you@example.com"],
         )
     """
     
@@ -93,66 +88,121 @@ class EmailSender:
         self.html_template = None
         self.text_template = None
         
-    def send(self, **kwargs) -> EmailMessage:
-        """Send an email message.
+    def send(self,
+             subject:Optional[str]=None,
+             sender:Optional[str]=None,
+             receivers:Union[List[str], str, None]=None,
+             cc:Union[List[str], str, None]=None,
+             bcc:Union[List[str], str, None]=None,
+             html:Optional[str]=None,
+             text:Optional[str]=None,
+             html_template:Optional[str]=None,
+             text_template:Optional[str]=None,
+             body_images:Optional[Dict[str, Union[str, bytes, 'plt.Figure', 'Image']]]=None, 
+             body_tables:Optional[Dict[str, 'pd.DataFrame']]=None, 
+             body_params:Optional[Dict[str, Any]]=None,
+             attachments:Optional[Dict[str, Union[str, os.PathLike, 'pd.DataFrame', bytes]]]=None) -> EmailMessage:
+        """Send an email.
 
         Parameters
         ----------
         subject : str
             Subject of the email.
+        sender : str, optional
+            Email address the email is sent from.
+            Note that some email services might not 
+            respect changing sender address 
+            (for example Gmail).
         receivers : list, optional
             Receivers of the email.
-        sender : str, optional
-            Sender of the email.
         cc : list, optional
             Cc or Carbon Copy of the email.
-            Extra recipients of the email.
+            Additional recipients of the email.
         bcc : list, optional
             Blind Carbon Copy of the email.
-            Extra recipients of the email that
+            Additional recipients of the email that
             don't see who else got the email.
         html : str, optional
-            HTML body of the email. May contain
-            Jinja templated variables of the 
-            tables, images and other variables.
-        text_body : str, optional
-            Text body of the email.
-        body_images : dict of bytes, path-likes and figures, optional
+            HTML body of the email. This is processed
+            by Jinja and may contain loops, parametrization
+            etc. See `Jinja documentation <https://jinja.palletsprojects.com>`_.
+        text : str, optional
+            Text body of the email. This is processed
+            by Jinja and may contain loops, parametrization
+            etc. See `Jinja documentation <https://jinja.palletsprojects.com>`_.
+        html_template : str, optional
+            Name of the HTML template loaded using Jinja environment specified
+            in ``templates_html`` attribute. Specify either ``html`` or ``html_template``.
+        text_template : str, optional
+            Name of the text template loaded using Jinja environment specified
+            in ``templates_text`` attribute. Specify either ``text`` or ``text_template``.
+        body_images : dict of bytes, dict of path-like, dict of plt Figure, dict of PIL Image, optional
             HTML images to embed with the html. The key should be 
             as Jinja variables in the html and the values represent
             images (path to an image, bytes of an image or image object).
-        body_tables : Dict[str, pd.DataFrame], optional
+        body_tables : dict of Pandas dataframes, optional
             HTML tables to embed with the html. The key should be 
             as Jinja variables in the html and the values are Pandas
             DataFrames.
-        html_params : dict, optional
-            Extra parameters passed to html_table as Jinja parameters.
+        body_params : dict, optional
+            Extra Jinja parameters passed to the HTML and text bodies.
+        attachments : dict, optional
+            Attachments of the email. If dict value is string, the attachment content
+            is the string itself. If path, the attachment is the content of the path's file.
+            If dataframe, the dataframe is turned to bytes or text according to the 
+            file extension in dict key.
 
         Examples
         --------
-            >>> sender = EmailSender(host="myserver", port=1234)
-            >>> sender.send(
-                sender="me@gmail.com",
-                receiver="you@gmail.com",
-                subject="Some news",
-                html='<h1>Hi,</h1> Nice to meet you. Look at this: <img src="{{ my_image }}">',
-                body_images={"my_image": Path("C:/path/to/img.png")}
-            )
-            >>> sender.send(
-                sender="me@gmail.com",
-                receiver="you@gmail.com",
-                subject="Some news",
-                html='<h1>Hi {{ name }},</h1> Nice to meet you. Look at this table: <img src="{{ my_table }}">',
-                body_images={"my_image": Path("C:/path/to/img.png")},
-                html_params={"name": "Jack"},
-            )
+        
+            Simple example:
+
+            .. code-block:: python
+
+                from redmail import EmailSender
+
+                email = EmailSender(
+                    host='localhost', 
+                    port=0, 
+                    user_name='me@example.com', 
+                    password='<PASSWORD>'
+                )
+                email.send(
+                    subject="An email",
+                    sender="me@example.com",
+                    receivers=['you@example.com'],
+                    test="Hi, this is an email.",
+                    html="<h1>Hi, </h1><p>this is an email.</p>"
+                )
+
+            See more examples from :ref:`docs <examples>`
 
         Returns
         -------
         EmailMessage
             Email message.
+
+        Notes
+        -----
+            See also `Jinja documentation <https://jinja.palletsprojects.com>`_
+            for utilizing Jinja in ``html`` and ``text`` arguments or for using 
+            Jinja templates with  ``html_template`` and ``text_template`` arguments.
         """
-        msg = self.get_message(**kwargs)
+        msg = self.get_message(
+            subject=subject,
+            sender=sender,
+            receivers=receivers,
+            cc=cc,
+            bcc=bcc,
+            html=html,
+            text=text,
+            html_template=html_template,
+            text_template=text_template,
+            body_images=body_images,
+            body_tables=body_tables,
+            body_params=body_params,
+            attachments=attachments,
+        )
         self.send_message(msg)
         return msg
         
@@ -170,7 +220,7 @@ class EmailSender:
                   body_tables:Optional[Dict[str, 'pd.DataFrame']]=None, 
                   body_params:Optional[Dict[str, Any]]=None,
                   attachments:Optional[Dict[str, Union[str, os.PathLike, 'pd.DataFrame', bytes]]]=None) -> EmailMessage:
-        """Get the email message."""
+        """Get the email message"""
 
         subject = subject or self.subject
         sender = self.get_sender(sender)
@@ -268,7 +318,7 @@ class EmailSender:
         server.quit()
     
     def get_params(self, sender:str) -> Dict[str, Any]:
-        "Get Jinja parametes passed to template"
+        "Get Jinja parametes passed to both text and html bodies"
         # TODO: Add receivers to params
         return {
             "node": node(),
@@ -278,6 +328,7 @@ class EmailSender:
         }
 
     def get_html_params(self, extra:Optional[dict]=None, **kwargs) -> Dict[str, Any]:
+        "Get Jinja parameters passed to HTML body"
         params = self.get_params(**kwargs)
         params.update({
             "error": Error(content_type='html-inline')
@@ -287,6 +338,7 @@ class EmailSender:
         return params
 
     def get_text_params(self, extra:Optional[dict]=None, **kwargs) -> Dict[str, Any]:
+        "Get Jinja parameters passed to text body"
         params = self.get_params(**kwargs)
         params.update({
             "error": Error(content_type='text')
@@ -295,24 +347,28 @@ class EmailSender:
             params.update(extra)
         return params
 
-    def get_html_table_template(self, layout:Optional[str]=None) -> jinja2.Template:
+    def get_html_table_template(self, layout:Optional[str]=None) -> Union[jinja2.Template, None]:
+        "Get Jinja template for tables in HTML body"
         layout = self.default_html_theme if layout is None else layout
         if layout is None:
             return None
         return self.templates_html_table.get_template(layout)
 
-    def get_html_template(self, layout:Optional[str]=None) -> jinja2.Template:
+    def get_html_template(self, layout:Optional[str]=None) -> Union[jinja2.Template, None]:
+        "Get pre-made Jinja template for HTML body"
         if layout is None:
             return None
         return self.templates_html.get_template(layout)
 
     def get_text_table_template(self, layout:Optional[str]=None) -> jinja2.Template:
+        "Get Jinja template for tables in text body"
         layout = self.default_text_theme if layout is None else layout
         if layout is None:
             return None
         return self.templates_text_table.get_template(layout)
 
     def get_text_template(self, layout:Optional[str]=None) -> jinja2.Template:
+        "Get pre-made Jinja template for text body"
         if layout is None:
             return None
         return self.templates_text.get_template(layout)
@@ -324,12 +380,14 @@ class EmailSender:
                            text_table:Union[str, os.PathLike, None]=None):
         """Create Jinja envs for body templates using given paths
         
-        This is a shortcut for manually setting them like:
-        .. clode-block:: python
+        This is a shortcut for manually setting them:
+
+        .. code-block:: python
 
             sender.templates_html = jinja2.Environment(loader=jinja2.FileSystemLoader(...))
             sender.templates_text = jinja2.Environment(loader=jinja2.FileSystemLoader(...))
-            ...
+            sender.templates_html_table = jinja2.Environment(loader=jinja2.FileSystemLoader(...))
+            sender.templates_text_table = jinja2.Environment(loader=jinja2.FileSystemLoader(...))
         """
         if html is not None:
             self.templates_html = jinja2.Environment(loader=jinja2.FileSystemLoader(html))
