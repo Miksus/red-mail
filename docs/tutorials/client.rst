@@ -7,7 +7,7 @@ Configuring SMTP Client
 Often the default client setup is enough but sometimes it may become necessary to get more control
 of the connection with your SMTP server. In this discussion we discuss ways to customize the connection.
 
-By default Red Mail uses `STARTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ or opportunistic
+By default Red Mail uses `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ or opportunistic
 TLS in connecting to the SMTP server. You may also change this if needed by changing the 
 ``cls_smtp`` to other SMTP client classes from `smtplib <https://docs.python.org/3/library/smtplib.html>`_
 in standard library.
@@ -17,10 +17,10 @@ in standard library.
     Extra keyword arguments in :class:`.EmailSender` initiation are passed to the SMTP client.
     Please see the documentation of the SMTP client you are seeking.
 
-STARTLS
+STARTTLS
 -------
 
-By default, Red Mail uses `STARTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ 
+By default, Red Mail uses `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ 
 which is configured as this:
 
 .. code-block:: python
