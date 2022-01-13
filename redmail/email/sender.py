@@ -157,19 +157,19 @@ class EmailSender:
         return msg
         
     def get_message(self, 
-                  subject:str=None,
-                  receivers:List[str]=None,
-                  sender:str=None,
-                  cc:List[str]=None,
-                  bcc:List[str]=None,
-                  html:str=None,
-                  text:str=None,
-                  html_template:str=None,
-                  text_template:str=None,
-                  body_images:Dict[str, Union[str, bytes, 'plt.Figure', 'Image']]=None, 
-                  body_tables:Dict[str, 'pd.DataFrame']=None, 
-                  body_params:Dict[str, Any]=None,
-                  attachments:Dict[str, Union[str, os.PathLike, 'pd.DataFrame', bytes]]=None) -> EmailMessage:
+                  subject:Optional[str]=None,
+                  sender:Optional[str]=None,
+                  receivers:Union[List[str], str, None]=None,
+                  cc:Union[List[str], str, None]=None,
+                  bcc:Union[List[str], str, None]=None,
+                  html:Optional[str]=None,
+                  text:Optional[str]=None,
+                  html_template:Optional[str]=None,
+                  text_template:Optional[str]=None,
+                  body_images:Optional[Dict[str, Union[str, bytes, 'plt.Figure', 'Image']]]=None, 
+                  body_tables:Optional[Dict[str, 'pd.DataFrame']]=None, 
+                  body_params:Optional[Dict[str, Any]]=None,
+                  attachments:Optional[Dict[str, Union[str, os.PathLike, 'pd.DataFrame', bytes]]]=None) -> EmailMessage:
         """Get the email message."""
 
         subject = subject or self.subject
@@ -224,19 +224,19 @@ class EmailSender:
             att.attach(msg)
         return msg
 
-    def get_receivers(self, receivers:Union[list, str]) -> Union[List[str], None]:
+    def get_receivers(self, receivers:Union[list, str, None]) -> Union[List[str], None]:
         """Get receivers of the email"""
         return receivers or self.receivers
 
-    def get_cc(self, cc:Union[list, str]) -> Union[List[str], None]:
+    def get_cc(self, cc:Union[list, str, None]) -> Union[List[str], None]:
         """Get carbon copy (cc) of the email"""
         return cc or self.cc
 
-    def get_bcc(self, bcc:Union[list, str]) -> Union[List[str], None]:
+    def get_bcc(self, bcc:Union[list, str, None]) -> Union[List[str], None]:
         """Get blind carbon copy (bcc) of the email"""
         return bcc or self.bcc
 
-    def get_sender(self, sender:str) -> str:
+    def get_sender(self, sender:Union[str, None]) -> str:
         """Get sender of the email"""
         return sender or self.sender or self.user_name
 
@@ -267,7 +267,7 @@ class EmailSender:
         
         server.quit()
     
-    def get_params(self, sender:str):
+    def get_params(self, sender:str) -> Dict[str, Any]:
         "Get Jinja parametes passed to template"
         # TODO: Add receivers to params
         return {
@@ -277,7 +277,7 @@ class EmailSender:
             "sender": EmailAddress(sender),
         }
 
-    def get_html_params(self, extra:Optional[dict]=None, **kwargs):
+    def get_html_params(self, extra:Optional[dict]=None, **kwargs) -> Dict[str, Any]:
         params = self.get_params(**kwargs)
         params.update({
             "error": Error(content_type='html-inline')
@@ -286,7 +286,7 @@ class EmailSender:
             params.update(extra)
         return params
 
-    def get_text_params(self, extra:Optional[dict]=None, **kwargs):
+    def get_text_params(self, extra:Optional[dict]=None, **kwargs) -> Dict[str, Any]:
         params = self.get_params(**kwargs)
         params.update({
             "error": Error(content_type='text')
@@ -295,33 +295,33 @@ class EmailSender:
             params.update(extra)
         return params
 
-    def get_html_table_template(self, layout:str=None) -> jinja2.Template:
+    def get_html_table_template(self, layout:Optional[str]=None) -> jinja2.Template:
         layout = self.default_html_theme if layout is None else layout
         if layout is None:
             return None
         return self.templates_html_table.get_template(layout)
 
-    def get_html_template(self, layout:str=None) -> jinja2.Template:
+    def get_html_template(self, layout:Optional[str]=None) -> jinja2.Template:
         if layout is None:
             return None
         return self.templates_html.get_template(layout)
 
-    def get_text_table_template(self, layout:str=None) -> jinja2.Template:
+    def get_text_table_template(self, layout:Optional[str]=None) -> jinja2.Template:
         layout = self.default_text_theme if layout is None else layout
         if layout is None:
             return None
         return self.templates_text_table.get_template(layout)
 
-    def get_text_template(self, layout:str=None) -> jinja2.Template:
+    def get_text_template(self, layout:Optional[str]=None) -> jinja2.Template:
         if layout is None:
             return None
         return self.templates_text.get_template(layout)
 
     def set_template_paths(self, 
-                           html:Union[str, os.PathLike]=None, 
-                           text:Union[str, os.PathLike]=None, 
-                           html_table:Union[str, os.PathLike]=None, 
-                           text_table:Union[str, os.PathLike]=None):
+                           html:Union[str, os.PathLike, None]=None, 
+                           text:Union[str, os.PathLike, None]=None, 
+                           html_table:Union[str, os.PathLike, None]=None, 
+                           text_table:Union[str, os.PathLike, None]=None):
         """Create Jinja envs for body templates using given paths
         
         This is a shortcut for manually setting them like:
