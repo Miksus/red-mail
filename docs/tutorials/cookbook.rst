@@ -144,3 +144,70 @@ the plots and let Red Mail send them to you:
             "tbl_summary": df_summary
         }
     )
+
+
+Distribution Lists
+------------------
+
+There might be a situation in which you would like to 
+specify some sets of pre-defined distribution lists
+for which you will send emails to depending on situation. 
+To accomplish this, you can create subclass the :class:`.EmailSender`
+and create cystin distribution list logic:  
+
+.. code-block:: python
+
+    from redmail import EmailSender
+
+    class DistributionSender(EmailSender):
+        "Send email using pre-defined distribution lists"
+
+        def __init__(self, *args, distributions:dict, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.distributions = distributions
+
+        def get_receivers(self, receiver_list):
+            if receiver_list:
+                return self.distributions[receiver_list]
+
+        def get_cc(self, receiver_list):
+            if receiver_list:
+                return self.distributions[receiver_list]
+
+        def get_bcc(self, receiver_list):
+            if receiver_list:
+                return self.distributions[receiver_list]
+
+Then to use it:
+
+.. code-block:: python
+
+    email = DistributionSender(
+        host="localhost", port=0,
+        distributions={
+            "managers": ["boss1@example.com", "boss2@example.com"],
+            "developers": ["dev1@example.com", "dev2@example.com"]
+        }
+    )
+
+    email.send(
+        subject="Important news",
+        receivers="developers",
+        cc="managers",
+        ...
+    )
+
+You can also accomplish this without subclassing to limited extent:
+
+.. code-block:: python
+
+    managers = EmailSender(host="localhost", port=0)
+    managers.receivers = ["boss1@example.com", "boss2@example.com"]
+
+    developers = EmailSender(host="localhost", port=0)
+    developers.receivers = ["dev1@example.com", "dev2@example.com"]
+
+    # Send an email to the developers
+    developers.send(
+        subject="Important news"
+    )

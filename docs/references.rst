@@ -5,6 +5,7 @@ Sender
 ------
 
 .. autoclass:: redmail.EmailSender
+    :members:
 
 
 Format Classes
