@@ -42,7 +42,9 @@ class EmailSender:
     use_starttls : bool
         Whether to use `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ 
         when connecting to the SMTP server.
-
+    **kwargs : dict
+        Additional keyword arguments are passed to initiation in ``cls_smtp``.
+        These are stored as attribute ``kws_smtp``
 
     Examples
     --------
@@ -74,7 +76,7 @@ class EmailSender:
 
     attachment_encoding = 'UTF-8'
 
-    def __init__(self, host:str, port:int, user_name:str=None, password:str=None, cls_smtp:smtplib.SMTP=smtplib.SMTP, use_starttls:bool=True):
+    def __init__(self, host:str, port:int, user_name:str=None, password:str=None, cls_smtp:smtplib.SMTP=smtplib.SMTP, use_starttls:bool=True, **kwargs):
         self.host = host
         self.port = port
 
@@ -95,6 +97,7 @@ class EmailSender:
 
         self.use_starttls = use_starttls
         self.cls_smtp = cls_smtp
+        self.kws_smtp = kwargs
         
     def send(self,
              subject:Optional[str]=None,
@@ -325,7 +328,7 @@ class EmailSender:
         user = self.user_name
         password = self.password
         
-        server = self.cls_smtp(self.host, self.port)
+        server = self.cls_smtp(self.host, self.port, **self.kws_smtp)
         if self.use_starttls:
             server.starttls()
 
