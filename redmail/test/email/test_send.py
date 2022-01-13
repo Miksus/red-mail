@@ -25,8 +25,7 @@ class MockServer:
         return
 
 def test_send():
-    email = EmailSender(host="localhost", port=0)
-    email._cls_smtp_server = MockServer
+    email = EmailSender(host="localhost", port=0, cls_smtp=MockServer)
     # This should fail but we test everything else goes through
     msg = email.send(
         subject="An example",

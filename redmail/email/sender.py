@@ -36,6 +36,13 @@ class EmailSender:
         User name to authenticate on the server.
     password : str, optional
         User password to authenticate on the server.
+    cls_smtp : smtplib.SMTP
+        SMTP class to use for connection. See options 
+        from `Python smtplib docs <https://docs.python.org/3/library/smtplib.html>`_.
+    use_starttls : bool
+        Whether to use `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ 
+        when connecting to the SMTP server.
+
 
     Examples
     --------
@@ -67,9 +74,7 @@ class EmailSender:
 
     attachment_encoding = 'UTF-8'
 
-    _cls_smtp_server = smtplib.SMTP
-
-    def __init__(self, host:str, port:int, user_name:str=None, password:str=None):
+    def __init__(self, host:str, port:int, user_name:str=None, password:str=None, cls_smtp:smtplib.SMTP=smtplib.SMTP, use_starttls:bool=True):
         self.host = host
         self.port = port
 
@@ -87,6 +92,9 @@ class EmailSender:
         self.html = None
         self.html_template = None
         self.text_template = None
+
+        self.use_starttls = use_starttls
+        self.cls_smtp = cls_smtp
         
     def send(self,
              subject:Optional[str]=None,
@@ -306,17 +314,25 @@ class EmailSender:
 
     def send_message(self, msg:EmailMessage):
         "Send the created message"
-        user = self.user_name
-        password = self.password
-        
-        server = self._cls_smtp_server(self.host, self.port)
-        server.starttls()
-        if user is not None or password is not None:
-            server.login(user, password)
+
+        server = self.connect()
         server.send_message(msg)
         
         server.quit()
     
+    def connect(self) -> smtplib.SMTP:
+        "Connect to the SMTP Server"
+        user = self.user_name
+        password = self.password
+        
+        server = self.cls_smtp(self.host, self.port)
+        if self.use_starttls:
+            server.starttls()
+
+        if user is not None or password is not None:
+            server.login(user, password)
+        return server
+
     def get_params(self, sender:str) -> Dict[str, Any]:
         "Get Jinja parametes passed to both text and html bodies"
         # TODO: Add receivers to params
