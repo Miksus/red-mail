@@ -79,6 +79,7 @@ There are also other reasons to use Red Mail:
 - :ref:`You can reuse your HTML templates <templating>`
 - :ref:`Gmail pre-configured <config-gmail>`
 - :ref:`Send with cc and bcc <send-cc-bcc>`
+- :ref:`Change the email protocol to what you need <config-smtp>`
 - And it is well tested and documented
 
 

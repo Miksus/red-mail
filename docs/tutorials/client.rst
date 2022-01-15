@@ -18,7 +18,7 @@ in standard library.
     Please see the documentation of the SMTP client you are seeking.
 
 STARTTLS
--------
+--------
 
 By default, Red Mail uses `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ 
 which is configured as this:
