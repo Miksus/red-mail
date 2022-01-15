@@ -93,6 +93,9 @@ class EmailSender:
     templates_text_table : jinja2.Environment
         Jinja environment used for loading templates
         for table styling for text bodies.
+    kws_smtp : dict
+        Keyword arguments passed to ``cls_smtp``
+        when connecting to the SMTP server.
 
     Examples
     --------
