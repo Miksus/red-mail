@@ -37,6 +37,54 @@ class EmailSender:
     password : str, optional
         User password to authenticate on the server.
 
+    Attributes
+    ----------
+    sender : str
+        Address for sending emails if it is not specified
+        in the send method.
+    receivers : list of str
+        Addresses to send emails if not specified
+        in the send method.
+    cc : list of str
+        Carbon copies of emails if not specified
+        in the send method.
+    bcc : list of str
+        Blind carbon copies of emails if not specified
+        in the send method.
+    subject : str
+        Subject of emails if not specified
+        in the send method.
+    text : str
+        Text body of emails if not specified
+        in the send method.
+    html : str
+        HTML body of emails if not specified
+        in the send method.
+    text_template : str
+        Name of the template to use as the text body of emails 
+        if not specified in the send method. 
+    html_template : str
+        Name of the template to use as the HTML body of emails 
+        if not specified in the send method.
+    templates_html : jinja2.Environment
+        Jinja environment used for loading HTML templates
+        if ``html_template`` is specified in send.
+    templates_text : jinja2.Environment
+        Jinja environment used for loading text templates
+        if ``text_template`` is specified in send.
+    default_html_theme : str
+        Jinja template from ``templates_html_table``
+        used for styling tables for HTML body.
+    default_text_theme : str
+        Jinja template from ``templates_text_table``
+        used for styling tables for text body.
+    templates_html_table : jinja2.Environment
+        Jinja environment used for loading templates
+        for table styling for HTML bodies.
+    templates_text_table : jinja2.Environment
+        Jinja environment used for loading templates
+        for table styling for text bodies.
+
     Examples
     --------
     .. code-block:: python
