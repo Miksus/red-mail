@@ -29,4 +29,5 @@ And see - :ref:`cookbook <cookbook>` for example use cases.
    templating
    cookbook
    config
+   client
    example
