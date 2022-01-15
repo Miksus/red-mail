@@ -107,10 +107,12 @@ class Attachments:
     def _get_filename(self, item):
         if isinstance(item, str):
             # Considered as path
-            if Path(item).is_file():
-                return Path(item).name
-            return item
+            # NOTE: the validation it is a file should already be
+            # done
+            return Path(item).name
         elif isinstance(item, PurePath):
             return item.name
-        else:
-            raise TypeError(f"Cannot figure out filename for {item}")
+        else: # pragma: no cover
+            # NOTE: this piece of code should not be run as the type check is
+            # done before. If this is run, then there is an unfinished feature.
+            raise NotImplementedError(f"Cannot figure out filename for {item}") 
