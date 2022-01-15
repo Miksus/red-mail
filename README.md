@@ -73,58 +73,14 @@ email.send(
 )
 ```
 
-You can also do more advanced things easily with it:
+More examples:
+- [simple example](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#simple-example)
+- [email with attachments](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#attachments)
+- [email with embedded images](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#embedded-images)
+- [email with embedded plots](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#embedded-plots)
+- [email with body parameters](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#parametrization)
 
-```python
-from redmail import EmailSender
-
-email = EmailSender(
-    host="localhost", port=0,
-    user_name="me@example.com", password="<PASSWORD>"
-)
-
-email.send(
-    subject="An example email",
-    sender="me@example.com",
-
-    # Recipients
-    receivers=['first.last@example.com'],
-    cc=["also@example.com"],
-    bcc=["external@example.com"],
-
-    # Body of the email
-    html="""<h1>Hello {{ friend }}!</h1>
-        <p>Have you seen this thing:</p>
-        {{ awesome_image }}
-        <p>Or this:</p>
-        {{ pretty_table }}
-        <p>Or this plot:</p>
-        {{ a_plot }}
-        <p>Kind regards, {{ sender.full_name }}</p>
-    """,
-
-    # Content that is embed to the body
-    body_params={'friend': 'Jack'},
-    body_images={
-        'awesome_image': 'path/to/image.png',
-        'a_plot': plt.Figure(...)
-    },
-    body_tables={
-        'pretty_table': pd.DataFrame(...)
-    },
-
-    # Attachments of the email
-    attachments={
-        'some_data.csv': pd.DataFrame(...),
-        'file_content.html': '<h1>This is an attachment</h1>',
-        'a_file.txt': pathlib.Path('path/to/file.txt')
-    }
-)
-```
-
-Short examples from [here](https://red-mail.readthedocs.io/en/latest/tutorials/example.html).
-
-Practical example in [cookbook](https://red-mail.readthedocs.io/en/latest/tutorials/cookbook.html).
+See practical example from the [cookbook](https://red-mail.readthedocs.io/en/latest/tutorials/cookbook.html).
 
 ---
 
