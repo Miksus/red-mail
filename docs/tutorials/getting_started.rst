@@ -7,7 +7,7 @@ Install the package from `Pypi <https://pypi.org/project/redmail/>`_:
 
 .. code-block:: console
 
-    pip install redengine
+    pip install redmail
 
 .. _configure:
 
