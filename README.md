@@ -80,7 +80,7 @@ More examples:
 - [email with embedded plots](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#embedded-plots)
 - [email with body parameters](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#parametrization)
 
-See practical example from the [cookbook](https://red-mail.readthedocs.io/en/latest/tutorials/cookbook.html).
+See practical examples from the [cookbook](https://red-mail.readthedocs.io/en/latest/tutorials/cookbook.html).
 
 ---
 
