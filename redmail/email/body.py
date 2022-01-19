@@ -192,11 +192,17 @@ class HTMLBody(Body):
 
             elif isinstance(img, dict):
                 # Expecting dict explanation of bytes
-                # ie. {"maintype": "image", "subtype": "png", "content"}
-                required_keys = ("content", "maintype", "subtype")
+                # ie. {"maintype": "image", "subtype": "png", "content": b'...'}
+
+                # Setting defaults
+                img['maintype'] = img.get('maintype', 'image')
+
+                # Validation
+                required_keys = ("content", "subtype")
                 if any(key not in img for key in required_keys):
                     missing_keys = tuple(key for key in required_keys if key not in img)
-                    raise KeyError(f"Image {repr(img)} missing keys: {missing_keys}")
+                    raise KeyError(f"Dict representation of an image missing keys: {missing_keys}")
+                
                 img_content = img.pop("content")
                 kwds = img
 
