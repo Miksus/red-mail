@@ -30,7 +30,7 @@ Simple Example
         subject="An email",
         sender="me@example.com",
         receivers=['you@example.com'],
-        test="Hi, this is an email.",
+        text="Hi, this is an email.",
         html="<h1>Hi, </h1><p>this is an email.</p>"
     )
 
