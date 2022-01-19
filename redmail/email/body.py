@@ -185,19 +185,26 @@ class HTMLBody(Body):
             if is_bytes(img) or isinstance(img, BytesIO):
                 # We just assume the user meant PNG. If not, it should have been specified
                 img_content = img.read() if hasattr(img, "read") else img
-                maintype = "image"
-                subtype  = "png"
+                kwds = {
+                    'maintype': 'image',
+                    'subtype': 'png',
+                }
 
             elif isinstance(img, dict):
                 # Expecting dict explanation of bytes
-                # ie. {"maintype": "image", "subtype": "png", "content"}
-                required_keys = ("content", "maintype", "subtype")
+                # ie. {"maintype": "image", "subtype": "png", "content": b'...'}
+
+                # Setting defaults
+                img['maintype'] = img.get('maintype', 'image')
+
+                # Validation
+                required_keys = ("content", "subtype")
                 if any(key not in img for key in required_keys):
                     missing_keys = tuple(key for key in required_keys if key not in img)
-                    raise KeyError(f"Image {repr(img)} missing keys: {missing_keys}")
-                img_content = img["content"]
-                maintype = "image"
-                subtype = "png"
+                    raise KeyError(f"Dict representation of an image missing keys: {missing_keys}")
+                
+                img_content = img.pop("content")
+                kwds = img
 
             elif isinstance(img, Path) or (isinstance(img, str) and Path(img).is_file()):
                 path = img
@@ -205,20 +212,28 @@ class HTMLBody(Body):
                 
                 with open(path, "rb") as img:
                     img_content = img.read()
+                kwds = {
+                    'maintype': maintype,
+                    'subtype': subtype,
+                }
             elif plt is not None and isinstance(img, plt.Figure):
                 buf = BytesIO()
                 img.savefig(buf, format='png')
                 buf.seek(0)
                 img_content = buf.read()
-                maintype = "image"
-                subtype  = "png"
+                kwds = {
+                    'maintype': 'image',
+                    'subtype': 'png',
+                }
             elif PIL is not None and isinstance(img, PIL.Image.Image):
                 buf = BytesIO()
                 img.save(buf, format='PNG')
                 buf.seek(0)
                 img_content = buf.read()
-                maintype = "image"
-                subtype  = "png"
+                kwds = {
+                    'maintype': 'image',
+                    'subtype': 'png',
+                }
             else:
                 # Cannot be figured out
                 if isinstance(img, str):
@@ -227,7 +242,6 @@ class HTMLBody(Body):
 
             msg_body.add_related(
                 img_content,
-                maintype=maintype,
-                subtype=subtype,
-                cid=cid
+                cid=cid,
+                **kwds
             )

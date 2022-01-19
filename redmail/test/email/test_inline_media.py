@@ -1,4 +1,5 @@
 
+import base64
 from redmail import EmailSender
 
 import re
@@ -14,8 +15,8 @@ from resources import get_mpl_fig, get_pil_image
 from convert import remove_extra_lines
 
 
-def compare_image_mime(mime_part, mime_part_html, orig_image:bytes):
-    assert 'image/png' == mime_part.get_content_type()
+def compare_image_mime(mime_part, mime_part_html, orig_image:bytes, type_="image/png"):
+    assert type_ == mime_part.get_content_type()
     image_bytes = mime_part.get_content()
     assert orig_image == image_bytes
 
@@ -68,6 +69,43 @@ def test_with_image_file(get_image_obj, dummy_png):
         #'MIME-Version': '1.0', 
         'Content-Type': 'multipart/alternative'
     } == headers
+
+def test_with_image_dict_jpeg():
+    img_data = '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD5rooor8DP9oD/2Q=='
+    img_bytes = base64.b64decode(img_data)
+
+    sender = EmailSender(host=None, port=1234)
+    msg = sender.get_message(
+        sender="me@gmail.com",
+        receivers="you@gmail.com",
+        subject="Some news",
+        html='<h1>Hi,</h1> Nice to meet you. Look at this: {{ my_image }}',
+        body_images={
+            'my_image': {
+                "content": img_bytes,
+                'subtype': 'jpg'
+            }
+        }
+    )
+    
+    assert "multipart/alternative" == msg.get_content_type()
+
+    #mime_text = msg.get_payload()[0]
+    mime_html = msg.get_payload()[0].get_payload()[0]
+    mime_image  = msg.get_payload()[0].get_payload()[1]
+
+    compare_image_mime(mime_image, mime_html, orig_image=img_bytes, type_="image/jpg")
+
+    # Test receivers etc.
+    headers = dict(msg.items())
+    assert {
+        'from': 'me@gmail.com', 
+        'subject': 'Some news', 
+        'to': 'you@gmail.com', 
+        #'MIME-Version': '1.0', 
+        'Content-Type': 'multipart/alternative'
+    } == headers
+
 
 @pytest.mark.parametrize(
     "get_image_obj", [
