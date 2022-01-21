@@ -35,8 +35,10 @@ You can configure your sender by:
        port='<SMTP PORT>',
    )
 
-Alternatively, there is a pre-configured sender for Gmail. 
-Please see :ref:`how to configure Gmail <config-gmail>` for more.
+There are guides to set up the following email providers:
+
+- :ref:`config-gmail`
+- :ref:`config-outlook`
 
 
 Sending Emails
