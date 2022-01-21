@@ -36,6 +36,15 @@ and then you can use the sender:
     to something else than what was used to log in. Therefore, changing 
     the ``sender`` argument often has no effect.
 
+.. note::
+
+    By default, Red Mail uses STARTTLS which should be suitable for majority of cases
+    and the pre-configured ports should support this. However, in some cases you may 
+    need to use other protocol and port. In such case, you may override the ``sender.port`` 
+    and ``sender.cls_smtp`` attributes. Read more about configuring different protocols 
+    from :ref:`config-smtp`.
+
+
 .. _config-gmail:
 
 Gmail
