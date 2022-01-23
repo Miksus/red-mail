@@ -98,3 +98,22 @@ to your emails:
         cc=['also@example.com'],
         bcc=['outsider@example.com']
     )
+
+.. _send-alias:
+
+Sending Email with Alias
+------------------------
+
+You can also alias the sender and receivers:
+
+.. code-block:: python
+
+    email.send(
+        subject='email subject',
+        sender="The Sender <me@example.com>",
+        receivers=['The Receiver <you@example.com>']
+    )
+
+Alias is an alternative text that is displayed instead of 
+the actual email addresses. The receivers can still get 
+the addresses though.
