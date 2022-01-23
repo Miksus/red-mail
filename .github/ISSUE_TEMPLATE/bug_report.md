@@ -1,8 +1,8 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: ''
+title: 'BUG: '
+labels: bug
 assignees: ''
 
 ---
@@ -12,10 +12,10 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+1. What method was used
+2. What arguments were used
+3. What happened
+4. What the error is
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
@@ -23,16 +23,14 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Email provider:**
+ - Email service: [e.g. Gmail, Outlook, private]
+ - Application to view the email [e.g. Web Gmail, Windows Mail, Outlook App]
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Environment (please complete the following information if relevant):**
+ - OS: [e.g. iOS, Linux, Windows]
+ - Python version [e.g. 3.6, 3.8, 3.10]
+ - Red Mail version [e.g. 0.2.0]
 
 **Additional context**
 Add any other context about the problem here.
