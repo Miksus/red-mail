@@ -13,6 +13,98 @@ def to_encoded(s:str):
     return str(base64.b64encode(s.encode()), 'ascii')
 
 
+def test_with_text():
+
+    sender = EmailSender(host=None, port=1234)
+    msg = sender.get_message(
+        sender="me@gmail.com",
+        receivers="you@gmail.com",
+        subject="Some news",
+        text="Hi, this is an email",
+        attachments={'data.txt': "Some content"}
+    )
+    assert msg.get_content_type() == "multipart/mixed"
+
+    text, attachment = msg.get_payload()
+    assert text.get_content_type() == 'text/plain'
+    assert attachment.get_content_type() == 'application/octet-stream'
+    assert text.get_payload() == "Hi, this is an email\n"
+
+    filename = attachment.get_filename()
+    data = attachment.get_payload()
+    assert filename == 'data.txt'
+    assert to_encoded("Some content") == data.replace('\n', '')
+
+def test_with_html():
+
+    sender = EmailSender(host=None, port=1234)
+    msg = sender.get_message(
+        sender="me@gmail.com",
+        receivers="you@gmail.com",
+        subject="Some news",
+        html="<h1>Hi, this is an email.</h1>",
+        attachments={'data.txt': "Some content"}
+    )
+    assert msg.get_content_type() == "multipart/alternative"
+
+    html, attachment = msg.get_payload()
+    assert html.get_content_type() == 'text/html'
+    assert attachment.get_content_type() == 'application/octet-stream'
+
+    assert html.get_payload() == "<h1>Hi, this is an email.</h1>\n"
+
+    filename = attachment.get_filename()
+    data = attachment.get_payload()
+    assert attachment.get_content_type() == 'application/octet-stream'
+    assert filename == 'data.txt'
+    assert to_encoded("Some content") == data.replace('\n', '')
+
+def test_with_text_and_html():
+
+    sender = EmailSender(host=None, port=1234)
+    msg = sender.get_message(
+        sender="me@gmail.com",
+        receivers="you@gmail.com",
+        subject="Some news",
+        text="Hi, this is an email.",
+        html="<h1>Hi, this is an email.</h1>",
+        attachments={'data.txt': "Some content"}
+    )
+    assert msg.get_content_type() == "multipart/alternative"
+
+    text, html, attachment = msg.get_payload()
+    assert text.get_content_type() == "text/plain"
+    assert html.get_content_type() == "text/html"
+    assert attachment.get_content_type() == 'application/octet-stream'
+
+    assert text.get_payload() == 'Hi, this is an email.\n'
+    assert html.get_payload() == '<h1>Hi, this is an email.</h1>\n'
+
+    filename = attachment.get_filename()
+    data = attachment.get_payload()
+    assert filename == 'data.txt'
+    assert to_encoded("Some content") == data.replace('\n', '')
+
+def test_no_body():
+
+    sender = EmailSender(host=None, port=1234)
+    msg = sender.get_message(
+        sender="me@gmail.com",
+        receivers="you@gmail.com",
+        subject="Some news",
+        attachments={'data.txt': 'Some content'}
+    )
+    assert msg.get_content_type() == "multipart/mixed"
+    assert len(msg.get_payload()) == 1
+
+    attachment = msg.get_payload(0)
+    assert attachment.get_content_type() == 'application/octet-stream'
+
+    filename = attachment.get_filename()
+    data = attachment.get_payload()
+    assert filename == 'data.txt'
+    assert to_encoded("Some content") == data.replace('\n', '')
+
 def test_dict_string():
 
     sender = EmailSender(host=None, port=1234)
@@ -22,9 +114,10 @@ def test_dict_string():
         subject="Some news",
         attachments={'data.txt': 'Some content'}
     )
-    payload = msg.get_payload(0)
-    filename = payload.get_filename()
-    data = payload.get_payload()
+    assert msg.get_content_type() == "multipart/mixed"
+    attachment = msg.get_payload(0)
+    filename = attachment.get_filename()
+    data = attachment.get_payload()
     assert filename == 'data.txt'
     assert to_encoded("Some content") == data.replace('\n', '')
 
