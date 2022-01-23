@@ -18,6 +18,12 @@ class Attachments:
         self.encoding = encoding
 
     def attach(self, msg:EmailMessage):
+        if msg.get_content_type() == "text/plain":
+            # We need to change the content type
+            # This occurs if no body is defined or only text is defined
+            # The content type is therefore changed to multipart/mixed
+            # See issue #23
+            msg.make_mixed()
         for part in self._get_parts():
             msg.attach(part)
 
