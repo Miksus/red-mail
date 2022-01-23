@@ -3,41 +3,67 @@ import logging
 from logging import Handler, LogRecord
 from logging.handlers import SMTPHandler, BufferingHandler
 from textwrap import dedent
-from typing import List
+from typing import List, Optional
 
 from redmail.email.sender import EmailSender
 
 class _EmailHandlerMixin:
 
-    def set_sender(self, 
-                   host, port, 
-                   user_name=None, password=None, 
-                   sender=None, receivers=None,
-                   subject=None):
+    def __init__(self, email, kwargs):
+        if email is not None:
+            # Using copy to prevent modifying the sender
+            # if it is used somewhere else
+            email = email.copy()
+            self.email = email
+            self._set_email_kwargs(kwargs)
+        else:
+            self.set_email(**kwargs)
+        self._validate_email()
+
+    def set_email(self, 
+                   host, port,
+                   user_name=None, password=None,
+                   **kwargs):
         "Create a simple default sender"
-        self.sender = EmailSender(
+        self.email = EmailSender(
             host=host, port=port,
             user_name=user_name, password=password
         )
-        self.sender.receivers = receivers
-        self.sender.sender = sender
-        if receivers is not None:
-            self.sender.receivers = receivers
-        elif user_name is not None:
-            self.sender.receivers = user_name
-        else:
-            raise ValueError("Missing receiver")
         
-        self.sender.text = self.default_text
-        self.sender.subject = subject or "Log record"
+        self._set_email_kwargs(kwargs)
 
     def get_subject(self, record):
-        "Get subject of the email"
-        if self.fmt_subject is not None:
-            return self.fmt_subject.format(
-                record=record, handler=self
-            )
+        "Format subject of the email sender"
+        return self.email.subject.format(
+            record=record, handler=self
+        )
 
+    def _set_email_kwargs(self, kwargs:dict):
+        for attr, value in kwargs.items():
+            if not hasattr(self.email, attr):
+                raise AttributeError(f"EmailSender has no attribute {attr}")
+            setattr(self.email, attr, value)
+
+        # Set default message body if nothing specified
+        has_no_body = (
+            self.email.text is None 
+            and self.email.text_template is None 
+            and self.email.html is None
+            and self.email.html_template is None
+        )
+        if has_no_body:
+            self.email.text = self.default_text
+
+    def _validate_email(self):
+        "Validate the email has all required attributes for logging"
+        req_attrs = ('host', 'port', 'subject', 'receivers')
+        missing = []
+        for attr in req_attrs:
+            if getattr(self.email, attr) is None:
+                missing.append(attr)
+        if missing:
+            cls_name = type(self).__name__
+            raise TypeError(f'{cls_name} email sender missing attributes: {missing}')
 
 class EmailHandler(_EmailHandlerMixin, Handler):
     """Logging handler for sending a log record as an email
@@ -46,15 +72,12 @@ class EmailHandler(_EmailHandlerMixin, Handler):
     ----------
     level : int
         Log level of the handler
-    sender : EmailSender
+    email : EmailSender
         Sender instance to be used for sending
         the log records.
-    fmt_subject : str, optional
-        Format of the email subject. ``record``
-        is passed as a format argument.
     kwargs : dict
         Keyword arguments for creating the 
-        sender if ``sender`` was not passed.
+        sender if ``email`` was not passed.
 
     Examples
     --------
@@ -65,7 +88,6 @@ class EmailHandler(_EmailHandlerMixin, Handler):
 
             handler = EmailHandler(
                 host="smtp.myhost.com", port=0,
-                fmt_subject="Log: {record.levelname}",
                 sender="no-reply@example.com",
                 receivers=["me@example.com"],
             )
@@ -79,7 +101,7 @@ class EmailHandler(_EmailHandlerMixin, Handler):
                 host="smtp.myhost.com",
                 port=0
             )
-            email.sender = "no-reply@example.com"
+            email.email = "no-reply@example.com"
             email.receivers = ["me@example.com"]
             email.html = '''
                 <h1>Record: {{ record.levelname }}</h1>
@@ -91,27 +113,25 @@ class EmailHandler(_EmailHandlerMixin, Handler):
                     <li>Line number: {{ record.lineno }}</li>
                 </ul>
             '''
-            handler = EmailHandler(sender=email, fmt_subject="{record.name}}: {record.levelname}")
+            handler = EmailHandler(email=email)
 
             import logging
             logger = logging.getLogger()
             logger.addHandler(handler)
     """
-
-    def __init__(self, level:int=logging.NOTSET, sender:EmailSender=None, fmt_subject=None, **kwargs):
-        super().__init__(level)
-        if sender is not None:
-            self.sender = sender
-        else:
-            self.set_sender(**kwargs)
-        self.fmt_subject = fmt_subject
+    email: EmailSender
 
     default_text = "{{ msg }}"
 
-    def emit(self, record:logging.LogRecord):
-        "Emit a record"
+    def __init__(self, level:int=logging.NOTSET, email:EmailSender=None, **kwargs):
+        _EmailHandlerMixin.__init__(self, email=email, kwargs=kwargs)
+        Handler.__init__(self, level)
 
-        self.sender.send(
+
+    def emit(self, record:logging.LogRecord):
+        "Emit a record (send email)"
+
+        self.email.send(
             subject=self.get_subject(record),
             body_params={
                 "record": record,
@@ -128,15 +148,12 @@ class MultiEmailHandler(_EmailHandlerMixin, BufferingHandler):
     ----------
     capacity : int
         Number of 
-    sender : EmailSender
+    email : EmailSender
         Sender instance to be used for sending
         the log records.
-    fmt_subject : str, optional
-        Format of the email subject. ``record``
-        is passed as a format argument.
     kwargs : dict
         Keyword arguments for creating the 
-        sender if ``sender`` was not passed.
+        sender if ``email`` was not passed.
 
     Examples
     --------
@@ -147,7 +164,6 @@ class MultiEmailHandler(_EmailHandlerMixin, BufferingHandler):
 
             handler = MultiEmailHandler(
                 host="smtp.myhost.com", port=0,
-                fmt_subject="Log: {min_level_name} - {max_level_name}",
                 sender="no-reply@example.com",
                 receivers=["me@example.com"],
             )
@@ -173,7 +189,7 @@ class MultiEmailHandler(_EmailHandlerMixin, BufferingHandler):
                     <li>Line number: {{ record.lineno }}</li>
                 </ul>
             '''
-            handler = EmailHandler(sender=email, fmt_subject="{record.name}}: {record.levelname}")
+            handler = EmailHandler(sender=email)
 
             import logging
             logger = logging.getLogger()
@@ -181,39 +197,32 @@ class MultiEmailHandler(_EmailHandlerMixin, BufferingHandler):
     """
 
     default_text = dedent("""
+    Log Recods:
     {% for record in records -%}
-    Log Record
-    ----------------------------
-    {% set msg = handler.format(record) -%}
-    {{ msg }}
-
-
+    {{ handler.format(record) }}
     {% endfor %}""")[1:]
 
-    def __init__(self, capacity:int, sender:EmailSender=None, fmt_subject=None, **kwargs):
-        super().__init__(capacity)
-        if sender is not None:
-            self.sender = sender
-        else:
-            self.set_sender(**kwargs)
-        self.fmt_subject = fmt_subject
+    def __init__(self, capacity:Optional[int]=None, email:EmailSender=None, **kwargs):
+        _EmailHandlerMixin.__init__(self, email=email, kwargs=kwargs)
+        BufferingHandler.__init__(self, capacity)
 
     def flush(self):
-        "Flush (send) the records"
+        "Flush the records (send an email)"
         self.acquire()
         try:
-            
+            msgs = []
             for rec in self.buffer:
-            # This creates msg, exc_text etc. to LogRecords
-                self.format(rec)
+                # This creates msg, exc_text etc. to the LogRecords
+                msgs.append(self.format(rec))
                 # For some reason logging does not create this attr unless having asctime in the format string
                 if self.formatter is None:
                     rec.asctime = logging.Formatter().formatTime(rec)
 
-            self.sender.send(
+            self.email.send(
                 subject=self.get_subject(self.buffer),
                 body_params={
                     "records": self.buffer,
+                    "msgs": msgs,
                     "handler": self
                 }
             )
@@ -221,14 +230,35 @@ class MultiEmailHandler(_EmailHandlerMixin, BufferingHandler):
         finally:
             self.release()
 
+    def shouldFlush(self, record):
+        """Should the handler flush its buffer?
+
+        Returns true if the buffer is up to capacity. This method can be overridden to implement custom flushing strategies.
+        """
+        if self.capacity is None:
+            # Only manual flushing
+            return False
+        else:
+            return super().shouldFlush()
+
     def get_subject(self, records:List[LogRecord]):
         "Get subject of the email"
-        if self.fmt_subject is not None:
+        if records:
             min_level = min([record.levelno for record in records])
             max_level = max([record.levelno for record in records])
-            return self.fmt_subject.format(
-                min_level_name=logging.getLevelName(min_level), 
-                max_level_name=logging.getLevelName(max_level),
-                handler=self,
-                records=records
-            )
+            fmt_kwds = {
+                "min_level_name": logging.getLevelName(min_level),
+                "max_level_name": logging.getLevelName(max_level),
+            }
+        else:
+            # No log records, getting something
+            fmt_kwds = {
+                "min_level_name": logging.getLevelName(logging.NOTSET),
+                "max_level_name": logging.getLevelName(logging.NOTSET),
+            }
+
+        return self.email.subject.format(
+            **fmt_kwds,
+            handler=self,
+            records=records
+        )
