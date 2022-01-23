@@ -130,6 +130,7 @@ def test_dict_bytes():
         subject="Some news",
         attachments={'data.bin': bytes(10)}
     )
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
@@ -147,6 +148,7 @@ def test_dict_path(tmpdir):
         subject="Some news",
         attachments={'myfile.txt': Path(str(file))}
     )
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
@@ -166,6 +168,7 @@ def test_dict_dataframe_txt():
     )
     expected = str(pd.DataFrame({'a': [1,2,3], 'b': ['1', '2', '3']}))
 
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
@@ -186,6 +189,7 @@ def test_dict_dataframe_csv():
         attachments={'myfile.csv': df}
     )
 
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
@@ -205,6 +209,7 @@ def test_dict_dataframe_html():
     )
     expected = '<table border="1" class="dataframe">\n  <thead>\n    <tr style="text-align: right;">\n      <th></th>\n      <th>a</th>\n      <th>b</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>1</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>2</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>3</td>\n      <td>3</td>\n    </tr>\n  </tbody>\n</table>'
 
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload().replace('\n', '')
@@ -237,6 +242,7 @@ def test_dict_dataframe_excel_no_error():
         subject="Some news",
         attachments={'myfile.xlsx': pd.DataFrame({'a': [1,2,3], 'b': ['1', '2', '3']})}
     )
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
@@ -253,6 +259,7 @@ def test_dict_pil_no_error():
         subject="Some news",
         attachments={'myimg.png': pil}
     )
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
@@ -269,6 +276,7 @@ def test_dict_matplotlib_no_error():
         subject="Some news",
         attachments={'myimg.png': fig}
     )
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
@@ -312,8 +320,9 @@ def test_dict_multiple(tmpdir):
         subject="Some news",
         attachments={'data_1.txt': Path(file1), 'data_2.txt': Path(file2)}
     )
+    assert msg.get_content_type() == "multipart/mixed"
     expected = [('data_1.txt', 'Some content 1'), ('data_2.txt', 'Some content 2')]
-    for payload, expected in zip(msg.get_payload(), expected):
+    for payload, expected in zip(msg.iter_attachments(), expected):
         filename = payload.get_filename()
         data = payload.get_payload()
         assert filename == expected[0]
@@ -335,6 +344,7 @@ def test_list_path(tmpdir):
         subject="Some news",
         attachments=[Path(str(file))]
     )
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
@@ -352,6 +362,7 @@ def test_list_string_path(tmpdir):
         subject="Some news",
         attachments=[str(file)]
     )
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
@@ -383,8 +394,9 @@ def test_list_multiple(tmpdir):
         subject="Some news",
         attachments=[Path(str(file1)), Path(str(file2))]
     )
+    assert msg.get_content_type() == "multipart/mixed"
     expected = [('data_1.txt', 'Some content 1'), ('data_2.txt', 'Some content 2')]
-    for payload, expected in zip(msg.get_payload(), expected):
+    for payload, expected in zip(msg.iter_attachments(), expected):
         filename = payload.get_filename()
         data = payload.get_payload()
         assert filename == expected[0]
@@ -412,6 +424,7 @@ def test_string_path(tmpdir):
         subject="Some news",
         attachments=str(file)
     )
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
@@ -439,6 +452,7 @@ def test_path(tmpdir):
         subject="Some news",
         attachments=Path(file)
     )
+    assert msg.get_content_type() == "multipart/mixed"
     payload = msg.get_payload(0)
     filename = payload.get_filename()
     data = payload.get_payload()
