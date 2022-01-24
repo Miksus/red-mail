@@ -3,30 +3,33 @@
 Email Logging with Red Mail
 ===========================
 
-Red Mail also has logging handlers which
+Red Mail also provides logging handlers which
 extends the :stdlib:`logging library's <logging.html>`
-:stdlib:`logging handlers <logging.handlers.html>`. 
-The logging library already has 
-:stdlib:`SMTPHandler <logging.handlers.html#smtphandler>`
-but the features are somewhat restricted. It does only 
-send a logging message formatted as plain text. 
+:stdlib:`handlers <logging.handlers.html>` from the standard library. 
+The logging library also has :stdlib:`SMTPHandler <logging.handlers.html#smtphandler>`
+but its features are somewhat restricted. It does only 
+send a logging message formatted as plain text and it 
+sends only one log record per email. 
 
-Red Mail's email handlers are capable of formatting the 
-log records in arbitrary ways using Jinja, creating 
-visually more pleasing HTML emails and sending multiple 
-log records via email at once.
+Red Mail's email handlers, on the other hand, 
+are capable of formatting the emails in arbitrary ways
+and it also enables to send multiple log records 
+with one email. Red Mail is more feature complete and 
+provides more customizable logging experience.
 
-If you would like to send one email per log record,
-:ref:`ext-emailhandler` is what you need. In case you 
-would like to reduce the amount of emails and send 
-multiple log records at once, use :ref:`ext-multiemailhandler`.
+There are two log handlers provided by Red Mail:
+
+- :ref:`EmailHandler <ext-emailhandler>`: Sends one log record per email
+- :ref:`MultiEmailHandler <ext-multiemailhandler>`: Sends multiple log records with one email
+
+The mechanics are simple and very similar between these two handlers.
 
 .. _ext-emailhandler:
 
 EmailHandler
 ------------
 
-To send one email per log record, use :class:`EmailHandler`.
+To send one log record per email, use :class:`.EmailHandler`.
 
 .. code-block:: python
 
@@ -44,7 +47,7 @@ To send one email per log record, use :class:`EmailHandler`.
 
 .. note::
 
-    You may pass the :class:`EmailSender` 
+    You may pass the :class:`.EmailSender` 
     directly as an argument ``email``, for 
     example:
 
@@ -57,33 +60,20 @@ To send one email per log record, use :class:`EmailHandler`.
             receivers=["me@example.com"],
         )
 
-    Note that a copy of the :class:`EmailSender` is created
+    Note that a copy of the :class:`.EmailSender` is created
     in order to avoid affecting the usage of the instance 
     elsewhere. Additional arguments (such as subject, sender,
     receivers, text, html, etc.) are set as attributes to 
-    this copy.
+    this copied instance.
 
 
-Then to use this, simply:
+To use this, simply:
 
 .. code-block:: python
 
     logger.warning("A warning happened")
 
-You may also customize the subject to include the level name (ie. info, debug, etc.):
-
-.. code-block:: python
-
-    hdlr = EmailHandler(
-        host="localhost",
-        port=0,
-        subject="Log Record: {record.levelname}",
-        receivers=["me@example.com"],
-    )
-    logger = logging.getLogger(__name__)
-    logger.addHandler(hdlr)
-
-You may also customize the subject and the bodies
+You may also template the subject and the bodies:
 
 .. code-block:: python
 
@@ -101,6 +91,7 @@ You may also customize the subject and the bodies
     logger = logging.getLogger(__name__)
     logger.addHandler(hdlr)
 
+As you may have noted, the subject can contain string formatting.
 The following arguments are passed to the string format:
 
 ============== ========================= ==================================
@@ -110,15 +101,16 @@ record         logging.LogRecord         Log records to send
 handler        EmailHandler              EmailHandler itself
 ============== ========================= ==================================
 
-And the passed Jinja parameters:
+In addition, the text and HTML bodies are processed using Jinja and the 
+following parameters are passed:
 
-======== ================= =================
+======== ================= ===================
 Argument Type              Description
-======== ================= =================
+======== ================= ===================
 record   logging.LogRecord Log record
 msg      str               Formatted message
-handler  EmailHandler      Handler itself
-======== ================= =================
+handler  EmailHandler      EmailHandler itself
+======== ================= ===================
 
 
 .. _ext-multiemailhandler:
@@ -126,11 +118,7 @@ handler  EmailHandler      Handler itself
 MultiEmailHandler
 -----------------
 
-In case sending emails after each log record is too much, you may use :class:`MultiEmailHandler`
-that sends the log records via email after specific number of log records have occurred, when 
-manually flushed or using custom logic.
-
-A simple example:
+To send multiple log records with one email, use :class:`.MultiEmailHandler`:
 
 .. code-block:: python
 
@@ -147,21 +135,9 @@ A simple example:
     logger = logging.getLogger(__name__)
     logger.addHandler(hdlr)
 
-Then to use this, simply:
-
-.. code-block:: python
-
-    logger.warning("A warning happened")
-    logger.warning("A warning happened")
-    # Should have now sent an email
-
-    # Manually flush
-    logger.warning("A warning happened")
-    hdlr.flush()
-
 .. note::
 
-    You may pass the :class:`EmailSender` 
+    You may pass the :class:`.EmailSender` 
     directly as an argument ``email``, for 
     example:
 
@@ -174,13 +150,56 @@ Then to use this, simply:
             receivers=["me@example.com"],
         )
 
-    Note that a copy of the :class:`EmailSender` is created
+    Note that a copy of the :class:`.EmailSender` is created
     in order to avoid affecting the usage of the instance 
     elsewhere. Additional arguments (such as subject, sender,
     receivers, text, html, etc.) are set as attributes to 
-    this copy.
+    this copied instance.
 
-The following arguments are passed to the subject format:
+To use this, simply:
+
+.. code-block:: python
+
+    logger.warning("A warning happened")
+    logger.warning("A warning happened")
+    # Should have now sent an email
+
+    # Or manually flush
+    logger.warning("A warning happened")
+    hdlr.flush()
+
+You may also template the subject and the bodies:
+
+.. code-block:: python
+
+    import logging
+    from redmail import EmailHandler
+
+    hdlr = MultiEmailHandler(
+        host="localhost",
+        port=0,
+        subject="Log Records: {min_level_name} - {max_level_name}",
+        receivers=["me@example.com"],
+        text="""Logging level: 
+            {% for record in records %}
+            Level name: {{ record.levelname }}
+            Message: {{ record.msg }}
+            {% endfor %}
+        """,
+        html="""
+            <ul>
+            {% for record in records %}
+                <li>Logging level: {{ record.levelname }}</li>
+                <li>Message: {{ record.msg }}</li>
+            {% endfor %}
+            </ul>
+        """,
+    )
+    logger = logging.getLogger(__name__)
+    logger.addHandler(hdlr)
+
+As you may have noted, the subject can contain string formatting.
+The following arguments are passed to the string format:
 
 ============== ========================= ==================================
 Argument       Type                      Description
@@ -188,21 +207,17 @@ Argument       Type                      Description
 records        list of logging.LogRecord Log records to send
 min_level_name str                       Name of the lowest log level name
 max_level_name str                       Name of the highest log level name
-handler        EmailHandler              MultiEmailHandler itself
+handler        MultiEmailHandler         MultiEmailHandler itself
 ============== ========================= ==================================
 
-And the passed Jinja parameters:
+In addition, the text and HTML bodies are processed using Jinja and the 
+following parameters are passed:
 
 ======== ========================= ==========================
 Argument Type                      Description
 ======== ========================= ==========================
-records  list of logging.LogRecord Log record
+records  list of logging.LogRecord List of log records
 msgs     list of str               List of formatted messages
-handler  EmailHandler              Handler itself
+handler  MultiEmailHandler         MultiEmailHandler itself
 ======== ========================= ==========================
 
-
-..
-   External links
-
-.. _stdlib_logging: https://docs.python.org/3/library/logging.html
