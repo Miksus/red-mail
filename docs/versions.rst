@@ -4,6 +4,14 @@
 Version history
 ===============
 
+- ``0.2.1``
+
+    - Fix: If some attachments are specified and only text body or no body at all is set´, sending email no longer crashes
+    - Fix: Now embedded images support also non-PNG images using dict format
+    - Docs: Added examples of embedding images using dict format
+    - Docs: Added an example of sending emails using aliases
+    - Docs: Fixed some couple of typos
+
 - ``0.2.0``
 
     - Docs: Docstrings were rewritten and are more complete
