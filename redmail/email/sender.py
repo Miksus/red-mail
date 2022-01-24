@@ -1,4 +1,5 @@
 
+from copy import copy
 from email.message import EmailMessage
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
@@ -467,3 +468,7 @@ class EmailSender:
             self.templates_html_table = jinja2.Environment(loader=jinja2.FileSystemLoader(html_table))
         if text_table is not None:
             self.templates_text_table = jinja2.Environment(loader=jinja2.FileSystemLoader(text_table))
+
+    def copy(self) -> 'EmailSender':
+        "Shallow copy EmailSender"
+        return copy(self)
