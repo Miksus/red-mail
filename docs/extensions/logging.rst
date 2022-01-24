@@ -1,16 +1,27 @@
 
-.. _logging:
 
-Red Mail Logging Handlers
-=========================
+Email Logging with Red Mail
+===========================
 
 Red Mail also has logging handlers which
-work with the *logging* library from Python's
-standard library. You may also use the `SMTPHandler <https://docs.python.org/3/library/logging.handlers.html#logging.handlers.SMTPHandler>`_ 
-from logging library but Red Mail provides more 
-customizable alternatives. Red Mail also has a 
-handler that is capable of sending multiple 
-records at once.
+extends the :stdlib:`logging library's <logging.html>`
+:stdlib:`logging handlers <logging.handlers.html>`. 
+The logging library already has 
+:stdlib:`SMTPHandler <logging.handlers.html#smtphandler>`
+but the features are somewhat restricted. It does only 
+send a logging message formatted as plain text. 
+
+Red Mail's email handlers are capable of formatting the 
+log records in arbitrary ways using Jinja, creating 
+visually more pleasing HTML emails and sending multiple 
+log records via email at once.
+
+If you would like to send one email per log record,
+:ref:`ext-emailhandler` is what you need. In case you 
+would like to reduce the amount of emails and send 
+multiple log records at once, use :ref:`ext-multiemailhandler`.
+
+.. _ext-emailhandler:
 
 EmailHandler
 ------------
@@ -92,23 +103,25 @@ You may also customize the subject and the bodies
 
 The following arguments are passed to the string format:
 
-======== =====
-Argument Type  Description
-======== =====
-record   logging.LogRecord
-handler  EmailHandler
-======== =====
+============== ========================= ==================================
+Argument       Type                      Description
+============== ========================= ==================================
+record         logging.LogRecord         Log records to send
+handler        EmailHandler              EmailHandler itself
+============== ========================= ==================================
 
 And the passed Jinja parameters:
 
-======== =====
+======== ================= =================
 Argument Type              Description
-======== =====
+======== ================= =================
 record   logging.LogRecord Log record
 msg      str               Formatted message
 handler  EmailHandler      Handler itself
-======== =====
+======== ================= =================
 
+
+.. _ext-multiemailhandler:
 
 MultiEmailHandler
 -----------------
@@ -169,21 +182,27 @@ Then to use this, simply:
 
 The following arguments are passed to the subject format:
 
-======== =====
-Argument Type  Description
-======== =====
-records        list of logging.LogRecord
-min_level_name str                           Name of the lowest log level name
-max_level_name str                           Name of the highest log level name
-handler        EmailHandler
-======== =====
+============== ========================= ==================================
+Argument       Type                      Description
+============== ========================= ==================================
+records        list of logging.LogRecord Log records to send
+min_level_name str                       Name of the lowest log level name
+max_level_name str                       Name of the highest log level name
+handler        EmailHandler              MultiEmailHandler itself
+============== ========================= ==================================
 
 And the passed Jinja parameters:
 
-======== =====
-Argument Type              Description
-======== =====
-record   logging.LogRecord Log record
-msg      str               Formatted message
-handler  EmailHandler      Handler itself
-======== =====
+======== ========================= ==========================
+Argument Type                      Description
+======== ========================= ==========================
+records  list of logging.LogRecord Log record
+msgs     list of str               List of formatted messages
+handler  EmailHandler              Handler itself
+======== ========================= ==========================
+
+
+..
+   External links
+
+.. _stdlib_logging: https://docs.python.org/3/library/logging.html
