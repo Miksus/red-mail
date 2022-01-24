@@ -119,6 +119,7 @@ Some more practical examples:
    :caption: Contents:
 
    tutorials/index
+   extensions/index
    references
    versions
 
