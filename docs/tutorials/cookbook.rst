@@ -101,7 +101,7 @@ templated error alerts that include the full traceback:
 Stats Reports
 -------------
 
-As demonstrated :ref:`here <embedding-plt>`, embedding Matplotlib 
+As demonstrated :ref:`here <embedding-images-plt>`, embedding Matplotlib 
 figures to the HTML bodies is trivial. Therefore you can easily
 create diagnostic reports or automatic analyses. Just create 
 the plots and let Red Mail send them to you:
