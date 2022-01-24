@@ -33,7 +33,8 @@ extensions = [
     'sphinx.ext.autodoc', 
     'sphinx.ext.coverage', 
     'sphinx.ext.napoleon',
-    'sphinx_rtd_theme'
+    'sphinx_rtd_theme',
+    'sphinx.ext.extlinks',
 ]
 rst_prolog = """
 .. include:: <s5defs.txt>
@@ -82,3 +83,8 @@ html_css_files = [
     'css/types.css',
     'css/colors.css',
 ]
+
+# Cross references
+extlinks = {
+    "stdlib": ("https://docs.python.org/3/library/%s", None)
+}
