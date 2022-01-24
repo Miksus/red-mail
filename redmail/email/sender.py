@@ -39,7 +39,7 @@ class EmailSender:
         User password to authenticate on the server.
     cls_smtp : smtplib.SMTP
         SMTP class to use for connection. See options 
-        from `Python smtplib docs <https://docs.python.org/3/library/smtplib.html>`_.
+        from :stdlib:`Python smtplib docs <smtplib.html>`.
     use_starttls : bool
         Whether to use `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ 
         when connecting to the SMTP server.
