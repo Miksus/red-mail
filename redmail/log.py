@@ -239,7 +239,7 @@ class MultiEmailHandler(_EmailHandlerMixin, BufferingHandler):
             # Only manual flushing
             return False
         else:
-            return super().shouldFlush()
+            return super().shouldFlush(record)
 
     def get_subject(self, records:List[LogRecord]):
         "Get subject of the email"
