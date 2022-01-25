@@ -29,7 +29,7 @@ The mechanics are simple and very similar between these two handlers.
 EmailHandler
 ------------
 
-To send one log record per email, use :class:`.EmailHandler`.
+To send one log record per email, use :class:`.EmailHandler`:
 
 .. code-block:: python
 
@@ -40,10 +40,14 @@ To send one log record per email, use :class:`.EmailHandler`.
         host="localhost",
         port=0,
         subject="A log record",
+        sender="no-reply@example.com",
         receivers=["me@example.com"],
     )
     logger = logging.getLogger(__name__)
     logger.addHandler(hdlr)
+
+    # To use:
+    logger.warning("A warning happened")
 
 .. note::
 
@@ -65,13 +69,6 @@ To send one log record per email, use :class:`.EmailHandler`.
     elsewhere. Additional arguments (such as subject, sender,
     receivers, text, html, etc.) are set as attributes to 
     this copied instance.
-
-
-To use this, simply:
-
-.. code-block:: python
-
-    logger.warning("A warning happened")
 
 You may also template the subject and the bodies:
 
@@ -130,10 +127,20 @@ To send multiple log records with one email, use :class:`.MultiEmailHandler`:
         host="localhost",
         port=0,
         subject="log records",
+        sender="no-reply@example.com",
         receivers=["me@example.com"],
     )
     logger = logging.getLogger(__name__)
     logger.addHandler(hdlr)
+
+    # To use:
+    logger.warning("A warning happened")
+    logger.warning("Another warning happened")
+    # (Now an email should have been sent)
+
+    # You may also manually flush
+    logger.warning("A warning happened")
+    hdlr.flush()
 
 .. note::
 
@@ -155,18 +162,6 @@ To send multiple log records with one email, use :class:`.MultiEmailHandler`:
     elsewhere. Additional arguments (such as subject, sender,
     receivers, text, html, etc.) are set as attributes to 
     this copied instance.
-
-To use this, simply:
-
-.. code-block:: python
-
-    logger.warning("A warning happened")
-    logger.warning("A warning happened")
-    # Should have now sent an email
-
-    # Or manually flush
-    logger.warning("A warning happened")
-    hdlr.flush()
 
 You may also template the subject and the bodies:
 
