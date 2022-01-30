@@ -1,7 +1,7 @@
 
 
-Email Logging with Red Mail
-===========================
+Email Logging
+=============
 
 Red Mail also provides logging handlers which
 extends the :stdlib:`logging library's <logging.html>`
