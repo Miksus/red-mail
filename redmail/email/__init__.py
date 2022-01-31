@@ -5,6 +5,11 @@ gmail = EmailSender(
     port=587,
 )
 
+outlook = EmailSender(
+    host='smtp.office365.com',
+    port=587,
+)
+
 def send_email(*args, host:str, port:int, user_name:str=None, password:str=None, **kwargs):
     """Send email
 
