@@ -77,7 +77,7 @@ There are also other reasons to use Red Mail:
 - :ref:`You can render nicer tables to the body <embedding-tables>`
 - :ref:`It has Jinja support <jinja-support>`
 - :ref:`You can reuse your HTML templates <templating>`
-- :ref:`Gmail pre-configured <config-gmail>`
+- :ref:`Gmail <config-gmail>` and :ref:`Outlook <config-outlook>` pre-configured
 - :ref:`Send with cc and bcc <send-cc-bcc>`
 - :ref:`Change the email protocol to what you need <config-smtp>`
 - And it is well tested and documented

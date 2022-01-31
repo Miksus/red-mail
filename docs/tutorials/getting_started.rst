@@ -35,9 +35,16 @@ You can configure your sender by:
        port='<SMTP PORT>',
    )
 
-Alternatively, there is a pre-configured sender for Gmail. 
-Please see :ref:`how to configure Gmail <config-gmail>` for more.
+There are guides to set up the following email providers:
 
+- :ref:`config-gmail`
+- :ref:`config-outlook`
+
+.. note::
+
+    By default, Red Mail uses **STARTTLS** as the protocol.
+    This is suitable for majority of cases but if you need
+    to use **SSL**, **TLS** or other protocols, see :ref:`config-smtp`.
 
 Sending Emails
 --------------
