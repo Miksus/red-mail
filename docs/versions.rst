@@ -4,6 +4,12 @@
 Version history
 ===============
 
+- ``0.3.0``
+
+    - Add: Logging handlers (:class:`.EmailHandler`, :class:`.MultiEmailHandler`)
+    - Add: Outlook pre-configured sender
+    - Add: Multiple emails can be sent without closing the connection using context manager in :class:`EmailSender`
+
 - ``0.2.1``
 
     - Fix: If some attachments are specified and only text body or no body at all is set´, sending email no longer crashes
