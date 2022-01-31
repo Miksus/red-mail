@@ -399,8 +399,6 @@ class EmailSender:
 
     def get_server(self) -> smtplib.SMTP:
         "Connect and get the SMTP Server"
-        if self.connection is not None:
-            return self.connection
         user = self.user_name
         password = self.password
         
