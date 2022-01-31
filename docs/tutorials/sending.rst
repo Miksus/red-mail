@@ -117,3 +117,49 @@ You can also alias the sender and receivers:
 Alias is an alternative text that is displayed instead of 
 the actual email addresses. The receivers can still get 
 the addresses though.
+
+.. _send-multi:
+
+Sending Multiple Emails
+-----------------------
+
+Normally Red Mail opens and closes the connection to the SMTP
+server when sending each email. If you are sending large amount
+of emails it may be beneficial to leave the connection open:
+
+.. code-block:: python
+
+    with email:
+        email.send(
+            subject='email subject',
+            sender="me@example.com",
+            receivers=['you@example.com']
+        )
+
+        email.send(
+            subject='email subject',
+            sender="me@example.com",
+            receivers=['they@example.com']
+        )
+        ...
+
+Alternatively, you may use the ``connect`` and ``close``
+methods:
+
+.. code-block:: python
+
+    try:
+        email.connect()
+        email.send(
+            subject='email subject',
+            sender="me@example.com",
+            receivers=['you@example.com']
+        )
+        email.send(
+            subject='email subject',
+            sender="me@example.com",
+            receivers=['they@example.com']
+        )
+        ...
+    finally:
+        email.close()

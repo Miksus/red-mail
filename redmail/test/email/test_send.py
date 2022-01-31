@@ -26,12 +26,34 @@ class MockServer:
 
 def test_send():
     email = EmailSender(host="localhost", port=0, cls_smtp=MockServer)
-    # This should fail but we test everything else goes through
+    assert email.connection is None
+
     msg = email.send(
         subject="An example",
         receivers=['koli.mikael@example.com']
     )
     assert isinstance(msg, EmailMessage)
+    assert email.connection is None
+
+def test_send_multi():
+    email = EmailSender(host="localhost", port=0, cls_smtp=MockServer)
+
+    assert email.connection is None
+    with email:
+        assert email.connection is not None
+        msg = email.send(
+            subject="An example",
+            receivers=['koli.mikael@example.com']
+        )
+        assert isinstance(msg, EmailMessage)
+        assert email.connection is not None
+        msg = email.send(
+            subject="An example",
+            receivers=['koli.mikael@example.com']
+        )
+        assert isinstance(msg, EmailMessage)
+        assert email.connection is not None
+    assert email.connection is None
 
 def test_send_function():
     # This should fail but we test everything else goes through
