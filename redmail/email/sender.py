@@ -1,4 +1,5 @@
 
+from copy import copy
 from email.message import EmailMessage
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
@@ -38,7 +39,7 @@ class EmailSender:
         User password to authenticate on the server.
     cls_smtp : smtplib.SMTP
         SMTP class to use for connection. See options 
-        from `Python smtplib docs <https://docs.python.org/3/library/smtplib.html>`_.
+        from :stdlib:`Python smtplib docs <smtplib.html>`.
     use_starttls : bool
         Whether to use `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ 
         when connecting to the SMTP server.
@@ -467,3 +468,7 @@ class EmailSender:
             self.templates_html_table = jinja2.Environment(loader=jinja2.FileSystemLoader(html_table))
         if text_table is not None:
             self.templates_text_table = jinja2.Environment(loader=jinja2.FileSystemLoader(text_table))
+
+    def copy(self) -> 'EmailSender':
+        "Shallow copy EmailSender"
+        return copy(self)

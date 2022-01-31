@@ -9,7 +9,7 @@ of the connection with your SMTP server. In this discussion we discuss ways to c
 
 By default Red Mail uses `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ or opportunistic
 TLS in connecting to the SMTP server. You may also change this if needed by changing the 
-``cls_smtp`` to other SMTP client classes from `smtplib <https://docs.python.org/3/library/smtplib.html>`_
+``cls_smtp`` to other SMTP client classes from ::stdlib:`smtplib <smtplib.html>`
 in standard library.
 
 .. note::
