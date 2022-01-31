@@ -47,6 +47,12 @@ def test_send_multi():
         )
         assert isinstance(msg, EmailMessage)
         assert email.connection is not None
+        msg = email.send(
+            subject="An example",
+            receivers=['koli.mikael@example.com']
+        )
+        assert isinstance(msg, EmailMessage)
+        assert email.connection is not None
     assert email.connection is None
 
 def test_send_function():
