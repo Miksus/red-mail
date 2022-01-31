@@ -80,6 +80,8 @@ There are also other reasons to use Red Mail:
 - :ref:`Gmail <config-gmail>` and :ref:`Outlook <config-outlook>` pre-configured
 - :ref:`Send with cc and bcc <send-cc-bcc>`
 - :ref:`Change the email protocol to what you need <config-smtp>`
+- :ref:`Easy to use logging handler <ext-logging>`
+- :ref:`Easy to use Flask extension <ext-flask>`
 - And it is well tested and documented
 
 

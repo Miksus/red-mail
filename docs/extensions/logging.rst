@@ -1,4 +1,4 @@
-
+.. _ext-logging:
 
 Email Logging
 =============
