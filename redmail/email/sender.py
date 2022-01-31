@@ -96,6 +96,10 @@ class EmailSender:
     kws_smtp : dict
         Keyword arguments passed to ``cls_smtp``
         when connecting to the SMTP server.
+    connection : smtplib.SMTP, None
+        Connection to the SMTP server. Created and closed
+        before and after sending each email unless there 
+        is an existing connection.
 
     Examples
     --------
@@ -150,6 +154,8 @@ class EmailSender:
         self.cls_smtp = cls_smtp
         self.kws_smtp = kwargs
         
+        self.connection = None
+
     def send(self,
              subject:Optional[str]=None,
              sender:Optional[str]=None,
@@ -368,14 +374,33 @@ class EmailSender:
 
     def send_message(self, msg:EmailMessage):
         "Send the created message"
-
-        server = self.connect()
-        server.send_message(msg)
-        
-        server.quit()
+        if self.is_alive:
+            self.connection.send_message(msg)
+        else:
+            # The connection was opened for this message
+            # thus it is also closed with this message
+            with self:
+                self.connection.send_message(msg)
     
-    def connect(self) -> smtplib.SMTP:
+    def __enter__(self):
+        self.connect()
+
+    def __exit__(self, *args):
+        self.close()
+
+    def connect(self):
         "Connect to the SMTP Server"
+        self.connection = self.get_server()
+
+    def close(self):
+        "Close (quit) the connection"
+        self.connection.quit()
+        self.connection = None
+
+    def get_server(self) -> smtplib.SMTP:
+        "Connect and get the SMTP Server"
+        if self.connection is not None:
+            return self.connection
         user = self.user_name
         password = self.password
         
@@ -386,6 +411,11 @@ class EmailSender:
         if user is not None or password is not None:
             server.login(user, password)
         return server
+
+    @property
+    def is_alive(self):
+        "bool: Check if there is a connection to the SMTP server"
+        return self.connection is not None
 
     def get_params(self, sender:str) -> Dict[str, Any]:
         "Get Jinja parametes passed to both text and html bodies"
