@@ -4,6 +4,10 @@
 Version history
 ===============
 
+- ``0.3.1``
+
+    - Package: Added the license as a classifier to setup.py. Some pipelines may require such. 
+
 - ``0.3.0``
 
     - Add: Logging handlers (:class:`.EmailHandler`, :class:`.MultiEmailHandler`)
