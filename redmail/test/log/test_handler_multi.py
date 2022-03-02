@@ -14,6 +14,14 @@ def test_default_body():
     # By default, this should be body if text/html/html_template/text_template not specified
     assert hdlr.email.text == MultiEmailHandler.default_text
 
+def test_sender_with_login():
+    hdlr = MultiEmailHandler(host="localhost", port=0, username="myuser", password="1234", receivers=["me@example.com"], subject="Some logging")
+    # By default, this should be body if text/html/html_template/text_template not specified
+    sender = hdlr.email
+    assert sender.username == "myuser"
+    assert sender.password == "1234"
+    assert sender.receivers == ["me@example.com"]
+    assert sender.subject == "Some logging"
 
 @pytest.mark.parametrize("kwargs,exp_headers,exp_payload",
     [
