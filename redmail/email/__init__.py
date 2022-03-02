@@ -19,7 +19,7 @@ def send_email(*args, host:str, port:int, username:str=None, password:str=None, 
         Address of the SMTP host
     port : int
         Port of the SMTP server
-    user_name : str
+    username : str
         User to send the email with
     password : str
         Password of the user to send the email with
