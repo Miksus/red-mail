@@ -366,7 +366,7 @@ class EmailSender:
 
     def get_sender(self, sender:Union[str, None]) -> str:
         """Get sender of the email"""
-        return sender or self.sender or self.user_name
+        return sender or self.sender or self.username
 
     def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None) -> EmailMessage:
         msg = EmailMessage()
