@@ -1,5 +1,4 @@
 
-from asyncio import Future
 from copy import copy
 from email.message import EmailMessage
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
