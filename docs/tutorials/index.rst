@@ -30,4 +30,5 @@ And see - :ref:`cookbook <cookbook>` for example use cases.
    cookbook
    config
    client
+   testing
    example
