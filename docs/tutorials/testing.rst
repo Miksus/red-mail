@@ -105,8 +105,7 @@ Then to use this mock:
     )
 
     msgs = MockServer.messages
-    assert msgs == 
-    ["""from: me@example.com
+    assert msgs == ["""from: me@example.com
     subject: Some news
     to: you@example.com
     Content-Type: text/plain; charset="utf-8"
@@ -153,8 +152,7 @@ Then to use this class:
     )
 
     msgs = email.messages
-    assert msgs == 
-    ["""from: me@example.com
+    assert msgs == ["""from: me@example.com
     subject: Some news
     to: you@example.com
     Content-Type: text/plain; charset="utf-8"
