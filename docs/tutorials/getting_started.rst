@@ -23,7 +23,7 @@ You can configure your sender by:
    email = EmailSender(
        host='<SMTP HOST>',
        port='<SMTP PORT>',
-       user_name='<USER_NAME>',
+       username='<USERNAME>',
        password='<PASSWORD>'
    )
 

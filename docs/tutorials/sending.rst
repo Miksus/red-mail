@@ -22,7 +22,7 @@ is configured. At minimum, sending an email requires:
 
     If you don't spesify the ``sender``, the sender is considered to 
     be ``email.sender``. If ``email.sender`` is also missing, the sender
-    is then set to be ``email.user_name``. Ensure that any of these is a 
+    is then set to be ``email.username``. Ensure that any of these is a 
     valid email address. 
 
 .. note::

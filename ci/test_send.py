@@ -10,7 +10,7 @@ load_dotenv()
 email = EmailSender(
     host=os.environ['EMAIL_HOST'],
     port=int(os.environ['EMAIL_PORT']),
-    user_name=os.environ['EMAIL_USERNAME'],
+    username=os.environ['EMAIL_USERNAME'],
     password=os.environ['EMAIL_PASSWORD']
 )
 
@@ -96,7 +96,8 @@ def send_images():
     plt.plot([1,2,3,2,3])
 
     email.send(
-        receivers=[os.environ['EMAIL_RECEIVER']],
+        sender=f"An Alias <{os.environ['EMAIL_SENDER']}>",
+        receivers=[os.environ['EMAIL_RECEIVERS']],
         subject="Embedded images",
         html='''
             <p>Dict image (JPEG):</p>
@@ -112,8 +113,8 @@ def send_images():
                 'subtype': 'jpg',
             },
             "plot_image": fig,
-            "path_image": Path(__file__).parent / "example.png",
-            "path_image_str": str((Path(__file__).parent / "example.png").absolute()),
+            "path_image": Path(__file__).parent.parent / "docs/imgs/email_emb_img.png",
+            "path_image_str": str((Path(__file__).parent.parent / "docs/imgs/email_emb_img.png").absolute()),
         }
     )
 
@@ -195,13 +196,15 @@ def log_simple():
 
 if __name__ == "__main__":
     fn_bodies = [send, send_text, send_html, send_test_and_html]
+    fn_imgs = [send_images]
     fn_attachments = [send_attachments, send_attachments_with_text, send_attachments_with_html, send_attachments_with_text_and_html]
     fn_log = [log_simple, log_multi]
 
     funcs = {
         "minimal": fn_bodies[0],
-        "full": fn_bodies + fn_attachments + fn_log,
+        "full": fn_bodies + fn_attachments + fn_log + fn_imgs,
         "logging": fn_log,
+        "images": fn_imgs,
     }[os.environ.get("EMAIL_FUNCS", "full")]
     for func in funcs:
         time.sleep(1)

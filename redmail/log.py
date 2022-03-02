@@ -27,7 +27,7 @@ class _EmailHandlerMixin:
         "Create a simple default sender"
         self.email = EmailSender(
             host=host, port=port,
-            user_name=user_name, password=password
+            username=user_name, password=password
         )
         
         self._set_email_kwargs(kwargs)
