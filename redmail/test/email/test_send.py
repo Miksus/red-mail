@@ -32,7 +32,7 @@ def test_send():
 
     msg = email.send(
         subject="An example",
-        receivers=['koli.mikael@example.com']
+        receivers=['me@example.com']
     )
     assert isinstance(msg, EmailMessage)
     assert email.connection is None
@@ -45,7 +45,7 @@ def test_send_with_user():
 
     msg = email.send(
         subject="An example",
-        receivers=['koli.mikael@example.com']
+        receivers=['me@example.com']
     )
     assert isinstance(msg, EmailMessage)
     assert email.connection is None
@@ -63,13 +63,13 @@ def test_send_multi():
         assert email.connection is not None
         msg = email.send(
             subject="An example",
-            receivers=['koli.mikael@example.com']
+            receivers=['me@example.com']
         )
         assert isinstance(msg, EmailMessage)
         assert email.connection is not None
         msg = email.send(
             subject="An example",
-            receivers=['koli.mikael@example.com']
+            receivers=['me@example.com']
         )
         assert isinstance(msg, EmailMessage)
         assert email.connection is not None
