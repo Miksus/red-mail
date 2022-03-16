@@ -9,7 +9,7 @@ from pathlib import Path
 from redmail.utils import is_bytes
 from redmail.utils import import_from_string
 
-from email.utils import make_msgid
+from email.utils import make_msgid, parseaddr
 
 from jinja2.environment import Template, Environment
 
@@ -109,7 +109,7 @@ class HTMLBody(Body):
             jinja_params : dict
                 Extra Jinja parameters for the HTML.
         """
-        domain = msg["from"].split("@")[-1] if self.domain is None else self.domain
+        domain = parseaddr(msg["from"])[1].split("@")[-1] if self.domain is None else self.domain
         html, cids = self.render(
             html, 
             images=images,
