@@ -338,6 +338,18 @@ class EmailSender:
                 tables=body_tables,
                 jinja_params=self.get_html_params(extra=body_params, sender=sender)
             )
+
+        # Change the structure to multipart/mixed if possible.
+        # This seems to be the most versatile and most unproblematic top level content-type
+        # as otherwise content may be missing or it may be misrendered.
+        # See: https://stackoverflow.com/a/23853079/13696660
+        # See issues: #23, #37
+        try:
+            msg.make_mixed()
+        except ValueError:
+            # Cannot convert to mixed
+            pass
+        
         if attachments:
             att = Attachments(attachments, encoding=self.attachment_encoding)
             att.attach(msg)
