@@ -12,7 +12,7 @@ import pytest
 from redmail.email.utils import pd
 
 from resources import get_mpl_fig, get_pil_image
-from convert import remove_extra_lines
+from convert import remove_extra_lines, payloads_to_dict
 
 
 def compare_image_mime(mime_part, mime_part_html, orig_image:bytes, type_="image/png"):
@@ -52,11 +52,12 @@ def test_with_image_file(get_image_obj, dummy_png):
         body_images={"my_image": image_obj}
     )
     
-    assert "multipart/alternative" == msg.get_content_type()
+    assert "multipart/mixed" == msg.get_content_type()
 
-    #mime_text = msg.get_payload()[0]
-    mime_html = msg.get_payload()[0].get_payload()[0]
-    mime_image  = msg.get_payload()[0].get_payload()[1]
+    alternative = msg.get_payload()[0]
+    related = alternative.get_payload()[0]
+
+    mime_html, mime_image = related.get_payload()
 
     compare_image_mime(mime_image, mime_html, orig_image=dummy_bytes)
 
@@ -67,7 +68,7 @@ def test_with_image_file(get_image_obj, dummy_png):
         'subject': 'Some news', 
         'to': 'you@gmail.com', 
         #'MIME-Version': '1.0', 
-        'Content-Type': 'multipart/alternative'
+        'Content-Type': 'multipart/mixed'
     } == headers
 
 def test_with_image_dict_jpeg():
@@ -87,12 +88,24 @@ def test_with_image_dict_jpeg():
             }
         }
     )
-    
-    assert "multipart/alternative" == msg.get_content_type()
+    # Validate structure
+    structure = payloads_to_dict(msg)
+    assert structure == {
+        "multipart/mixed": {
+            "multipart/alternative": {
+                "multipart/related": {
+                    "text/html": structure["multipart/mixed"]["multipart/alternative"]["multipart/related"]["text/html"],
+                    "image/jpg": structure["multipart/mixed"]["multipart/alternative"]["multipart/related"]["image/jpg"],
+                }
+            }
+        }
+    }
+    assert "multipart/mixed" == msg.get_content_type()
 
-    #mime_text = msg.get_payload()[0]
-    mime_html = msg.get_payload()[0].get_payload()[0]
-    mime_image  = msg.get_payload()[0].get_payload()[1]
+    alternative = msg.get_payload()[0]
+    related = alternative.get_payload()[0]
+
+    mime_html, mime_image = related.get_payload()
 
     compare_image_mime(mime_image, mime_html, orig_image=img_bytes, type_="image/jpg")
 
@@ -103,7 +116,7 @@ def test_with_image_dict_jpeg():
         'subject': 'Some news', 
         'to': 'you@gmail.com', 
         #'MIME-Version': '1.0', 
-        'Content-Type': 'multipart/alternative'
+        'Content-Type': 'multipart/mixed'
     } == headers
 
 
@@ -125,11 +138,12 @@ def test_with_image_obj(get_image_obj):
         body_images={"my_image": image_obj}
     )
     
-    assert "multipart/alternative" == msg.get_content_type()
+    assert "multipart/mixed" == msg.get_content_type()
 
-    #mime_text = msg.get_payload()[0]
-    mime_html = msg.get_payload()[0].get_payload()[0]
-    mime_image  = msg.get_payload()[0].get_payload()[1]
+    alternative = msg.get_payload()[0]
+    related = alternative.get_payload()[0]
+
+    mime_html, mime_image = related.get_payload()
 
     compare_image_mime(mime_image, mime_html, orig_image=image_bytes)
 
@@ -140,7 +154,7 @@ def test_with_image_obj(get_image_obj):
         'subject': 'Some news', 
         'to': 'you@gmail.com', 
         #'MIME-Version': '1.0', 
-        'Content-Type': 'multipart/alternative'
+        'Content-Type': 'multipart/mixed'
     } == headers
 
 def test_with_image_error():
@@ -235,10 +249,13 @@ def test_with_html_table_no_error(get_df, tmpdir):
         body_tables={"my_table": df}
     )
     
-    assert "multipart/alternative" == msg.get_content_type()
+    assert "multipart/mixed" == msg.get_content_type()
+
+    alternative = msg.get_payload()[0]
+    mime_html = alternative.get_payload()[0]
 
     #mime_text = msg.get_payload()[0]
-    html = remove_extra_lines(msg.get_payload()[0].get_payload()).replace("=20", "").replace('"3D', "")
+    html = remove_extra_lines(mime_html.get_payload()).replace("=20", "").replace('"3D', "")
     #tmpdir.join("email.html").write(html)
 
     # TODO: Test the HTML is as required

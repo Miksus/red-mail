@@ -38,11 +38,13 @@ def test_template(tmpdir):
         body_params={"friend": "Jack", 'project_name': 'RedMail'}
     )
     
-    assert "multipart/alternative" == msg.get_content_type()
+    assert "multipart/mixed" == msg.get_content_type()
 
-    #text = remove_extra_lines(msg.get_payload()[0].get_payload())
-    text = remove_email_extra(msg.get_payload()[0].get_payload())
-    html = remove_email_extra(msg.get_payload()[1].get_payload())
+    alternative = msg.get_payload()[0]
+    text_part, html_part = alternative.get_payload()
+
+    text = remove_email_extra(text_part.get_payload())
+    html = remove_email_extra(html_part.get_payload())
 
     assert expected_html == html
     assert expected_text == text

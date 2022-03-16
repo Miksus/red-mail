@@ -41,5 +41,6 @@ def test_distributions():
         'from': 'me@example.com', 
         'subject': 'Some email', 
         'to': 'me@example.com, you@example.com', 
-        'cc': 'he@example.com, she@example.com', 
+        'cc': 'he@example.com, she@example.com',
+        'Content-Type': 'multipart/mixed'
     }
