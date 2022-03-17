@@ -30,14 +30,12 @@ def test_default_body():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "A log record",
-                #'Content-Transfer-Encoding': '7bit',
-                'Content-Type': 'multipart/mixed',
+                'Content-Transfer-Encoding': '7bit',
+                'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
             {
-                'multipart/mixed': {
-                    'text/plain': 'a message\n'
-                }
+                'text/plain': 'a message\n'
             },
             id="Minimal",
         ),
@@ -54,14 +52,12 @@ def test_default_body():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "A log record",
-                #'Content-Transfer-Encoding': '7bit',
-                'Content-Type': 'multipart/mixed',
+                'Content-Transfer-Encoding': '7bit',
+                'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
             {
-                'multipart/mixed': {
-                    'text/plain': 'Log Record: \n_test: INFO: a message\n'
-                }
+                'text/plain': 'Log Record: \n_test: INFO: a message\n'
             },
             id="Custom message (msg)",
         ),
@@ -78,14 +74,12 @@ def test_default_body():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "A log record",
-                #'Content-Transfer-Encoding': '7bit',
-                'Content-Type': 'multipart/mixed',
+                'Content-Transfer-Encoding': '7bit',
+                'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
             {
-                'multipart/mixed': {
-                    'text/plain': 'Log Record: \na message\n'
-                }
+                'text/plain': 'Log Record: \na message\n'
             },
             id="Custom message (record)",
         ),
@@ -100,14 +94,12 @@ def test_default_body():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "Log: _test - INFO",
-                #'Content-Transfer-Encoding': '7bit',
-                'Content-Type': 'multipart/mixed',
+                'Content-Transfer-Encoding': '7bit',
+                'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
             {
-                'multipart/mixed': {
-                    'text/plain': 'a message\n'
-                }
+                'text/plain': 'a message\n'
             },
             id="Sender with fomatted subject",
         ),

@@ -1,3 +1,4 @@
+from textwrap import dedent
 from redmail import EmailSender
 
 import pytest
@@ -6,124 +7,103 @@ from convert import remove_extra_lines, payloads_to_dict
 from getpass import getpass, getuser
 from platform import node
 
-from convert import remove_email_extra
+from convert import remove_email_extra, remove_email_content_id
 
 def test_text_message():
 
     sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
-        sender="me@gmail.com",
-        receivers="you@gmail.com",
+        sender="me@example.com",
+        receivers="you@example.com",
         subject="Some news",
         text="Hi, nice to meet you.",
     )
+    assert str(msg) == dedent("""
+    from: me@example.com
+    subject: Some news
+    to: you@example.com
+    Content-Type: text/plain; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
+    MIME-Version: 1.0
 
-    # Validate structure
-    assert payloads_to_dict(msg) == {
-        'multipart/mixed': {
-            'text/plain': 'Hi, nice to meet you.\n',
-        }
-    }
-    assert msg.get_content_type() == "multipart/mixed"
+    Hi, nice to meet you.
+    """)[1:]
 
-    text = msg.get_payload()[0]
-
-    expected_headers = {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
-        'MIME-Version': '1.0', 
-        'Content-Type': 'multipart/mixed',
-        #'Content-Transfer-Encoding': '7bit',
-    }
-
-    assert "text/plain" == text.get_content_type()
-    assert "Hi, nice to meet you.\n" == text.get_payload()
-
-    # Test receivers etc.
-    headers = dict(msg.items())
-    assert expected_headers == headers
 
 def test_html_message():
 
     sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
-        sender="me@gmail.com",
-        receivers="you@gmail.com",
+        sender="me@example.com",
+        receivers="you@example.com",
         subject="Some news",
         html="<h3>Hi,</h3><p>Nice to meet you</p>",
     )
 
-    # Validate structure
-    assert payloads_to_dict(msg) == {
-        'multipart/mixed': {
-            'multipart/alternative': {
-                'text/html': '<h3>Hi,</h3><p>Nice to meet you</p>\n',
-            }
-        }
-    }
-    assert msg.get_content_type() == "multipart/mixed"
+    assert remove_email_content_id(str(msg)) == dedent("""
+    from: me@example.com
+    subject: Some news
+    to: you@example.com
+    Content-Type: multipart/mixed; boundary="===============<ID>=="
 
-    alternative = msg.get_payload()[0]
-    html = alternative.get_payload()[0]
-    expected_headers = {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
-        #'MIME-Version': '1.0', 
-        'Content-Type': 'multipart/mixed'
-    }
+    --===============<ID>==
+    Content-Type: multipart/alternative;
+     boundary="===============<ID>=="
 
-    assert "<h3>Hi,</h3><p>Nice to meet you</p>\n" == html.get_content()
+    --===============<ID>==
+    Content-Type: text/html; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
+    MIME-Version: 1.0
 
-    # Test receivers etc.
-    headers = dict(msg.items())
-    assert expected_headers == headers
+    <h3>Hi,</h3><p>Nice to meet you</p>
+
+    --===============<ID>==--
+
+    --===============<ID>==--
+    """)[1:]
+
 
 def test_text_and_html_message():
 
     sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
-        sender="me@gmail.com",
-        receivers="you@gmail.com",
+        sender="me@example.com",
+        receivers="you@example.com",
         subject="Some news",
         html="<h3>Hi,</h3><p>nice to meet you.</p>",
         text="Hi, nice to meet you.",
     )
 
-    # Validate structure
-    assert payloads_to_dict(msg) == {
-        'multipart/mixed': {
-            'multipart/alternative': {
-                'text/plain': 'Hi, nice to meet you.\n',
-                'text/html': '<h3>Hi,</h3><p>nice to meet you.</p>\n',
-            }
-        }
-    }
+    assert remove_email_content_id(str(msg)) == dedent("""
+    from: me@example.com
+    subject: Some news
+    to: you@example.com
+    MIME-Version: 1.0
+    Content-Type: multipart/mixed; boundary="===============<ID>=="
 
-    alternative = msg.get_payload()[0]
-    text, html = alternative.get_payload()
+    --===============<ID>==
+    Content-Type: multipart/alternative;
+     boundary="===============<ID>=="
 
-    expected_headers = {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
-        'MIME-Version': '1.0', 
-        'Content-Type': 'multipart/mixed'
-    }
+    --===============<ID>==
+    Content-Type: text/plain; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
 
-    assert "multipart/mixed" == msg.get_content_type()
+    Hi, nice to meet you.
 
-    assert "text/plain" == text.get_content_type()
-    assert "Hi, nice to meet you.\n" == text.get_content()
+    --===============<ID>==
+    Content-Type: text/html; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
+    MIME-Version: 1.0
 
-    assert "text/html" == html.get_content_type()
-    assert "<h3>Hi,</h3><p>nice to meet you.</p>\n" == html.get_content()
+    <h3>Hi,</h3><p>nice to meet you.</p>
 
-    # Test receivers etc.
-    headers = dict(msg.items())
-    assert expected_headers == headers
-    
+    --===============<ID>==--
+
+    --===============<ID>==--
+    """)[1:]
+
+
 @pytest.mark.parametrize(
     "html,expected_html,text,expected_text,extra", [
         pytest.param(
@@ -216,15 +196,22 @@ def test_set_defaults():
         'from': 'me@gmail.com', 
         'to': 'you@gmail.com, they@gmail.com', 
         'subject': 'Some email', 
-        'Content-Type': 'multipart/mixed', 
-        #'Content-Transfer-Encoding': '7bit', 
+        'Content-Type': 'text/plain; charset="utf-8"', 
+        'Content-Transfer-Encoding': '7bit', 
         'MIME-Version': '1.0'
     } == dict(msg.items())
 
 def test_cc_bcc():
     email = EmailSender(host=None, port=1234)
-    msg = email.get_message(sender="me@example.com", subject="Something", cc=['you@example.com'], bcc=['he@example.com', 'she@example.com'])
-    assert dict(msg.items()) == {'from': 'me@example.com', 'subject': 'Something', 'cc': 'you@example.com', 'bcc': 'he@example.com, she@example.com', 'Content-Type': 'multipart/mixed'}
+    msg = email.get_message(sender="me@example.com", subject="Some email", cc=['you@example.com'], bcc=['he@example.com', 'she@example.com'])
+
+    assert remove_email_content_id(str(msg)) == dedent("""
+    from: me@example.com
+    subject: Some email
+    cc: you@example.com
+    bcc: he@example.com, she@example.com
+
+    """)[1:]
 
 def test_missing_subject():
     email = EmailSender(host=None, port=1234)

@@ -30,14 +30,12 @@ def test_default_body():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "A log record",
-                #'Content-Transfer-Encoding': '7bit',
-                'Content-Type': 'multipart/mixed',
+                'Content-Transfer-Encoding': '7bit',
+                'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
             {
-                'multipart/mixed': {
-                    'text/plain': 'Log Recods:\na message\n'
-                }
+                'text/plain': 'Log Recods:\na message\n'
             },
             id="Minimal",
         ),
@@ -54,14 +52,12 @@ def test_default_body():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "A log record",
-                #'Content-Transfer-Encoding': '7bit',
-                'Content-Type': 'multipart/mixed',
+                'Content-Transfer-Encoding': '7bit',
+                'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
             {
-                'multipart/mixed': {
-                    'text/plain': 'The records: \nLog: _test - INFO - a message\n'
-                }
+                'text/plain': 'The records: \nLog: _test - INFO - a message\n'
             },
             id="Custom message (msgs)",
         ),
@@ -78,14 +74,12 @@ def test_default_body():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "A log record",
-                #'Content-Transfer-Encoding': '7bit',
-                'Content-Type': 'multipart/mixed',
+                'Content-Transfer-Encoding': '7bit',
+                'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
             {
-                'multipart/mixed': {
-                    'text/plain': 'The records: \nLog: INFO - a message\n',
-                }
+                'text/plain': 'The records: \nLog: INFO - a message\n',
             },
             id="Custom message (records)",
         ),
@@ -100,14 +94,12 @@ def test_default_body():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "Logs: INFO - INFO",
-                #'Content-Transfer-Encoding': '7bit',
-                'Content-Type': 'multipart/mixed',
+                'Content-Transfer-Encoding': '7bit',
+                'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
             {
-                'multipart/mixed': {
-                    'text/plain': 'Log Recods:\na message\n',
-                }
+                'text/plain': 'Log Recods:\na message\n',
             },
             id="Sender with fomatted subject",
         ),
@@ -207,15 +199,14 @@ def test_flush_multiple(logger):
     assert len(msgs) == 1
     msg = msgs[0]
     headers = dict(msg.items())
-    payload = msg.get_payload()[0]
-    text = payload.get_payload()
+    text = msg.get_payload()
 
     assert headers == {
         "from": "None",
         "to": "he@example.com, she@example.com",
         "subject": "Logs: DEBUG - INFO",
-        #'Content-Transfer-Encoding': '7bit',
-        'Content-Type': 'multipart/mixed',
+        'Content-Transfer-Encoding': '7bit',
+        'Content-Type': 'text/plain; charset="utf-8"',
         'MIME-Version': '1.0',
     }
 
@@ -240,15 +231,14 @@ def test_flush_none():
     assert len(msgs) == 1
     msg = msgs[0]
     headers = dict(msg.items())
-    payload = msg.get_payload()[0]
-    text = payload.get_payload()
+    text = msg.get_payload()
 
     assert headers == {
         "from": "None",
         "to": "he@example.com, she@example.com",
         "subject": "Logs: NOTSET - NOTSET",
-        #'Content-Transfer-Encoding': '7bit',
-        'Content-Type': 'multipart/mixed',
+        'Content-Transfer-Encoding': '7bit',
+        'Content-Type': 'text/plain; charset="utf-8"',
         'MIME-Version': '1.0',
     }
 
