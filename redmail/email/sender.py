@@ -313,8 +313,10 @@ class EmailSender:
             cc=cc,
             bcc=bcc,
         )
-
-        if text is not None or text_template is not None:
+        has_text = text is not None or text_template is not None
+        has_html = html is not None or html_template is not None
+        has_attachments = attachments is not None
+        if has_text:
             body = TextBody(
                 template=self.get_text_template(text_template),
                 table_template=self.get_text_table_template(),
@@ -326,7 +328,7 @@ class EmailSender:
                 jinja_params=self.get_text_params(extra=body_params, sender=sender),
             )
 
-        if html is not None or html_template is not None:
+        if has_html:
             body = HTMLBody(
                 template=self.get_html_template(html_template),
                 table_template=self.get_html_table_template(),
@@ -338,18 +340,14 @@ class EmailSender:
                 tables=body_tables,
                 jinja_params=self.get_html_params(extra=body_params, sender=sender)
             )
-
-        # Change the structure to multipart/mixed if possible.
-        # This seems to be the most versatile and most unproblematic top level content-type
-        # as otherwise content may be missing or it may be misrendered.
-        # See: https://stackoverflow.com/a/23853079/13696660
-        # See issues: #23, #37
-        try:
-            msg.make_mixed()
-        except ValueError:
-            # Cannot convert to mixed
-            pass
         
+        self._set_content_type(
+            msg,
+            has_text=has_text,
+            has_html=has_html,
+            has_attachments=has_attachments,
+        )
+
         if attachments:
             att = Attachments(attachments, encoding=self.attachment_encoding)
             att.attach(msg)
@@ -384,6 +382,23 @@ class EmailSender:
         if bcc:
             msg['bcc'] = bcc
         return msg
+
+    def _set_content_type(self, msg:EmailMessage, has_text, has_html, has_attachments):
+
+        # NOTE: we don't convert emails that have only text/plain to multiplart/mixed
+        # in order to keep the messages minimal (as often desired with simple plain text)
+
+        if has_html or has_attachments:
+            # Change the structure to multipart/mixed if possible.
+            # This seems to be the most versatile and most unproblematic top level content-type
+            # as otherwise content may be missing or it may be misrendered.
+            # See: https://stackoverflow.com/a/23853079/13696660
+            # See issues: #23, #37
+            try:
+                msg.make_mixed()
+            except ValueError:
+                # Cannot convert to mixed
+                pass
 
     def send_message(self, msg:EmailMessage):
         "Send the created message"
