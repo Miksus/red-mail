@@ -18,9 +18,7 @@ def test_empty():
         subject="An example",
     )
     structure = payloads_to_dict(msg)
-    assert structure == {
-        "multipart/mixed": {}
-    }
+    assert structure == {}
 
 def test_text():
 
@@ -33,9 +31,7 @@ def test_text():
     )
     structure = payloads_to_dict(msg)
     assert structure == {
-        "multipart/mixed": {
-            'text/plain': 'Text content\n'
-        }
+        'text/plain': 'Text content\n'
     }
 
 def test_html():
