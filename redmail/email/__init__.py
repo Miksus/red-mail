@@ -23,7 +23,7 @@ def send_email(*args, host:str, port:int, username:str=None, password:str=None, 
         User to send the email with
     password : str
         Password of the user to send the email with
-    user_name : str
+    username : str
         Deprecated alias for username. Please use username instead.
     **kwargs : dict
         See redmail.EmailSender.send
