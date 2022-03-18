@@ -4,6 +4,14 @@
 Version history
 ===============
 
+- ``0.4.0``
+
+    - Rename: Changed ``user_name`` to ``username`` in ``redmail.EmailSender``. ``user_name`` still works but issues a warning.
+    - Add: ``redmail.EmailSender.send`` now has new argument ``use_jinja`` (by default True) to disable Jinja templating.
+    - Fix: Now the MIME structure is more defined and more likely renders emails properly across email providers.
+    - Fix: Embedded images for aliased senders.
+    - Docs: Added examples of how to test Red Mail's messages.
+
 - ``0.3.1``
 
     - Package: Added the license as a classifier to setup.py. Some pipelines may require such. 
