@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from resources import get_mpl_fig, get_pil_image
-from convert import remove_extra_lines
+from convert import remove_extra_lines, payloads_to_dict
 
 def to_encoded(s:str):
     return str(base64.b64encode(s.encode()), 'ascii')
@@ -23,6 +23,14 @@ def test_with_text():
         text="Hi, this is an email",
         attachments={'data.txt': "Some content"}
     )
+    # Validate structure
+    assert payloads_to_dict(msg) == {
+        'multipart/mixed': {
+            'application/octet-stream': 'U29tZSBjb250ZW50\n',
+            'text/plain': 'Hi, this is an email\n',
+        }
+    }
+
     assert msg.get_content_type() == "multipart/mixed"
 
     text, attachment = msg.get_payload()
@@ -45,9 +53,20 @@ def test_with_html():
         html="<h1>Hi, this is an email.</h1>",
         attachments={'data.txt': "Some content"}
     )
-    assert msg.get_content_type() == "multipart/alternative"
+    # Validate structure
+    assert payloads_to_dict(msg) == {
+        'multipart/mixed': {
+            'application/octet-stream': 'U29tZSBjb250ZW50\n',
+            'multipart/alternative': {
+                'text/html': '<h1>Hi, this is an email.</h1>\n'
+            }
+        }
+    }
 
-    html, attachment = msg.get_payload()
+    assert msg.get_content_type() == "multipart/mixed"
+
+    alternative, attachment = msg.get_payload()
+    html = alternative.get_payload()[0]
     assert html.get_content_type() == 'text/html'
     assert attachment.get_content_type() == 'application/octet-stream'
 
@@ -70,9 +89,20 @@ def test_with_text_and_html():
         html="<h1>Hi, this is an email.</h1>",
         attachments={'data.txt': "Some content"}
     )
-    assert msg.get_content_type() == "multipart/alternative"
+    # Validate structure
+    assert payloads_to_dict(msg) == {
+        'multipart/mixed': {
+            'application/octet-stream': 'U29tZSBjb250ZW50\n',
+            'multipart/alternative': {
+                'text/html': '<h1>Hi, this is an email.</h1>\n',
+                'text/plain': 'Hi, this is an email.\n'
+            }
+        }
+    }
+    assert msg.get_content_type() == "multipart/mixed"
 
-    text, html, attachment = msg.get_payload()
+    alternative, attachment = msg.get_payload()
+    text, html = alternative.get_payload()
     assert text.get_content_type() == "text/plain"
     assert html.get_content_type() == "text/html"
     assert attachment.get_content_type() == 'application/octet-stream'
@@ -94,6 +124,13 @@ def test_no_body():
         subject="Some news",
         attachments={'data.txt': 'Some content'}
     )
+    # Validate structure
+    assert payloads_to_dict(msg) == {
+        'multipart/mixed': {
+            'application/octet-stream': 'U29tZSBjb250ZW50\n',
+        }
+    }
+
     assert msg.get_content_type() == "multipart/mixed"
     assert len(msg.get_payload()) == 1
 

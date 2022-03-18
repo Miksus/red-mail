@@ -1,99 +1,109 @@
+from textwrap import dedent
 from redmail import EmailSender
 
 import pytest
 
-from convert import remove_extra_lines
+from convert import remove_extra_lines, payloads_to_dict
 from getpass import getpass, getuser
 from platform import node
 
-from convert import remove_email_extra
+from convert import remove_email_extra, remove_email_content_id
 
 def test_text_message():
-    text = "Hi, nice to meet you."
 
     sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
-        sender="me@gmail.com",
-        receivers="you@gmail.com",
+        sender="me@example.com",
+        receivers="you@example.com",
         subject="Some news",
-        text=text,
+        text="Hi, nice to meet you.",
     )
-    payload = msg.get_payload()
-    expected_headers = {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
-        'MIME-Version': '1.0', 
-        'Content-Type': 'text/plain; charset="utf-8"',
-        'Content-Transfer-Encoding': '7bit',
-    }
+    assert str(msg) == dedent("""
+    from: me@example.com
+    subject: Some news
+    to: you@example.com
+    Content-Type: text/plain; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
+    MIME-Version: 1.0
 
-    assert "text/plain" == msg.get_content_type()
-    assert text + "\n" == payload
+    Hi, nice to meet you.
+    """)[1:]
 
-    # Test receivers etc.
-    headers = dict(msg.items())
-    assert expected_headers == headers
 
 def test_html_message():
-    html = "<h3>Hi,</h3><p>Nice to meet you</p>"
 
     sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
-        sender="me@gmail.com",
-        receivers="you@gmail.com",
+        sender="me@example.com",
+        receivers="you@example.com",
         subject="Some news",
-        html=html,
+        html="<h3>Hi,</h3><p>Nice to meet you</p>",
     )
-    payload = msg.get_payload()
-    expected_headers = {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
-        #'MIME-Version': '1.0', 
-        'Content-Type': 'multipart/alternative'
-    }
 
-    assert "multipart/alternative" == msg.get_content_type()
-    assert html + "\n" == payload[0].get_content()
+    assert remove_email_content_id(str(msg)) == dedent("""
+    from: me@example.com
+    subject: Some news
+    to: you@example.com
+    Content-Type: multipart/mixed; boundary="===============<ID>=="
 
-    # Test receivers etc.
-    headers = dict(msg.items())
-    assert expected_headers == headers
+    --===============<ID>==
+    Content-Type: multipart/alternative;
+     boundary="===============<ID>=="
+
+    --===============<ID>==
+    Content-Type: text/html; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
+    MIME-Version: 1.0
+
+    <h3>Hi,</h3><p>Nice to meet you</p>
+
+    --===============<ID>==--
+
+    --===============<ID>==--
+    """)[1:]
+
 
 def test_text_and_html_message():
-    html = "<h3>Hi,</h3><p>nice to meet you.</p>"
-    text = "Hi, nice to meet you."
 
     sender = EmailSender(host=None, port=1234)
     msg = sender.get_message(
-        sender="me@gmail.com",
-        receivers="you@gmail.com",
+        sender="me@example.com",
+        receivers="you@example.com",
         subject="Some news",
-        html=html,
-        text=text,
+        html="<h3>Hi,</h3><p>nice to meet you.</p>",
+        text="Hi, nice to meet you.",
     )
-    payload = msg.get_payload()
-    expected_headers = {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
-        'MIME-Version': '1.0', 
-        'Content-Type': 'multipart/alternative'
-    }
 
-    assert "multipart/alternative" == msg.get_content_type()
+    assert remove_email_content_id(str(msg)) == dedent("""
+    from: me@example.com
+    subject: Some news
+    to: you@example.com
+    MIME-Version: 1.0
+    Content-Type: multipart/mixed; boundary="===============<ID>=="
 
-    assert "text/plain" == payload[0].get_content_type()
-    assert text + "\n" == payload[0].get_content()
+    --===============<ID>==
+    Content-Type: multipart/alternative;
+     boundary="===============<ID>=="
 
-    assert "text/html" == payload[1].get_content_type()
-    assert html + "\n" == payload[1].get_content()
+    --===============<ID>==
+    Content-Type: text/plain; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
 
-    # Test receivers etc.
-    headers = dict(msg.items())
-    assert expected_headers == headers
-    
+    Hi, nice to meet you.
+
+    --===============<ID>==
+    Content-Type: text/html; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
+    MIME-Version: 1.0
+
+    <h3>Hi,</h3><p>nice to meet you.</p>
+
+    --===============<ID>==--
+
+    --===============<ID>==--
+    """)[1:]
+
+
 @pytest.mark.parametrize(
     "html,expected_html,text,expected_text,extra", [
         pytest.param(
@@ -130,10 +140,23 @@ def test_with_jinja_params(html, text, extra, expected_html, expected_text):
         body_params=extra
     )
     
-    assert "multipart/alternative" == msg.get_content_type()
+    # Validate structure
+    structure = payloads_to_dict(msg)
+    assert structure == {
+        'multipart/mixed': {
+            'multipart/alternative': {
+                'text/plain': structure["multipart/mixed"]["multipart/alternative"]["text/plain"],
+                'text/html': structure["multipart/mixed"]["multipart/alternative"]["text/html"],
+            }
+        }
+    }
 
-    text = remove_email_extra(msg.get_payload()[0].get_payload())
-    html = remove_email_extra(msg.get_payload()[1].get_payload())
+    assert "multipart/mixed" == msg.get_content_type()
+    alternative = msg.get_payload()[0]
+    text_part, html_part = alternative.get_payload()
+    
+    text = remove_email_extra(text_part.get_payload())
+    html = remove_email_extra(html_part.get_payload())
 
     assert expected_html == html
     assert expected_text == text
@@ -180,8 +203,12 @@ def test_with_error():
             text="Error occurred \n{{ error }}",
             html="<h1>Error occurred: </h1>{{ error }}",
         )
-    text = remove_email_extra(msg.get_payload()[0].get_payload())
-    html = remove_email_extra(msg.get_payload()[1].get_payload())
+
+    alternative = msg.get_payload()[0]
+    text_part, html_part = alternative.get_payload()
+
+    text = remove_email_extra(text_part.get_payload())
+    html = remove_email_extra(html_part.get_payload())
 
     assert text.startswith('Error occurred\nTraceback (most recent call last):\n  File "')
     assert text.endswith(', in test_with_error\n    raise RuntimeError("Deliberate failure")\nRuntimeError: Deliberate failure\n')
@@ -206,8 +233,15 @@ def test_set_defaults():
 
 def test_cc_bcc():
     email = EmailSender(host=None, port=1234)
-    msg = email.get_message(sender="me@example.com", subject="Something", cc=['you@example.com'], bcc=['he@example.com', 'she@example.com'])
-    assert dict(msg.items()) == {'from': 'me@example.com', 'subject': 'Something', 'cc': 'you@example.com', 'bcc': 'he@example.com, she@example.com'}
+    msg = email.get_message(sender="me@example.com", subject="Some email", cc=['you@example.com'], bcc=['he@example.com', 'she@example.com'])
+
+    assert remove_email_content_id(str(msg)) == dedent("""
+    from: me@example.com
+    subject: Some email
+    cc: you@example.com
+    bcc: he@example.com, she@example.com
+
+    """)[1:]
 
 def test_missing_subject():
     email = EmailSender(host=None, port=1234)
@@ -235,5 +269,5 @@ def test_no_table_templates():
         'subject': 'Some news', 
         'to': 'you@gmail.com', 
         'MIME-Version': '1.0', 
-        'Content-Type': 'multipart/alternative',
+        'Content-Type': 'multipart/mixed',
     }

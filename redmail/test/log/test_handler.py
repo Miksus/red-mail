@@ -4,6 +4,8 @@ from redmail import EmailSender
 from redmail import EmailHandler
 import logging
 
+from convert import payloads_to_dict
+
 def _create_dummy_send(messages:list):
     def _dummy_send(msg):
         messages.append(msg)
@@ -32,7 +34,9 @@ def test_default_body():
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
-            'a message\n',
+            {
+                'text/plain': 'a message\n'
+            },
             id="Minimal",
         ),
         pytest.param(
@@ -52,7 +56,9 @@ def test_default_body():
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
-            'Log Record: \n_test: INFO: a message\n',
+            {
+                'text/plain': 'Log Record: \n_test: INFO: a message\n'
+            },
             id="Custom message (msg)",
         ),
         pytest.param(
@@ -72,7 +78,9 @@ def test_default_body():
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
-            'Log Record: \na message\n',
+            {
+                'text/plain': 'Log Record: \na message\n'
+            },
             id="Custom message (record)",
         ),
         pytest.param(
@@ -90,7 +98,9 @@ def test_default_body():
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
-            'a message\n',
+            {
+                'text/plain': 'a message\n'
+            },
             id="Sender with fomatted subject",
         ),
         pytest.param(
@@ -106,9 +116,15 @@ def test_default_body():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "A log record",
-                'Content-Type': 'multipart/alternative',
+                'Content-Type': 'multipart/mixed',
             },
-            ["<h1>INFO</h1><p>_test: INFO: a message</p>\n"],
+            {
+                'multipart/mixed': {
+                    'multipart/alternative': {
+                        'text/html': "<h1>INFO</h1><p>_test: INFO: a message</p>\n"
+                    }
+                }
+            },
             id="Custom message (HTML, msg)",
         ),
         pytest.param(
@@ -124,9 +140,15 @@ def test_default_body():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "A log record",
-                'Content-Type': 'multipart/alternative',
+                'Content-Type': 'multipart/mixed',
             },
-            ["<h1>INFO</h1><p>a message</p>\n"],
+            {
+                'multipart/mixed': {
+                    'multipart/alternative': {
+                        'text/html': "<h1>INFO</h1><p>a message</p>\n"
+                    }
+                }
+            },
             id="Custom message (HTML, record)",
         ),
     ]
@@ -150,9 +172,5 @@ def test_emit(logger, kwargs, exp_headers, exp_payload):
 
     assert headers == exp_headers
 
-    if isinstance(payload, str):
-        assert payload == exp_payload
-    else:
-        # HTML (and text) of payloads
-        payloads = [pl.get_payload() for pl in payload]
-        assert payloads == exp_payload
+    structure = payloads_to_dict(msg)
+    assert structure == exp_payload

@@ -12,7 +12,10 @@ with unit tests. There are several ways to do this.
 
     Red Mail extends :stdlib:`email.message.EmailMessage <email.message.html#email.message.EmailMessage>`
     from standard library. You may use its attributes and
-    methods for testing the contents of your messages.
+    methods for testing the contents of your messages. 
+    
+    See :ref:`email_structure` for how Red Mail's
+    emails are structured.
 
 Using get_message
 -----------------

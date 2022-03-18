@@ -1,4 +1,5 @@
 
+from collections import Counter
 import re
 
 def remove_extra_lines(s:str):
@@ -8,3 +9,28 @@ def remove_extra_lines(s:str):
 def remove_email_extra(s:str):
     s = remove_extra_lines(s)
     return s.replace("=20", "").replace('"3D', "").replace("=\n", "")
+
+def remove_email_content_id(s:str, repl="<ID>"):
+    return re.sub(r"(?<================)[0-9]+(?===)", repl, s)
+
+def payloads_to_dict(*parts):
+    data = {}
+    for part in parts:
+
+        payload = part.get_payload()
+        key = part.get_content_type()
+        if key in data:
+            new_key = key
+            n = 0
+            while new_key in data:
+                n += 1
+                new_key = key + f"_{n}"
+            key = new_key
+        if isinstance(payload, str):
+            data[key] = payload
+        elif payload is None:
+            # Most likely empty message
+            pass
+        else:
+            data[key] = payloads_to_dict(*payload)
+    return data
