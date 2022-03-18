@@ -10,7 +10,7 @@ load_dotenv()
 email = EmailSender(
     host=os.environ['EMAIL_HOST'],
     port=int(os.environ['EMAIL_PORT']),
-    user_name=os.environ['EMAIL_USERNAME'],
+    username=os.environ['EMAIL_USERNAME'],
     password=os.environ['EMAIL_PASSWORD']
 )
 
@@ -111,7 +111,8 @@ def send_images():
     plt.plot([1,2,3,2,3])
 
     email.send(
-        receivers=[os.environ['EMAIL_RECEIVER']],
+        sender=f"An Alias <{os.environ['EMAIL_SENDER']}>",
+        receivers=[os.environ['EMAIL_RECEIVERS']],
         subject="Embedded images",
         html='''
             <p>Dict image (JPEG):</p>
@@ -127,8 +128,8 @@ def send_images():
                 'subtype': 'jpg',
             },
             "plot_image": fig,
-            "path_image": Path(__file__).parent / "example.png",
-            "path_image_str": str((Path(__file__).parent / "example.png").absolute()),
+            "path_image": Path(__file__).parent.parent / "docs/imgs/email_emb_img.png",
+            "path_image_str": str((Path(__file__).parent.parent / "docs/imgs/email_emb_img.png").absolute()),
         }
     )
 
@@ -218,6 +219,7 @@ if __name__ == "__main__":
         "bodies": fn_bodies,
         "full": fn_bodies + fn_attachments + fn_log,
         "logging": fn_log,
+        "images": fn_imgs,
     }[os.environ.get("EMAIL_FUNCS", "full")]
     for func in funcs:
         print("Running:", func.__name__)

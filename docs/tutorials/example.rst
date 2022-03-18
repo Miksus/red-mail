@@ -15,7 +15,7 @@ sender object as:
     email = EmailSender(
         host='localhost', 
         port=0, 
-        user_name='me@example.com', 
+        username='me@example.com', 
         password='<PASSWORD>'
     )
 

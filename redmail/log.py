@@ -4,6 +4,7 @@ from logging import Handler, LogRecord
 from logging.handlers import SMTPHandler, BufferingHandler
 from textwrap import dedent
 from typing import List, Optional
+import warnings
 
 from redmail.email.sender import EmailSender
 
@@ -22,12 +23,15 @@ class _EmailHandlerMixin:
 
     def set_email(self, 
                    host, port,
-                   user_name=None, password=None,
+                   username=None, password=None,
                    **kwargs):
         "Create a simple default sender"
+        if "user_name" in kwargs and username is None:
+            warnings.warn("Argument user_name is replaced with username. Please use username instead.", FutureWarning)
+            username = kwargs.pop("user_name")
         self.email = EmailSender(
             host=host, port=port,
-            user_name=user_name, password=password
+            username=username, password=password
         )
         
         self._set_email_kwargs(kwargs)

@@ -10,7 +10,7 @@ outlook = EmailSender(
     port=587,
 )
 
-def send_email(*args, host:str, port:int, user_name:str=None, password:str=None, **kwargs):
+def send_email(*args, host:str, port:int, username:str=None, password:str=None, **kwargs):
     """Send email
 
     Parameters
@@ -19,17 +19,19 @@ def send_email(*args, host:str, port:int, user_name:str=None, password:str=None,
         Address of the SMTP host
     port : int
         Port of the SMTP server
-    user_name : str
+    username : str
         User to send the email with
     password : str
         Password of the user to send the email with
+    username : str
+        Deprecated alias for username. Please use username instead.
     **kwargs : dict
         See redmail.EmailSender.send
     """
     sender = EmailSender(
         host=host, 
         port=port, 
-        user_name=user_name,
+        username=username,
         password=password
     )
     return sender.send(*args, **kwargs)

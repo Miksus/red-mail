@@ -21,7 +21,7 @@ and then you can use the sender:
 .. code-block:: python
 
     from redmail import outlook
-    outlook.user_name = 'example@hotmail.com'
+    outlook.username = 'example@hotmail.com'
     outlook.password = '<YOUR PASSWORD>'
 
     outlook.send(
@@ -66,7 +66,7 @@ server pre-configured:
 .. code-block:: python
 
     from redmail import gmail
-    gmail.user_name = 'example@gmail.com' # Your Gmail address
+    gmail.username = 'example@gmail.com' # Your Gmail address
     gmail.password = '<APP PASSWORD>'
 
     # And then you can send emails
@@ -88,7 +88,7 @@ account. There is a pre-configured sender which you may use:
 .. code-block:: python
 
     from redmail import outlook
-    outlook.user_name = 'example@hotmail.com'
+    outlook.username = 'example@hotmail.com'
     outlook.password = '<YOUR PASSWORD>'
 
     # And then you can send emails

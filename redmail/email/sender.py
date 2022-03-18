@@ -2,6 +2,7 @@
 from copy import copy
 from email.message import EmailMessage
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
+import warnings
 
 import jinja2
 from redmail.email.attachment import Attachments
@@ -33,7 +34,7 @@ class EmailSender:
         SMTP host address.
     port : int
         Port to the SMTP server.
-    user_name : str, optional
+    username : str, optional
         User name to authenticate on the server.
     password : str, optional
         User password to authenticate on the server.
@@ -43,6 +44,8 @@ class EmailSender:
     use_starttls : bool
         Whether to use `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ 
         when connecting to the SMTP server.
+    user_name : str, optional
+        Deprecated alias for username. Please use username instead.
     **kwargs : dict
         Additional keyword arguments are passed to initiation in ``cls_smtp``.
         These are stored as attribute ``kws_smtp``
@@ -136,11 +139,16 @@ class EmailSender:
 
     attachment_encoding = 'UTF-8'
 
-    def __init__(self, host:str, port:int, user_name:str=None, password:str=None, cls_smtp:smtplib.SMTP=smtplib.SMTP, use_starttls:bool=True, **kwargs):
+    def __init__(self, host:str, port:int, username:str=None, password:str=None, cls_smtp:smtplib.SMTP=smtplib.SMTP, use_starttls:bool=True, **kwargs):
+
+        if "user_name" in kwargs and username is None:
+            warnings.warn("Argument user_name was renamed as username. Please use username instead.", FutureWarning)
+            username = kwargs.pop("user_name")
+
         self.host = host
         self.port = port
 
-        self.user_name = user_name
+        self.username = username
         self.password = password
 
         # Defaults
@@ -241,7 +249,7 @@ class EmailSender:
                 email = EmailSender(
                     host='localhost', 
                     port=0, 
-                    user_name='me@example.com', 
+                    username='me@example.com', 
                     password='<PASSWORD>'
                 )
                 email.send(
@@ -379,7 +387,7 @@ class EmailSender:
 
     def get_sender(self, sender:Union[str, None]) -> str:
         """Get sender of the email"""
-        return sender or self.sender or self.user_name
+        return sender or self.sender or self.username
 
     def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None) -> EmailMessage:
         msg = EmailMessage()
@@ -435,7 +443,7 @@ class EmailSender:
 
     def get_server(self) -> smtplib.SMTP:
         "Connect and get the SMTP Server"
-        user = self.user_name
+        user = self.username
         password = self.password
         
         server = self.cls_smtp(self.host, self.port, **self.kws_smtp)
@@ -535,3 +543,14 @@ class EmailSender:
     def copy(self) -> 'EmailSender':
         "Shallow copy EmailSender"
         return copy(self)
+
+
+    @property
+    def user_name(self):
+        warnings.warn("Attribute user_name was renamed as username. Please use username instead.", FutureWarning)
+        return self.username
+
+    @user_name.setter
+    def user_name(self, user):
+        warnings.warn("Attribute user_name was renamed as username. Please use username instead.", FutureWarning)
+        self.username = user
