@@ -114,3 +114,29 @@ as if statements, for loops, macros etc. Here is a quick illustration:
 
 Please see `Jinja documentation <https://jinja.palletsprojects.com/>`_ 
 for more.
+
+
+Disabling Jinja
+---------------
+
+In case you wish to pass raw text/HTML and don't want to use Jinja
+to render the bodies, you may also disable it:
+
+.. code-block:: python
+
+    email.send(
+        subject='email subject',
+        receivers=['first.last@example.com'],
+        text="""
+        Hi,
+        {{ these brackets are not processed }}
+        """,
+        html="""
+        <h1>Hi!</h1>
+        <p>
+            {{ these brackets are not processed }}
+        </p>
+        """,
+        use_jinja=False
+    )
+

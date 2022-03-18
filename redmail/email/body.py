@@ -39,9 +39,10 @@ class BodyImage:
 
 class Body:
 
-    def __init__(self, template:Template=None, table_template:Template=None):
+    def __init__(self, template:Template=None, table_template:Template=None, use_jinja=True):
         self.template = template
         self.table_template = table_template
+        self.use_jinja = use_jinja
 
     def render_body(self, body:str, jinja_params:dict):
         if body is not None and self.template is not None:
@@ -79,7 +80,8 @@ class Body:
 class TextBody(Body):
 
     def attach(self, msg:EmailMessage, text:str, **kwargs):
-        text = self.render(text, **kwargs)
+        if self.use_jinja:
+            text = self.render(text, **kwargs)
         msg.set_content(text)
 
 
@@ -109,16 +111,17 @@ class HTMLBody(Body):
             jinja_params : dict
                 Extra Jinja parameters for the HTML.
         """
-        domain = parseaddr(msg["from"])[1].split("@")[-1] if self.domain is None else self.domain
-        html, cids = self.render(
-            html, 
-            images=images,
-            domain=domain,
-            **kwargs
-        )
+        if self.use_jinja:
+            domain = parseaddr(msg["from"])[1].split("@")[-1] if self.domain is None else self.domain
+            html, cids = self.render(
+                html, 
+                images=images,
+                domain=domain,
+                **kwargs
+            )
         msg.add_alternative(html, subtype='html')
 
-        if images is not None:
+        if self.use_jinja and images is not None:
             # https://stackoverflow.com/a/49098251/13696660
             html_msg = msg.get_payload()[-1]
             cid_path_mapping = {cids[name]: path for name, path in images.items()}
