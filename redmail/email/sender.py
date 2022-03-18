@@ -79,6 +79,10 @@ class EmailSender:
     html_template : str
         Name of the template to use as the HTML body of emails 
         if not specified in the send method.
+    use_jinja : bool
+        Use Jinja to render text/HTML. If Jinja is disabled,
+        images cannot be embedded to HTML, templates have no
+        effect and body_params are not used. Defaults True
     templates_html : jinja2.Environment
         Jinja environment used for loading HTML templates
         if ``html_template`` is specified in send.
@@ -158,6 +162,7 @@ class EmailSender:
         self.html = None
         self.html_template = None
         self.text_template = None
+        self.use_jinja = True
 
         self.use_starttls = use_starttls
         self.cls_smtp = cls_smtp
@@ -223,6 +228,9 @@ class EmailSender:
             DataFrames.
         body_params : dict, optional
             Extra Jinja parameters passed to the HTML and text bodies.
+        use_jinja : bool
+            Use Jinja to render text/HTML. If Jinja is disabled, body content cannot be 
+            embedded, templates have no effect and body parameters do nothing.
         attachments : dict, optional
             Attachments of the email. If dict value is string, the attachment content
             is the string itself. If path, the attachment is the content of the path's file.
@@ -296,7 +304,8 @@ class EmailSender:
                   body_images:Optional[Dict[str, Union[str, bytes, 'plt.Figure', 'Image']]]=None, 
                   body_tables:Optional[Dict[str, 'pd.DataFrame']]=None, 
                   body_params:Optional[Dict[str, Any]]=None,
-                  attachments:Optional[Dict[str, Union[str, os.PathLike, 'pd.DataFrame', bytes]]]=None) -> EmailMessage:
+                  attachments:Optional[Dict[str, Union[str, os.PathLike, 'pd.DataFrame', bytes]]]=None,
+                  use_jinja=None) -> EmailMessage:
         """Get the email message"""
 
         subject = subject or self.subject
@@ -310,6 +319,7 @@ class EmailSender:
         text = text or self.text
         html_template = html_template or self.html_template
         text_template = text_template or self.text_template
+        use_jinja = self.use_jinja if use_jinja is None else use_jinja
 
         if subject is None:
             raise ValueError("Email must have a subject")
@@ -321,11 +331,14 @@ class EmailSender:
             cc=cc,
             bcc=bcc,
         )
-
-        if text is not None or text_template is not None:
+        has_text = text is not None or text_template is not None
+        has_html = html is not None or html_template is not None
+        has_attachments = attachments is not None
+        if has_text:
             body = TextBody(
                 template=self.get_text_template(text_template),
                 table_template=self.get_text_table_template(),
+                use_jinja=use_jinja
             )
             body.attach(
                 msg, 
@@ -334,10 +347,11 @@ class EmailSender:
                 jinja_params=self.get_text_params(extra=body_params, sender=sender),
             )
 
-        if html is not None or html_template is not None:
+        if has_html:
             body = HTMLBody(
                 template=self.get_html_template(html_template),
                 table_template=self.get_html_table_template(),
+                use_jinja=use_jinja
             )
             body.attach(
                 msg,
@@ -346,6 +360,14 @@ class EmailSender:
                 tables=body_tables,
                 jinja_params=self.get_html_params(extra=body_params, sender=sender)
             )
+        
+        self._set_content_type(
+            msg,
+            has_text=has_text,
+            has_html=has_html,
+            has_attachments=has_attachments,
+        )
+
         if attachments:
             att = Attachments(attachments, encoding=self.attachment_encoding)
             att.attach(msg)
@@ -380,6 +402,19 @@ class EmailSender:
         if bcc:
             msg['bcc'] = bcc
         return msg
+
+    def _set_content_type(self, msg:EmailMessage, has_text, has_html, has_attachments):
+
+        # NOTE: we don't convert emails that have only text/plain to multiplart/mixed
+        # in order to keep the messages minimal (as often desired with simple plain text)
+
+        if has_html or has_attachments:
+            # Change the structure to multipart/mixed if possible.
+            # This seems to be the most versatile and most unproblematic top level content-type
+            # as otherwise content may be missing or it may be misrendered.
+            # See: https://stackoverflow.com/a/23853079/13696660
+            # See issues: #23, #37
+            msg.make_mixed()
 
     def send_message(self, msg:EmailMessage):
         "Send the created message"

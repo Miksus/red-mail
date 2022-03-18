@@ -114,3 +114,63 @@ as if statements, for loops, macros etc. Here is a quick illustration:
 
 Please see `Jinja documentation <https://jinja.palletsprojects.com/>`_ 
 for more.
+
+
+Pass Unescaped Content
+----------------------
+
+In case you need to include parts that should not be processed by 
+Jinja, you may pass them using `markupsafe.Markup <https://markupsafe.palletsprojects.com/en/2.1.x/escaping/#markupsafe.Markup>`_:
+
+.. code-block:: python
+
+    from markupsafe import Markup
+
+    email.send(
+        subject='email subject',
+        receivers=['first.last@example.com'],
+        html="""
+            <h1>Hi,</h1>
+            <p>{{ raw_content }}</p>
+            <p>Kind regards
+            <br>{{ sender.full_name }}</p>
+        """,
+        body_params={
+            'raw_content': Markup("<strong>this text is passed unescaped as is</strong>")
+        }
+    )
+
+.. warning::
+
+    For HTML, content only from trusted sources should be left unescaped.
+
+
+Disabling Jinja
+---------------
+
+In case you wish to pass raw text/HTML and don't want to use Jinja
+to render the bodies, you may also disable it:
+
+.. code-block:: python
+
+    email.send(
+        subject='email subject',
+        receivers=['first.last@example.com'],
+        text="""
+            Hi,
+            {{ these brackets are not processed }}
+        """,
+        html="""
+            <h1>Hi!</h1>
+            <p>
+                {{ these brackets are not processed }}
+            </p>
+        """,
+        use_jinja=False
+    )
+
+You may also disable Jinja for all sent emails without passing the argument:
+
+.. code-block:: python
+
+    email.use_jinja = False

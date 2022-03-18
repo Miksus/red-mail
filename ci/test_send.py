@@ -17,18 +17,18 @@ email = EmailSender(
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-def send():
+def send_empty():
     msg = email.send(
         sender=os.environ['EMAIL_SENDER'],
         receivers=os.environ['EMAIL_RECEIVERS'].split(","),
-        subject="An example",
+        subject="Empty email",
     )
 
 def send_text():
     msg = email.send(
         sender=os.environ['EMAIL_SENDER'],
         receivers=os.environ['EMAIL_RECEIVERS'].split(","),
-        subject="An example",
+        subject="Email with text",
         text="Hi, this is an example email.",
     )
 
@@ -36,17 +36,17 @@ def send_html():
     msg = email.send(
         sender=os.environ['EMAIL_SENDER'],
         receivers=os.environ['EMAIL_RECEIVERS'].split(","),
-        subject="An example",
-        html="<h1>Hi,</h1><p>this is an example email.</p>",
+        subject="Email with HTML",
+        html="<h2>This is HTML.</h2>",
     )
 
 def send_test_and_html():
     msg = email.send(
         sender=os.environ['EMAIL_SENDER'],
         receivers=os.environ['EMAIL_RECEIVERS'].split(","),
-        subject="An example",
-        text="<h1>Hi,</h1><p>this is an example email.</p>",
-        html="<h1>Hi,</h1><p>this is an example email.</p>",
+        subject="Email with text and HTML",
+        text="This is text (with HTML).",
+        html="<h2>This is HTML (with text).</h2>",
     )
 
 
@@ -54,7 +54,7 @@ def send_attachments():
     msg = email.send(
         sender=os.environ['EMAIL_SENDER'],
         receivers=os.environ['EMAIL_RECEIVERS'].split(","),
-        subject="An attachment",
+        subject="Email with attachment",
         attachments={"a_file.html": (Path(__file__).parent / "file.html")}
     )
 
@@ -62,8 +62,8 @@ def send_attachments_with_text():
     msg = email.send(
         sender=os.environ['EMAIL_SENDER'],
         receivers=os.environ['EMAIL_RECEIVERS'].split(","),
-        subject="An attachment with text body",
-        text="Hi, this contains an attachment.",
+        subject="Email with attachment and text",
+        text="This contains an attachment.",
         attachments={"a_file.html": (Path(__file__).parent / "file.html")}
     )
 
@@ -71,18 +71,33 @@ def send_attachments_with_html():
     msg = email.send(
         sender=os.environ['EMAIL_SENDER'],
         receivers=os.environ['EMAIL_RECEIVERS'].split(","),
-        subject="An attachment with HTML body",
-        html="<h1>Hi, this contains an attachment.</h1>",
+        subject="Email with attachment and HTML",
+        html="<h1>This contains an attachment.</h1>",
         attachments={"a_file.html": (Path(__file__).parent / "file.html")}
     )
 
-def send_attachments_with_text_and_html():
+def send_attachments_with_html_and_image():
     msg = email.send(
         sender=os.environ['EMAIL_SENDER'],
         receivers=os.environ['EMAIL_RECEIVERS'].split(","),
-        subject="An attachment with text and HTML body",
-        text="Hi, this contains an attachment",
-        html="<h1>Hi, this contains an attachment.</h1>",
+        subject="Email with attachment, HTML and inline image",
+        html="<h1>This contains an attachment and image.</h1>{{ path_image }}",
+        body_images={
+            "path_image": Path(__file__).parent.parent / "docs/imgs/email_emb_img.png",
+        },
+        attachments={"a_file.html": (Path(__file__).parent / "file.html")}
+    )
+
+def send_full_features():
+    msg = email.send(
+        sender=os.environ['EMAIL_SENDER'],
+        receivers=os.environ['EMAIL_RECEIVERS'].split(","),
+        subject="Email with full features",
+        text="Hi, this contains an attachment and image.",
+        html="<h1>This contains text, HTML, an attachment and inline image.</h1>{{ path_image }}",
+        body_images={
+            "path_image": Path(__file__).parent.parent / "docs/imgs/email_emb_img.png",
+        },
         attachments={"a_file.html": (Path(__file__).parent / "file.html")}
     )
 
@@ -195,17 +210,18 @@ def log_simple():
 
 
 if __name__ == "__main__":
-    fn_bodies = [send, send_text, send_html, send_test_and_html]
-    fn_imgs = [send_images]
-    fn_attachments = [send_attachments, send_attachments_with_text, send_attachments_with_html, send_attachments_with_text_and_html]
+    fn_bodies = [send_empty, send_text, send_html, send_test_and_html, send_full_features]
+    fn_attachments = [send_attachments, send_attachments_with_text, send_attachments_with_html]
     fn_log = [log_simple, log_multi]
 
     funcs = {
         "minimal": fn_bodies[0],
-        "full": fn_bodies + fn_attachments + fn_log + fn_imgs,
+        "bodies": fn_bodies,
+        "full": fn_bodies + fn_attachments + fn_log,
         "logging": fn_log,
         "images": fn_imgs,
     }[os.environ.get("EMAIL_FUNCS", "full")]
     for func in funcs:
+        print("Running:", func.__name__)
         time.sleep(1)
         func()

@@ -4,6 +4,8 @@ from redmail import EmailSender
 from redmail import MultiEmailHandler
 import logging
 
+from convert import payloads_to_dict
+
 def _create_dummy_send(messages:list):
     def _dummy_send(msg):
         messages.append(msg)
@@ -40,7 +42,9 @@ def test_sender_with_login():
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
-            'Log Recods:\na message\n',
+            {
+                'text/plain': 'Log Recods:\na message\n'
+            },
             id="Minimal",
         ),
         pytest.param(
@@ -60,7 +64,9 @@ def test_sender_with_login():
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
-            'The records: \nLog: _test - INFO - a message\n',
+            {
+                'text/plain': 'The records: \nLog: _test - INFO - a message\n'
+            },
             id="Custom message (msgs)",
         ),
         pytest.param(
@@ -80,7 +86,9 @@ def test_sender_with_login():
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
-            'The records: \nLog: INFO - a message\n',
+            {
+                'text/plain': 'The records: \nLog: INFO - a message\n',
+            },
             id="Custom message (records)",
         ),
         pytest.param(
@@ -98,7 +106,9 @@ def test_sender_with_login():
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
             },
-            'Log Recods:\na message\n',
+            {
+                'text/plain': 'Log Recods:\na message\n',
+            },
             id="Sender with fomatted subject",
         ),
         pytest.param(
@@ -114,9 +124,15 @@ def test_sender_with_login():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "A log record",
-                'Content-Type': 'multipart/alternative',
+                'Content-Type': 'multipart/mixed',
             },
-            ["<h1>The records:</h1><p>Log: _test - INFO - a message</p>\n"],
+            {
+                'multipart/mixed': {
+                    'multipart/alternative': {
+                        'text/html': "<h1>The records:</h1><p>Log: _test - INFO - a message</p>\n",
+                    }
+                }
+            },
             id="Custom message (HTML, msgs)",
         ),
         pytest.param(
@@ -132,9 +148,15 @@ def test_sender_with_login():
                 "from": "me@example.com",
                 "to": "he@example.com, she@example.com",
                 "subject": "A log record",
-                'Content-Type': 'multipart/alternative',
+                'Content-Type': 'multipart/mixed',
             },
-            ["<h1>The records:</h1><p>Log: INFO - a message</p>\n"],
+            {
+                'multipart/mixed': {
+                    'multipart/alternative': {
+                        'text/html': "<h1>The records:</h1><p>Log: INFO - a message</p>\n",
+                    }
+                }
+            },
             id="Custom message (HTML, records)",
         ),
     ]
@@ -160,12 +182,8 @@ def test_emit(logger, kwargs, exp_headers, exp_payload):
 
     assert headers == exp_headers
 
-    if isinstance(payload, str):
-        assert payload == exp_payload
-    else:
-        # HTML (and text) of payloads
-        payloads = [pl.get_payload() for pl in payload]
-        assert payloads == exp_payload
+    structure = payloads_to_dict(msg)
+    assert structure == exp_payload
 
 
 def test_flush_multiple(logger):
@@ -189,7 +207,7 @@ def test_flush_multiple(logger):
     assert len(msgs) == 1
     msg = msgs[0]
     headers = dict(msg.items())
-    payload = msg.get_payload()
+    text = msg.get_payload()
 
     assert headers == {
         "from": "None",
@@ -200,7 +218,7 @@ def test_flush_multiple(logger):
         'MIME-Version': '1.0',
     }
 
-    assert payload == "Records: \nINFO - an info\nDEBUG - a debug\n"
+    assert text == "Records: \nINFO - an info\nDEBUG - a debug\n"
 
 def test_flush_none():
     msgs = []
@@ -221,7 +239,7 @@ def test_flush_none():
     assert len(msgs) == 1
     msg = msgs[0]
     headers = dict(msg.items())
-    payload = msg.get_payload()
+    text = msg.get_payload()
 
     assert headers == {
         "from": "None",
@@ -232,4 +250,4 @@ def test_flush_none():
         'MIME-Version': '1.0',
     }
 
-    assert payload == "Records: \n"
+    assert text == "Records: \n"
