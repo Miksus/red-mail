@@ -168,9 +168,7 @@ def test_with_jinja_params(html, text, extra, expected_html, expected_text):
 ])
 def test_without_jinja(use_jinja_obj, use_jinja):
     html = "<h3>Hi,</h3> <p>This is {{ user }} from { node }. I'm really {{ sender.full_name }}.</p>"
-    expected_html = "<h3>Hi,</h3> <p>This is {{ user }} from { node }. I'm really {{ sender.full_name }}.</p>\n"
     text = "Hi, \nThis is {{ user }} from { node }. I'm really {{ sender.full_name }}."
-    expected_text = "Hi, \nThis is {{ user }} from { node }. I'm really {{ sender.full_name }}.\n"
 
     sender = EmailSender(host=None, port=1234)
     sender.use_jinja = use_jinja_obj
@@ -183,13 +181,37 @@ def test_without_jinja(use_jinja_obj, use_jinja):
         use_jinja=use_jinja,
     )
     
-    assert "multipart/alternative" == msg.get_content_type()
+    assert remove_email_content_id(str(msg)) == dedent("""
+    from: me@example.com
+    subject: Some news
+    to: you@example.com
+    MIME-Version: 1.0
+    Content-Type: multipart/mixed; boundary="===============<ID>=="
 
-    text = remove_email_extra(msg.get_payload()[0].get_payload())
-    html = remove_email_extra(msg.get_payload()[1].get_payload())
+    --===============<ID>==
+    Content-Type: multipart/alternative;
+     boundary="===============<ID>=="
 
-    assert expected_html == html
-    assert expected_text == text
+    --===============<ID>==
+    Content-Type: text/plain; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
+
+    Hi, 
+    This is {{ user }} from { node }. I'm really {{ sender.full_name }}.
+
+    --===============<ID>==
+    Content-Type: text/html; charset="utf-8"
+    Content-Transfer-Encoding: quoted-printable
+    MIME-Version: 1.0
+
+    <h3>Hi,</h3> <p>This is {{ user }} from { node }. I'm really {{ sender.full_n=
+    ame }}.</p>
+
+    --===============<ID>==--
+
+    --===============<ID>==--
+    """)[1:]
+
 
 def test_with_error():
     sender = EmailSender(host=None, port=1234)
