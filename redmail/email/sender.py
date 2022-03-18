@@ -394,11 +394,7 @@ class EmailSender:
             # as otherwise content may be missing or it may be misrendered.
             # See: https://stackoverflow.com/a/23853079/13696660
             # See issues: #23, #37
-            try:
-                msg.make_mixed()
-            except ValueError:
-                # Cannot convert to mixed
-                pass
+            msg.make_mixed()
 
     def send_message(self, msg:EmailMessage):
         "Send the created message"
