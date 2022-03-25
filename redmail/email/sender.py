@@ -338,6 +338,7 @@ class EmailSender:
             body = TextBody(
                 template=self.get_text_template(text_template),
                 table_template=self.get_text_table_template(),
+                jinja_env=self.templates_text,
                 use_jinja=use_jinja
             )
             body.attach(
@@ -351,6 +352,7 @@ class EmailSender:
             body = HTMLBody(
                 template=self.get_html_template(html_template),
                 table_template=self.get_html_table_template(),
+                jinja_env=self.templates_html,
                 use_jinja=use_jinja
             )
             body.attach(

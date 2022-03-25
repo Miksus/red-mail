@@ -1,8 +1,10 @@
+from textwrap import dedent
+from jinja2 import Environment
 from redmail import EmailSender
 
 import pytest
 
-from convert import remove_email_extra
+from convert import remove_email_extra, remove_email_content_id
 from getpass import getpass, getuser
 from platform import node
 
@@ -48,6 +50,51 @@ def test_template(tmpdir):
 
     assert expected_html == html
     assert expected_text == text
+
+def test_jinja_env(tmpdir):
+
+    sender = EmailSender(host=None, port=1234)
+    env = Environment()
+    env.globals["my_param"] = "<a value>"
+    sender.templates_text = env
+    sender.templates_html = env
+    msg = sender.get_message(
+        sender="me@example.com",
+        receivers=["you@example.com"],
+        subject="Some news",
+        text="A param: {{ my_param }}",
+        html="<h1>A param: {{ my_param }}</h1>"
+    )
+    content = str(msg)
+    content = remove_email_content_id(content)
+    assert content == dedent("""
+    from: me@example.com
+    subject: Some news
+    to: you@example.com
+    MIME-Version: 1.0
+    Content-Type: multipart/mixed; boundary="===============<ID>=="
+
+    --===============<ID>==
+    Content-Type: multipart/alternative;
+     boundary="===============<ID>=="
+
+    --===============<ID>==
+    Content-Type: text/plain; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
+
+    A param: <a value>
+
+    --===============<ID>==
+    Content-Type: text/html; charset="utf-8"
+    Content-Transfer-Encoding: 7bit
+    MIME-Version: 1.0
+
+    <h1>A param: <a value></h1>
+
+    --===============<ID>==--
+
+    --===============<ID>==--
+    """)[1:]
 
 def test_body_and_template_error(tmpdir):
 
