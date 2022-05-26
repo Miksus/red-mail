@@ -10,7 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import sphinx_rtd_theme
+import sphinx_book_theme
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
@@ -33,7 +33,7 @@ extensions = [
     'sphinx.ext.autodoc', 
     'sphinx.ext.coverage', 
     'sphinx.ext.napoleon',
-    'sphinx_rtd_theme',
+    'sphinx_book_theme',
     'sphinx.ext.extlinks',
 ]
 rst_prolog = """
@@ -52,7 +52,7 @@ autodoc_typehints = 'none'
 autodoc_member_order = 'bysource'
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+#templates_path = ['_templates']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -61,9 +61,16 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_logo = "logo.png"
 html_theme_options = {
-    'logo_only': True,
-    'display_version': False,
+    "repository_url": "https://github.com/Miksus/red-mail",
+    "use_repository_button": True,
+    "repository_branch": "master",
+    "use_issues_button": True,
+    "use_download_button": True,
+    "use_fullscreen_button": True,
+    #"use_edit_page_button": True,
+    "logo_only": True,
 }
+#html_sidebars = {}
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -71,7 +78,7 @@ html_theme_options = {
 # a list of builtin themes.
 #
 html_title = "Advanced Email Sender for Python"
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_book_theme'
 html_favicon = 'favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
