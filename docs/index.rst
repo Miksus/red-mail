@@ -123,7 +123,7 @@ Some more practical examples:
    tutorials/index
    extensions/index
    references
-   faqs
+   faq
    versions
 
 
