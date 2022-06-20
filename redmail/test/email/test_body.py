@@ -9,6 +9,10 @@ from platform import node
 
 from convert import remove_email_extra, remove_email_content_id
 
+import platform
+PYTHON_VERSION = platform.sys.version_info
+IS_PY36 = PYTHON_VERSION.major == 3 and PYTHON_VERSION.minor == 6
+
 def test_text_message():
 
     sender = EmailSender(host=None, port=1234)
@@ -180,8 +184,8 @@ def test_without_jinja(use_jinja_obj, use_jinja):
         html=html,
         use_jinja=use_jinja,
     )
-    
-    assert remove_email_content_id(str(msg)) == dedent("""
+    encoding = '7bit' if IS_PY36 else 'quoted-printable' 
+    expected = dedent("""
     from: me@example.com
     subject: Some news
     to: you@example.com
@@ -201,7 +205,7 @@ def test_without_jinja(use_jinja_obj, use_jinja):
 
     --===============<ID>==
     Content-Type: text/html; charset="utf-8"
-    Content-Transfer-Encoding: quoted-printable
+    Content-Transfer-Encoding: """ + encoding + """
     MIME-Version: 1.0
 
     <h3>Hi,</h3> <p>This is {{ user }} from { node }. I'm really {{ sender.full_n=
@@ -211,6 +215,9 @@ def test_without_jinja(use_jinja_obj, use_jinja):
 
     --===============<ID>==--
     """)[1:]
+    if IS_PY36:
+        expected = expected.replace('sender.full_n=\n', 'sender.full_n')
+    assert remove_email_content_id(str(msg)) == expected
 
 
 def test_with_error():
@@ -232,6 +239,9 @@ def test_with_error():
     text = remove_email_extra(text_part.get_payload())
     html = remove_email_extra(html_part.get_payload())
 
+    if IS_PY36:
+        text = text.replace('Error occurred \n', 'Error occurred\n')
+        html = html.replace('<span style="color:', '<span style=3D"color:')
     assert text.startswith('Error occurred\nTraceback (most recent call last):\n  File "')
     assert text.endswith(', in test_with_error\n    raise RuntimeError("Deliberate failure")\nRuntimeError: Deliberate failure\n')
 
