@@ -39,9 +39,10 @@ class BodyImage:
 
 class Body:
 
-    def __init__(self, template:Template=None, table_template:Template=None, use_jinja=True):
+    def __init__(self, jinja_env:Environment, template:Template=None, table_template:Template=None, use_jinja=True):
         self.template = template
         self.table_template = table_template
+        self.jinja_env = jinja_env
         self.use_jinja = use_jinja
 
     def render_body(self, body:str, jinja_params:dict):
@@ -49,7 +50,7 @@ class Body:
             raise ValueError("Either body or template must be specified but not both.")
             
         if body is not None:
-            template = Environment().from_string(body)
+            template = self.jinja_env.from_string(body)
         else:
             template = self.template
         return template.render(**jinja_params)
