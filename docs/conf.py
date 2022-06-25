@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx_book_theme',
     'sphinx.ext.extlinks',
+    'sphinx_copybutton',
 ]
 rst_prolog = """
 .. include:: <s5defs.txt>
