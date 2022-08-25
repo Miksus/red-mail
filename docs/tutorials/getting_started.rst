@@ -39,6 +39,10 @@ You can configure your sender by:
        port='<SMTP PORT>',
    )
 
+.. note::
+
+    The correct SMTP port is typically 587.
+
 There are guides to set up the following email providers:
 
 - :ref:`config-gmail`
