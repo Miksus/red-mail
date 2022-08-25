@@ -1,4 +1,8 @@
 
+.. meta::
+   :description: Send templated email in Python using Jinja. 
+   :keywords: send, email, Python, jinja, environment
+
 .. _templating:
 
 Using Templates
