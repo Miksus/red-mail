@@ -5,11 +5,15 @@
 
 .. _templating:
 
-Using Templates
-===============
+Setting Jinja Environments
+==========================
 
-As templating relies on Jinja, you can set the 
-template path to a custom folder and 
+There are two ways of setting a custom Jinja env
+to Red Mail: from paths or directly setting the 
+envs.
+
+To set the paths and let Red Mail to create the 
+environments:
 
 .. code-block:: python
 
@@ -19,6 +23,18 @@ template path to a custom folder and
         html="path/html/templates",
         text="path/text/templates",
     )
+
+To set the Jinja environments:
+
+.. code-block:: python
+
+    import jinja2
+
+    # Create an env
+    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader("path/to/templates"))
+
+    email_sender.templates_html = jinja_env
+    email_sender.templates_text = jinja_env
 
 .. note::
 
@@ -33,6 +49,9 @@ template path to a custom folder and
             html_table="path/html/tables",
             text_table="path/text/tables",
         )
+    
+    The environments are in the attributes ``templates_html_table`` 
+    and ``templates_text_table`` respectively.
 
 Next we will make a simple template, let's call it 
 ``event_card.html``:
