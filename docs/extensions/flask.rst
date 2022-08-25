@@ -1,3 +1,7 @@
+.. meta::
+   :description: Send email in Flask. 
+   :keywords: send, email, Python, Flask
+
 .. _ext-flask:
 
 Flask Extension

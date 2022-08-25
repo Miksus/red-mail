@@ -1,20 +1,29 @@
 
-.. _embedded:
-
-Embedding Content
-=================
-
-Red Mail allows to embed images and tables to the
-HTML bodies of emails. By default, tables often 
-look outdated and ugly in emails but Red Mail
-has pre-made table templates that render nicer
-looking tables from Pandas dataframes.
-
+.. meta::
+   :description: Send email with image in the body in Python. 
+   :keywords: send, email, Python, image, content
 
 .. _embedding-images:
 
-Embedded Images
----------------
+Sending Email with Image in Body
+================================
+
+With Red Mail you can also embed an image directly to 
+the HTML body of an email to make them more visual.
+
+Red Mail supports various types for the image:
+
+- :ref:`from path <embedding-images-path>`
+- :ref:`from raw bytes <embedding-images-bytes>`
+- :ref:`from dict <embedding-images-dict>`
+- :ref:`from Matplotlib figure <embedding-images-plt>`
+- :ref:`from Pillow image <embedding-images-pil>`
+
+
+.. _embedding-images-path:
+
+Embedding Image from path
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can also embed images straight to the HTML body 
 of the email:
@@ -64,6 +73,7 @@ In addition to paths as strings, the following are supported:
 - :ref:`PIL.Image (Pillow image) <embedding-images-pil>`
 - :ref:`dict (content as bytes and specify the type) <embedding-images-dict>`
 
+
 .. _embedding-images-bytes:
 
 Embedding Image from bytes
@@ -95,7 +105,7 @@ You may also pass the image as bytes:
 
     The bytes are expected to represent a PNG image. In case your image is in 
     other format (ie. JPEG), you should specify the image using the 
-    :ref:`dict format <embedding-images-dict>`
+    :ref:`dict format <embedding-images-dict>`.
 
 .. _embedding-images-dict:
 
@@ -127,7 +137,7 @@ You may also include images using the dict format:
         }
     )
 
-This enables more control than including bytes as you may specify the ``subtype`` of the image. 
+Compared to embedding bytes, using the dict format you can also specify the ``subtype`` of the image. 
 
 .. _embedding-images-plt:
 
@@ -189,80 +199,3 @@ You may also include Pillow image:
             'my_image': img, 
         }
     )
-
-.. _embedding-tables:
-
-Embedded Tables
----------------
-
-You may include tables simply by turning them 
-to raw HTML for example using ``df.to_html()``
-in Pandas. However, this often lead to very
-ugly tables as SMTP is poor at handling CSS
-or styling in general. Here is a comparison
-of using ``df.to_html()`` directly vs embedding
-via Red Mail:
-
-|pic1| vs |pic2|
-
-.. |pic1| image:: /imgs/table_without_style.png
-   :height: 150px
-   :align: top
-   
-
-.. |pic2| image:: /imgs/table_with_style.png
-   :height: 150px
-   :align: top
-
-
-To embed tables, you can simply pass them 
-to the send function as Pandas dataframes:
-
-.. code-block:: python
-
-    # Creating a simple dataframe
-    import pandas as pd
-    df = pd.DataFrame({
-        'nums': [1,2,3],
-        'strings': ['yes', 'no', 'yes'],
-    })
-
-    # Let Red Mail to render the dataframe for you:
-    email.send(
-        subject='A prettified table',
-        receivers=['first.last@example.com'],
-        html="<h1>This is a table:</h1> {{ mytable }}",
-        body_tables={
-            'mytable': df, 
-        }
-    )
-
-
-Red Mail uses Jinja and inline HTML styling to make the
-tables look nice. Email servers typically don't handle
-well CSS.
-
-.. warning::
-
-    Red Email Pandas templating should work on various 
-    dataframe strucutres (empty, multi-indexed etc.) but
-    sometimes the rendering may be off if the dataframe
-    is especially complex in structural sense. There are
-    plans to make it even more better.
-
-You may also override the template paths (see 
-:ref:`templating`) to create custom templates
-if you wish to make your own table prettifying:
-
-.. code-block:: python
-
-    email.set_template_paths(
-        html_table="path/to/templates", 
-        text_template="path/to/templates"
-    )
-    email.default_html_theme = "my_table_template.html"
-    email.default_text_theme = "my_table_template.txt"
-
-The templates get parameter ``df`` which is the dataframe
-to be prettified.
-

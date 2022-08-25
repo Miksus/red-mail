@@ -1,3 +1,7 @@
+.. meta::
+   :description: Send email in Python.
+   :keywords: send, email, Python
+
 .. _sending-emails:
 
 Sending Emails

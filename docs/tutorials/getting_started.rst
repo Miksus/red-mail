@@ -1,3 +1,7 @@
+.. meta::
+   :description: Send email in Python. 
+   :keywords: send, email, Python
+
 .. _getting-started:
 
 Getting started
@@ -34,6 +38,10 @@ You can configure your sender by:
        host='<SMTP HOST>',
        port='<SMTP PORT>',
    )
+
+.. note::
+
+    The correct SMTP port is typically 587.
 
 There are guides to set up the following email providers:
 

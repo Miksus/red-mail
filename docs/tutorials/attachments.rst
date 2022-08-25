@@ -1,4 +1,8 @@
 
+.. meta::
+   :description: Send email with attachment in Python.
+   :keywords: send, email, Python, attachment
+
 .. _attachments:
 
 Sending Email with Attachments

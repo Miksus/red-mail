@@ -24,7 +24,7 @@ And see - :ref:`cookbook <cookbook>` for example use cases.
    getting_started
    sending
    attachments
-   body_content
+   embed/index
    jinja_support
    templating
    cookbook
