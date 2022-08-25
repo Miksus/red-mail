@@ -1,3 +1,7 @@
+.. meta::
+   :description: Email logger for Python. 
+   :keywords: send, email, Python, logging
+
 .. _ext-logging:
 
 Email Logging

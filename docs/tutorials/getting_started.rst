@@ -1,3 +1,7 @@
+.. meta::
+   :description: Send email in Python. 
+   :keywords: send, email, Python
+
 .. _getting-started:
 
 Getting started

@@ -1,3 +1,6 @@
+.. meta::
+   :description: Send email in Python using Jinja. 
+   :keywords: send, email, Python, jinja
 
 .. _jinja-support:
 
