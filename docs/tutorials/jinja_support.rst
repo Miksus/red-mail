@@ -4,8 +4,8 @@
 
 .. _jinja-support:
 
-Jinja Support
-=============
+Jinja Templating
+================
 
 Red Mail uses Jinja for templating the HTML and text 
 bodies. This enables a lot of features out-of-the box.

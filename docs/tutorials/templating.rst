@@ -5,8 +5,8 @@
 
 .. _templating:
 
-Setting Jinja Environments
-==========================
+Jinja Environments
+==================
 
 There are two ways of setting a custom Jinja env
 to Red Mail: from paths or directly setting the 
