@@ -11,7 +11,7 @@ setup(
     author="Mikael Koli",
     author_email="koli.mikael@gmail.com",
     url="https://github.com/Miksus/red-mail.git",
-    package_data={package: ["py.typed", "*.pyi", "**/*.pyi"] for package in find_packages()}
+    package_data={package: ["py.typed", "*.pyi", "**/*.pyi"] for package in find_packages()},
     packages=find_packages(),
     zip_safe=False,
     description="Email sending library",
