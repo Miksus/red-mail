@@ -8,8 +8,19 @@
 Sending Email with Image in Body
 ================================
 
-This section goes through how to send an email with
+With Red Mail you can also embed an image directly to 
+the HTML body of an email to make them more visual.
 
+Red Mail supports various types for the image:
+
+- :ref:`from path <embedding-images-path>`
+- :ref:`from raw bytes <embedding-images-bytes>`
+- :ref:`from dict <embedding-images-dict>`
+- :ref:`from Matplotlib figure <embedding-images-plt>`
+- :ref:`from Pillow image <embedding-images-pil>`
+
+
+.. _embedding-images-path:
 
 Embedding Image from path
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -94,7 +105,7 @@ You may also pass the image as bytes:
 
     The bytes are expected to represent a PNG image. In case your image is in 
     other format (ie. JPEG), you should specify the image using the 
-    :ref:`dict format <embedding-images-dict>`
+    :ref:`dict format <embedding-images-dict>`.
 
 .. _embedding-images-dict:
 
@@ -126,7 +137,7 @@ You may also include images using the dict format:
         }
     )
 
-This enables more control than including bytes as you may specify the ``subtype`` of the image. 
+Compared to embedding bytes, using the dict format you can also specify the ``subtype`` of the image. 
 
 .. _embedding-images-plt:
 
