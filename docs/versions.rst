@@ -4,6 +4,11 @@
 Version history
 ===============
 
+- ``0.4.1``
+
+    - Add: Mypy stubs (thanks Waghabond!)
+    - Docs: Improved embedded content page.
+
 - ``0.4.0``
 
     - Rename: Changed ``user_name`` to ``username`` in ``redmail.EmailSender``. ``user_name`` still works but issues a warning.
