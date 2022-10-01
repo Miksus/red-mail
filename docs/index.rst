@@ -3,14 +3,14 @@
    :description: Red Mail is an advanced email sender for Python. It is open source and well tested.
    :keywords: send, email, Python
 
-:red:`Red` Mail: Send Emails in Python
-=============================================
+.. raw:: html
+   :file: header.html
 
-.. image:: https://badgen.net/pypi/v/redmail
-   :target: https://pypi.org/project/redmail/
+- `Documentation <https://redbox.readthedocs.io/>`_
+- `Source code (Github) <https://github.com/Miksus/redbox>`_
+- `Releases (PyPI) <https://pypi.org/project/redbox/>`_
 
-.. image:: https://badgen.net/pypi/python/redmail
-   :target: https://pypi.org/project/redmail/
+This is a sister library for `Red Box, advanced email reader <https://red-box.readthedocs.io/>`_.
 
 Red Mail is a Python library for sending emails. 
 It makes sending emails very trivial regardless of whether 
@@ -27,9 +27,10 @@ Why Red Mail?
 -------------
 
 Sending emails is a pretty straight forward task.
-However, the standard SMTP libraries don't make 
-it particularly easy and sending emails **SHOULD NOT** 
-look like this:
+However, the SMTP and email libraries from the standard library 
+don't make it particularly easy. 
+
+Sending emails **SHOULD NOT** look like this:
 
 .. code-block:: python
 
