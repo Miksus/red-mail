@@ -13,6 +13,12 @@ Install the package from `Pypi <https://pypi.org/project/redmail/>`_:
 
     pip install redmail
 
+Or install the package using Conda:
+
+.. code-block:: console
+
+    conda install -c conda-forge redmail
+
 .. _configure:
 
 Configuring Email

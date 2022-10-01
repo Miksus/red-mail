@@ -12,8 +12,9 @@
 
 
 ## What is it?
-Red Mail is an advanced email sender library. It makes sending emails trivial and 
-has a lot of advanced features such as:
+Red Mail is an advanced email sender library. 
+It is a sister library for [Red Box, advanced email reader](https://github.com/Miksus/red-box).
+It makes sending emails trivial and has a lot of advanced features such as:
 
 - [Attachments](https://red-mail.readthedocs.io/en/latest/tutorials/attachments.html)
 - [Templating (with Jinja)](https://red-mail.readthedocs.io/en/latest/tutorials/jinja_support.html)

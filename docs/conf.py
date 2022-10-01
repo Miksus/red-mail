@@ -10,7 +10,6 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import sphinx_book_theme
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
@@ -33,7 +32,6 @@ extensions = [
     'sphinx.ext.autodoc', 
     'sphinx.ext.coverage', 
     'sphinx.ext.napoleon',
-    'sphinx_book_theme',
     'sphinx.ext.extlinks',
     'sphinx_copybutton',
 ]
@@ -79,7 +77,7 @@ html_theme_options = {
 # a list of builtin themes.
 #
 html_title = "Red Mail"
-html_theme = 'sphinx_book_theme'
+html_theme = 'sphinx_material'
 html_favicon = 'favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -91,6 +89,43 @@ html_css_files = [
     'css/types.css',
     'css/colors.css',
 ]
+
+html_sidebars = {
+    "**": [
+        "logo-text.html",
+        "globaltoc.html",
+        "localtoc.html",
+        "searchbox.html"
+    ]
+}
+
+html_theme_options = {
+    'nav_title': 'Red Box',
+
+    'color_primary': 'red',
+    'color_accent': 'grey',
+
+    'repo_url': 'https://github.com/Miksus/red-mail/',
+    'repo_name': 'Red Mail',
+    "repo_type": "github",
+
+    # Visible levels of the global TOC; -1 means unlimited
+    'globaltoc_depth': 3,
+    # If False, expand all TOC entries
+    'globaltoc_collapse': True,
+    # If True, show hidden TOC entries
+    'globaltoc_includehidden': False,
+
+    "html_minify": False,
+    "html_prettify": False,
+    "css_minify": True,
+
+    "heroes": {
+        "index": "Advanced email sending library.",
+    },
+    "nav_links": [
+    ],
+}
 
 # Cross references
 extlinks = {

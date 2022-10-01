@@ -15,7 +15,7 @@ See:
 - :ref:`This to send using HTML templates (Jinja) <templating>`
 - :ref:`This to configure Red Mail to various SMTP providers (ie. Gmail) <templating>`
 
-And see - :ref:`cookbook <cookbook>` for example use cases.
+And see :ref:`cookbook <cookbook>` for example use cases.
 
 .. toctree::
    :maxdepth: 1
