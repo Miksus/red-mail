@@ -100,7 +100,7 @@ html_sidebars = {
 }
 
 html_theme_options = {
-    'nav_title': 'Red Box',
+    'nav_title': 'Red Mail',
 
     'color_primary': 'red',
     'color_accent': 'grey',
