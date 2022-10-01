@@ -29,8 +29,8 @@ which is configured as this:
     from smtplib import SMTP
 
     email = EmailSender(
-        host="smtp.myhost.com",
-        port=0,
+        host="smtp.example.com",
+        port=587,
         cls_smtp=SMTP,
         use_starttls=True
     )
@@ -46,8 +46,8 @@ You may also continue using TLS:
     from redmail import EmailSender
 
     email = EmailSender(
-        host="smtp.myhost.com",
-        port=0,
+        host="smtp.example.com",
+        port=587,
         use_starttls=False
     )
 
@@ -63,8 +63,8 @@ To use SSL:
     from smtplib import SMTP_SSL
 
     email = EmailSender(
-        host="smtp.myhost.com",
-        port=0,
+        host="smtp.example.com",
+        port=587,
         cls_smtp=SMTP_SSL,
     )
 
@@ -77,8 +77,8 @@ You may also pass the SSL context:
     from ssl import SSLContext
 
     email = EmailSender(
-        host="smtp.myhost.com",
-        port=0,
+        host="smtp.example.com",
+        port=587,
         cls_smtp=SMTP_SSL,
         context=SSLContext(...)
     )
@@ -94,8 +94,8 @@ To use LMTP:
     from smtplib import LMTP
 
     email = EmailSender(
-        host="smtp.myhost.com",
-        port=0,
+        host="smtp.example.com",
+        port=587,
         cls_smtp=LMTP
     )
 
