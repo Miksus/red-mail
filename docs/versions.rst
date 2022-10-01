@@ -4,6 +4,10 @@
 Version history
 ===============
 
+- ``0.4.2``
+
+    - Docs: Changed docs style.
+
 - ``0.4.1``
 
     - Add: Mypy stubs (thanks Waghabond!)
