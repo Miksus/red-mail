@@ -13,7 +13,7 @@ is configured. At minimum, sending an email requires:
 
 .. code-block:: python
 
-    from email import EmailSender
+    from redmail import EmailSender
     email = EmailSender(host='localhost', port=0)
 
     email.send(
