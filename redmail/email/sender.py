@@ -440,8 +440,9 @@ class EmailSender:
 
     def close(self):
         "Close (quit) the connection"
-        self.connection.quit()
-        self.connection = None
+        if self.connection:
+            self.connection.quit()
+            self.connection = None
 
     def get_server(self) -> smtplib.SMTP:
         "Connect and get the SMTP Server"
