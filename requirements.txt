@@ -6,3 +6,4 @@ pandas
 matplotlib
 Pillow
 openpyxl
+premailer

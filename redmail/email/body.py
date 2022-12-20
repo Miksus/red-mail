@@ -4,6 +4,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, Union, ByteString
 from pathlib import Path
+from premailer import transform
 
 
 from redmail.utils import is_bytes
@@ -14,6 +15,8 @@ from email.utils import make_msgid, parseaddr
 from jinja2.environment import Template, Environment
 
 from markupsafe import Markup
+
+from pandas.io.formats.style import Styler
 
 # We try to import matplotlib and PIL but if fails, they will be None
 from .utils import PIL, plt, pd
@@ -63,6 +66,12 @@ class Body:
             raise ImportError("Missing package 'pandas'. Prettifying tables requires Pandas.")
         
         extra = {} if extra is None else extra
+
+        # Allow for pandas styler object, convert to inline CSS for email client rendering
+        # https://pandas.pydata.org/docs/reference/api/pandas.io.formats.style.Styler.html
+        if isinstance(tbl, Styler):
+            return transform(tbl.to_html())
+
         df = pd.DataFrame(tbl)
 
         tbl_html = self.table_template.render({"df": df, **extra})
