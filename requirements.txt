@@ -6,4 +6,4 @@ pandas
 matplotlib
 Pillow
 openpyxl
-premailer
+css_inline

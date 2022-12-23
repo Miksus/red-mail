@@ -4,7 +4,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, Union, ByteString
 from pathlib import Path
-from premailer import transform
+from css_inline import CSSInliner
 
 
 from redmail.utils import is_bytes
@@ -70,7 +70,8 @@ class Body:
         # Allow for pandas styler object, convert to inline CSS for email client rendering
         # https://pandas.pydata.org/docs/reference/api/pandas.io.formats.style.Styler.html
         if isinstance(tbl, Styler):
-            return transform(tbl.to_html())
+            inliner = CSSInliner()
+            return inliner.inline(tbl.to_html())
 
         df = pd.DataFrame(tbl)
 
