@@ -43,6 +43,7 @@ in tests:
     assert str(msg) == """from: me@example.com
     subject: Some news
     to: you@example.com
+    Message-ID: <167294165062.31860.1664530310632362057@example.com>
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0
@@ -111,6 +112,7 @@ Then to use this mock:
     assert msgs == ["""from: me@example.com
     subject: Some news
     to: you@example.com
+    Message-ID: <167294165062.31860.1664530310632362057@example.com>
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0
@@ -158,6 +160,7 @@ Then to use this class:
     assert msgs == ["""from: me@example.com
     subject: Some news
     to: you@example.com
+    Message-ID: <167294165062.31860.1664530310632362057@example.com>
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0
