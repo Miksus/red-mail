@@ -177,7 +177,11 @@ def test_emit(logger, kwargs, exp_headers, exp_payload):
 
     assert len(msgs) == 1
     msg = msgs[0]
-    headers = dict(msg.items())
+    headers = {
+        key: val
+        for key, val in msg.items()
+        if key not in ('Message-ID',)
+    }
     payload = msg.get_payload()
 
     assert headers == exp_headers
@@ -206,7 +210,11 @@ def test_flush_multiple(logger):
 
     assert len(msgs) == 1
     msg = msgs[0]
-    headers = dict(msg.items())
+    headers = {
+        key: val
+        for key, val in msg.items()
+        if key not in ('Message-ID',)
+    }
     text = msg.get_payload()
 
     assert headers == {
@@ -238,7 +246,11 @@ def test_flush_none():
 
     assert len(msgs) == 1
     msg = msgs[0]
-    headers = dict(msg.items())
+    headers = {
+        key: val
+        for key, val in msg.items()
+        if key not in ('Message-ID',)
+    }
     text = msg.get_payload()
 
     assert headers == {

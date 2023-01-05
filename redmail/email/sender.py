@@ -1,6 +1,7 @@
 
 from copy import copy
 from email.message import EmailMessage
+from email.utils import make_msgid
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 import warnings
 
@@ -391,6 +392,12 @@ class EmailSender:
         """Get sender of the email"""
         return sender or self.sender or self.username
 
+    def create_message_id(self, sender:str) -> str:
+        domain = None
+        if sender is not None and '@' in sender:
+            domain = sender.split("@")[1]
+        return make_msgid(domain=domain)
+
     def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None) -> EmailMessage:
         msg = EmailMessage()
         msg["from"] = sender
@@ -403,6 +410,11 @@ class EmailSender:
             msg['cc'] = cc
         if bcc:
             msg['bcc'] = bcc
+
+        # Message-IDs could be produced by the first mail server
+        # or the program sending the email (as we are doing now).
+        # Apparently Gmail might require it as of 2022
+        msg['Message-ID'] = self.create_message_id(sender)
         return msg
 
     def _set_content_type(self, msg:EmailMessage, has_text, has_html, has_attachments):

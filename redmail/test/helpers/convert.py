@@ -13,6 +13,9 @@ def remove_email_extra(s:str):
 def remove_email_content_id(s:str, repl="<ID>"):
     return re.sub(r"(?<================)[0-9]+(?===)", repl, s)
 
+def remove_email_message_id(s:str, repl="<message_id>"):
+    return re.sub(r"(?<=Message-ID: <).+?(?=>)", repl, s)
+
 def payloads_to_dict(*parts):
     data = {}
     for part in parts:

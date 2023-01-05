@@ -3,7 +3,7 @@ from typing import Union
 from textwrap import dedent
 from redmail import EmailSender
 
-from convert import remove_email_content_id
+from convert import remove_email_content_id, remove_email_message_id
 
 def test_distributions():
     class DistrSender(EmailSender):
@@ -40,10 +40,13 @@ def test_distributions():
         cc="group2",
         subject="Some email",
     )
-    assert remove_email_content_id(str(msg)) == dedent("""
+    msg = remove_email_message_id(str(msg))
+    msg = remove_email_content_id(str(msg))
+    assert msg == dedent("""
     from: me@example.com
     subject: Some email
     to: me@example.com, you@example.com
     cc: he@example.com, she@example.com
-
+    Message-ID: <<message_id>>
+    
     """)[1:]
