@@ -1,4 +1,5 @@
 from textwrap import dedent
+import sys
 from redmail import EmailSender
 
 import pytest
@@ -11,7 +12,7 @@ from convert import remove_email_extra, remove_email_content_id, remove_email_me
 
 import platform
 PYTHON_VERSION = platform.sys.version_info
-IS_PY36 = PYTHON_VERSION.major == 3 and PYTHON_VERSION.minor == 6
+IS_PY37 = sys.version_info < (3, 8)
 
 def test_text_message():
 
@@ -188,7 +189,7 @@ def test_without_jinja(use_jinja_obj, use_jinja):
         html=html,
         use_jinja=use_jinja,
     )
-    encoding = '7bit' if IS_PY36 else 'quoted-printable' 
+    encoding = '7bit' if IS_PY37 else 'quoted-printable' 
     expected = dedent("""
     from: me@example.com
     subject: Some news
@@ -220,7 +221,7 @@ def test_without_jinja(use_jinja_obj, use_jinja):
 
     --===============<ID>==--
     """)[1:]
-    if IS_PY36:
+    if IS_PY37:
         expected = expected.replace('sender.full_n=\n', 'sender.full_n')
     msg = remove_email_message_id(str(msg))
     assert remove_email_content_id(msg) == expected
@@ -245,7 +246,7 @@ def test_with_error():
     text = remove_email_extra(text_part.get_payload())
     html = remove_email_extra(html_part.get_payload())
 
-    if IS_PY36:
+    if IS_PY37:
         text = text.replace('Error occurred \n', 'Error occurred\n')
         html = html.replace('<span style="color:', '<span style=3D"color:')
     assert text.startswith('Error occurred\nTraceback (most recent call last):\n  File "')
