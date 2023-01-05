@@ -8,7 +8,7 @@ from convert import remove_extra_lines, payloads_to_dict
 from getpass import getpass, getuser
 from platform import node
 
-from convert import remove_email_extra, remove_email_content_id
+from convert import remove_email_extra, remove_email_content_id, remove_email_message_id
 
 import platform
 PYTHON_VERSION = platform.sys.version_info
@@ -23,10 +23,12 @@ def test_text_message():
         subject="Some news",
         text="Hi, nice to meet you.",
     )
+    msg = remove_email_message_id(str(msg))
     assert str(msg) == dedent("""
     from: me@example.com
     subject: Some news
     to: you@example.com
+    Message-ID: <<message_id>>
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0
@@ -44,11 +46,12 @@ def test_html_message():
         subject="Some news",
         html="<h3>Hi,</h3><p>Nice to meet you</p>",
     )
-
+    msg = remove_email_message_id(str(msg))
     assert remove_email_content_id(str(msg)) == dedent("""
     from: me@example.com
     subject: Some news
     to: you@example.com
+    Message-ID: <<message_id>>
     Content-Type: multipart/mixed; boundary="===============<ID>=="
 
     --===============<ID>==
@@ -78,11 +81,12 @@ def test_text_and_html_message():
         html="<h3>Hi,</h3><p>nice to meet you.</p>",
         text="Hi, nice to meet you.",
     )
-
+    msg = remove_email_message_id(str(msg))
     assert remove_email_content_id(str(msg)) == dedent("""
     from: me@example.com
     subject: Some news
     to: you@example.com
+    Message-ID: <<message_id>>
     MIME-Version: 1.0
     Content-Type: multipart/mixed; boundary="===============<ID>=="
 
@@ -190,6 +194,7 @@ def test_without_jinja(use_jinja_obj, use_jinja):
     from: me@example.com
     subject: Some news
     to: you@example.com
+    Message-ID: <<message_id>>
     MIME-Version: 1.0
     Content-Type: multipart/mixed; boundary="===============<ID>=="
 
@@ -218,7 +223,8 @@ def test_without_jinja(use_jinja_obj, use_jinja):
     """)[1:]
     if IS_PY37:
         expected = expected.replace('sender.full_n=\n', 'sender.full_n')
-    assert remove_email_content_id(str(msg)) == expected
+    msg = remove_email_message_id(str(msg))
+    assert remove_email_content_id(msg) == expected
 
 
 def test_with_error():
@@ -255,24 +261,30 @@ def test_set_defaults():
     email.receivers = ['you@gmail.com', 'they@gmail.com']
     email.subject = "Some email"
     msg = email.get_message(text="Hi, an email")
+    headers = {
+        key: val if key not in ('Message-ID',) else '<ID>'
+        for key, val in msg.items()
+    }
     assert {
         'from': 'me@gmail.com', 
         'to': 'you@gmail.com, they@gmail.com', 
         'subject': 'Some email', 
         'Content-Type': 'text/plain; charset="utf-8"', 
         'Content-Transfer-Encoding': '7bit', 
-        'MIME-Version': '1.0'
-    } == dict(msg.items())
+        'MIME-Version': '1.0',
+        'Message-ID': '<ID>',
+    } == headers
 
 def test_cc_bcc():
     email = EmailSender(host=None, port=1234)
     msg = email.get_message(sender="me@example.com", subject="Some email", cc=['you@example.com'], bcc=['he@example.com', 'she@example.com'])
-
-    assert remove_email_content_id(str(msg)) == dedent("""
+    msg = remove_email_message_id(str(msg))
+    assert remove_email_content_id(msg) == dedent("""
     from: me@example.com
     subject: Some email
     cc: you@example.com
     bcc: he@example.com, she@example.com
+    Message-ID: <<message_id>>
 
     """)[1:]
 
@@ -297,7 +309,12 @@ def test_no_table_templates():
         text="An example",
         html="<h1>An example</h1>"
     )
-    assert dict(msg.items()) == {
+    headers = {
+        key: val
+        for key, val in msg.items()
+        if key not in ('Message-ID',)
+    }
+    assert headers == {
         'from': 'me@gmail.com', 
         'subject': 'Some news', 
         'to': 'you@gmail.com', 
