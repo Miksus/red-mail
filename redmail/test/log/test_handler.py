@@ -27,9 +27,9 @@ def test_default_body():
                 "receivers": ["he@example.com", "she@example.com"],
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "A log record",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "A log record",
                 'Content-Transfer-Encoding': '7bit',
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
@@ -49,9 +49,9 @@ def test_default_body():
                 "fmt": '%(name)s: %(levelname)s: %(message)s'
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "A log record",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "A log record",
                 'Content-Transfer-Encoding': '7bit',
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
@@ -71,9 +71,9 @@ def test_default_body():
                 "fmt": '%(name)s: %(levelname)s: %(message)s'
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "A log record",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "A log record",
                 'Content-Transfer-Encoding': '7bit',
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
@@ -91,9 +91,9 @@ def test_default_body():
                 "receivers": ["he@example.com", "she@example.com"],
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "Log: _test - INFO",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "Log: _test - INFO",
                 'Content-Transfer-Encoding': '7bit',
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
@@ -113,9 +113,9 @@ def test_default_body():
                 "html": "<h1>{{ record.levelname }}</h1><p>{{ msg }}</p>"
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "A log record",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "A log record",
                 'Content-Type': 'multipart/mixed',
             },
             {
@@ -137,9 +137,9 @@ def test_default_body():
                 "html": "<h1>{{ record.levelname }}</h1><p>{{ record.message }}</p>"
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "A log record",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "A log record",
                 'Content-Type': 'multipart/mixed',
             },
             {

@@ -68,9 +68,9 @@ def test_with_image_file(get_image_obj, dummy_png):
         if key not in ('Message-ID',)
     }
     assert {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
+        'From': 'me@gmail.com', 
+        'Subject': 'Some news', 
+        'To': 'you@gmail.com', 
         #'MIME-Version': '1.0', 
         'Content-Type': 'multipart/mixed'
     } == headers
@@ -120,9 +120,9 @@ def test_with_image_dict_jpeg():
         if key not in ('Message-ID',)
     }
     assert {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
+        'From': 'me@gmail.com', 
+        'Subject': 'Some news', 
+        'To': 'you@gmail.com', 
         #'MIME-Version': '1.0', 
         'Content-Type': 'multipart/mixed'
     } == headers
@@ -162,9 +162,9 @@ def test_with_image_obj(get_image_obj):
         if key not in ('Message-ID',)
     }
     assert {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
+        'From': 'me@gmail.com', 
+        'Subject': 'Some news', 
+        'To': 'you@gmail.com', 
         #'MIME-Version': '1.0', 
         'Content-Type': 'multipart/mixed'
     } == headers

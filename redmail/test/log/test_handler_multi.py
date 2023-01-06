@@ -35,9 +35,9 @@ def test_sender_with_login():
                 "receivers": ["he@example.com", "she@example.com"],
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "A log record",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "A log record",
                 'Content-Transfer-Encoding': '7bit',
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
@@ -57,9 +57,9 @@ def test_sender_with_login():
                 "fmt": '%(name)s - %(levelname)s - %(message)s'
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "A log record",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "A log record",
                 'Content-Transfer-Encoding': '7bit',
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
@@ -79,9 +79,9 @@ def test_sender_with_login():
                 "fmt": '%(name)s - %(levelname)s - %(message)s'
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "A log record",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "A log record",
                 'Content-Transfer-Encoding': '7bit',
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
@@ -99,9 +99,9 @@ def test_sender_with_login():
                 "receivers": ["he@example.com", "she@example.com"],
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "Logs: INFO - INFO",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "Logs: INFO - INFO",
                 'Content-Transfer-Encoding': '7bit',
                 'Content-Type': 'text/plain; charset="utf-8"',
                 'MIME-Version': '1.0',
@@ -121,9 +121,9 @@ def test_sender_with_login():
                 "html": "<h1>The records:</h1><p>{% for msg in msgs %}Log: {{ msg }}{% endfor %}</p>"
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "A log record",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "A log record",
                 'Content-Type': 'multipart/mixed',
             },
             {
@@ -145,9 +145,9 @@ def test_sender_with_login():
                 "html": "<h1>The records:</h1><p>{% for rec in records %}Log: {{ rec.levelname }} - {{ rec.message }}{% endfor %}</p>"
             }, 
             {
-                "from": "me@example.com",
-                "to": "he@example.com, she@example.com",
-                "subject": "A log record",
+                "From": "me@example.com",
+                "To": "he@example.com, she@example.com",
+                "Subject": "A log record",
                 'Content-Type': 'multipart/mixed',
             },
             {
@@ -218,9 +218,9 @@ def test_flush_multiple(logger):
     text = msg.get_payload()
 
     assert headers == {
-        "from": "None",
-        "to": "he@example.com, she@example.com",
-        "subject": "Logs: DEBUG - INFO",
+        "From": "None",
+        "To": "he@example.com, she@example.com",
+        "Subject": "Logs: DEBUG - INFO",
         'Content-Transfer-Encoding': '7bit',
         'Content-Type': 'text/plain; charset="utf-8"',
         'MIME-Version': '1.0',
@@ -254,9 +254,9 @@ def test_flush_none():
     text = msg.get_payload()
 
     assert headers == {
-        "from": "None",
-        "to": "he@example.com, she@example.com",
-        "subject": "Logs: NOTSET - NOTSET",
+        "From": "None",
+        "To": "he@example.com, she@example.com",
+        "Subject": "Logs: NOTSET - NOTSET",
         'Content-Transfer-Encoding': '7bit',
         'Content-Type': 'text/plain; charset="utf-8"',
         'MIME-Version': '1.0',

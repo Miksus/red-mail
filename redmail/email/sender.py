@@ -400,16 +400,16 @@ class EmailSender:
 
     def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None) -> EmailMessage:
         msg = EmailMessage()
-        msg["from"] = sender
-        msg["subject"] = subject
+        msg["From"] = sender
+        msg["Subject"] = subject
         
         # To whoom the email goes
         if receivers:
-            msg["to"] = receivers
+            msg["To"] = receivers
         if cc:
-            msg['cc'] = cc
+            msg['Cc'] = cc
         if bcc:
-            msg['bcc'] = bcc
+            msg['Bcc'] = bcc
 
         # Message-IDs could be produced by the first mail server
         # or the program sending the email (as we are doing now).

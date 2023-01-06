@@ -69,9 +69,9 @@ def test_jinja_env(tmpdir):
     content = remove_email_message_id(content)
     content = remove_email_content_id(content)
     assert content == dedent("""
-    from: me@example.com
-    subject: Some news
-    to: you@example.com
+    From: me@example.com
+    Subject: Some news
+    To: you@example.com
     Message-ID: <<message_id>>
     MIME-Version: 1.0
     Content-Type: multipart/mixed; boundary="===============<ID>=="
