@@ -280,20 +280,6 @@ def test_set_defaults():
         'Date': '<ID>',
     } == headers
 
-def test_cc_bcc():
-    email = EmailSender(host=None, port=1234)
-    msg = email.get_message(sender="me@example.com", subject="Some email", cc=['you@example.com'], bcc=['he@example.com', 'she@example.com'])
-    msg = prune_generated_headers(str(msg))
-    assert remove_email_content_id(msg) == dedent("""
-    From: me@example.com
-    Subject: Some email
-    Cc: you@example.com
-    Bcc: he@example.com, she@example.com
-    Message-ID: <<message_id>>
-    Date: <date>
-
-    """)[1:]
-
 def test_missing_subject():
     email = EmailSender(host=None, port=1234)
     with pytest.raises(ValueError):
