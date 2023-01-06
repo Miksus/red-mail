@@ -4,7 +4,7 @@ from redmail import EmailSender
 
 import pytest
 
-from convert import remove_email_extra, remove_email_content_id, remove_email_message_id
+from convert import remove_email_extra, remove_email_content_id, prune_generated_headers
 from getpass import getpass, getuser
 from platform import node
 
@@ -66,13 +66,14 @@ def test_jinja_env(tmpdir):
         html="<h1>A param: {{ my_param }}</h1>"
     )
     content = str(msg)
-    content = remove_email_message_id(content)
+    content = prune_generated_headers(content)
     content = remove_email_content_id(content)
     assert content == dedent("""
     from: me@example.com
     subject: Some news
     to: you@example.com
     Message-ID: <<message_id>>
+    Date: <date>
     MIME-Version: 1.0
     Content-Type: multipart/mixed; boundary="===============<ID>=="
 

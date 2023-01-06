@@ -44,6 +44,7 @@ in tests:
     subject: Some news
     to: you@example.com
     Message-ID: <167294165062.31860.1664530310632362057@example.com>
+    Date: Dec, 31 Jan 2021 06:56:46 -0000
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0
@@ -113,6 +114,7 @@ Then to use this mock:
     subject: Some news
     to: you@example.com
     Message-ID: <167294165062.31860.1664530310632362057@example.com>
+    Date: Dec, 31 Jan 2021 06:56:46 -0000
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0
@@ -161,6 +163,7 @@ Then to use this class:
     subject: Some news
     to: you@example.com
     Message-ID: <167294165062.31860.1664530310632362057@example.com>
+    Date: Dec, 31 Jan 2021 06:56:46 -0000
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0

@@ -1,7 +1,7 @@
 
 from copy import copy
 from email.message import EmailMessage
-from email.utils import make_msgid
+from email.utils import make_msgid, formatdate
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 import warnings
 
@@ -415,6 +415,8 @@ class EmailSender:
         # or the program sending the email (as we are doing now).
         # Apparently Gmail might require it as of 2022
         msg['Message-ID'] = self.create_message_id(sender)
+
+        msg['Date'] = formatdate()
         return msg
 
     def _set_content_type(self, msg:EmailMessage, has_text, has_html, has_attachments):

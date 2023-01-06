@@ -180,7 +180,7 @@ def test_emit(logger, kwargs, exp_headers, exp_payload):
     headers = {
         key: val
         for key, val in msg.items()
-        if key not in ('Message-ID',)
+        if key not in ('Message-ID', 'Date')
     }
     payload = msg.get_payload()
 
@@ -213,7 +213,7 @@ def test_flush_multiple(logger):
     headers = {
         key: val
         for key, val in msg.items()
-        if key not in ('Message-ID',)
+        if key not in ('Message-ID', 'Date')
     }
     text = msg.get_payload()
 
@@ -249,7 +249,7 @@ def test_flush_none():
     headers = {
         key: val
         for key, val in msg.items()
-        if key not in ('Message-ID',)
+        if key not in ('Message-ID', 'Date')
     }
     text = msg.get_payload()
 

@@ -65,7 +65,7 @@ def test_with_image_file(get_image_obj, dummy_png):
     headers = {
         key: val
         for key, val in msg.items()
-        if key not in ('Message-ID',)
+        if key not in ('Message-ID', 'Date')
     }
     assert {
         'from': 'me@gmail.com', 
@@ -117,7 +117,7 @@ def test_with_image_dict_jpeg():
     headers = {
         key: val
         for key, val in msg.items()
-        if key not in ('Message-ID',)
+        if key not in ('Message-ID', 'Date')
     }
     assert {
         'from': 'me@gmail.com', 
@@ -159,7 +159,7 @@ def test_with_image_obj(get_image_obj):
     headers = {
         key: val
         for key, val in msg.items()
-        if key not in ('Message-ID',)
+        if key not in ('Message-ID', 'Date')
     }
     assert {
         'from': 'me@gmail.com', 

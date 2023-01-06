@@ -170,7 +170,7 @@ def test_emit(logger, kwargs, exp_headers, exp_payload):
     headers = {
         key: val
         for key, val in msg.items()
-        if key not in ('Message-ID',)
+        if key not in ('Message-ID', 'Date')
     }
     payload = msg.get_payload()
 
