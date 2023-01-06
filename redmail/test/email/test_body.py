@@ -25,9 +25,9 @@ def test_text_message():
     )
     msg = remove_email_message_id(str(msg))
     assert str(msg) == dedent("""
-    from: me@example.com
-    subject: Some news
-    to: you@example.com
+    From: me@example.com
+    Subject: Some news
+    To: you@example.com
     Message-ID: <<message_id>>
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
@@ -48,9 +48,9 @@ def test_html_message():
     )
     msg = remove_email_message_id(str(msg))
     assert remove_email_content_id(str(msg)) == dedent("""
-    from: me@example.com
-    subject: Some news
-    to: you@example.com
+    From: me@example.com
+    Subject: Some news
+    To: you@example.com
     Message-ID: <<message_id>>
     Content-Type: multipart/mixed; boundary="===============<ID>=="
 
@@ -83,9 +83,9 @@ def test_text_and_html_message():
     )
     msg = remove_email_message_id(str(msg))
     assert remove_email_content_id(str(msg)) == dedent("""
-    from: me@example.com
-    subject: Some news
-    to: you@example.com
+    From: me@example.com
+    Subject: Some news
+    To: you@example.com
     Message-ID: <<message_id>>
     MIME-Version: 1.0
     Content-Type: multipart/mixed; boundary="===============<ID>=="
@@ -191,9 +191,9 @@ def test_without_jinja(use_jinja_obj, use_jinja):
     )
     encoding = '7bit' if IS_PY37 else 'quoted-printable' 
     expected = dedent("""
-    from: me@example.com
-    subject: Some news
-    to: you@example.com
+    From: me@example.com
+    Subject: Some news
+    To: you@example.com
     Message-ID: <<message_id>>
     MIME-Version: 1.0
     Content-Type: multipart/mixed; boundary="===============<ID>=="
@@ -266,9 +266,9 @@ def test_set_defaults():
         for key, val in msg.items()
     }
     assert {
-        'from': 'me@gmail.com', 
-        'to': 'you@gmail.com, they@gmail.com', 
-        'subject': 'Some email', 
+        'From': 'me@gmail.com', 
+        'To': 'you@gmail.com, they@gmail.com', 
+        'Subject': 'Some email', 
         'Content-Type': 'text/plain; charset="utf-8"', 
         'Content-Transfer-Encoding': '7bit', 
         'MIME-Version': '1.0',
@@ -280,10 +280,10 @@ def test_cc_bcc():
     msg = email.get_message(sender="me@example.com", subject="Some email", cc=['you@example.com'], bcc=['he@example.com', 'she@example.com'])
     msg = remove_email_message_id(str(msg))
     assert remove_email_content_id(msg) == dedent("""
-    from: me@example.com
-    subject: Some email
-    cc: you@example.com
-    bcc: he@example.com, she@example.com
+    From: me@example.com
+    Subject: Some email
+    Cc: you@example.com
+    Bcc: he@example.com, she@example.com
     Message-ID: <<message_id>>
 
     """)[1:]
@@ -315,9 +315,9 @@ def test_no_table_templates():
         if key not in ('Message-ID',)
     }
     assert headers == {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
+        'From': 'me@gmail.com', 
+        'Subject': 'Some news', 
+        'To': 'you@gmail.com', 
         'MIME-Version': '1.0', 
         'Content-Type': 'multipart/mixed',
     }
