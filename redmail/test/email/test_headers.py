@@ -1,17 +1,12 @@
 import datetime
+import socket
 from textwrap import dedent
 import sys
 import re
 
 from redmail import EmailSender
 
-import pytest
-
-from convert import remove_extra_lines, payloads_to_dict
-from getpass import getpass, getuser
-from platform import node
-
-from convert import remove_email_extra, remove_email_content_id, prune_generated_headers
+from convert import remove_email_content_id, prune_generated_headers
 
 import platform
 PYTHON_VERSION = sys.version_info
@@ -34,23 +29,18 @@ def test_date():
         # It should not take longer than second to generate the email
         assert dt_string in (before.strftime(format), after.strftime(format))
 
-@pytest.mark.parametrize("sender,domain", 
-    [
-        pytest.param("me@example.com", "@example.com", id="With domain"),
-        pytest.param(None, f"@{platform.node()}", id="Without domain"),
-    ]
-)
-def test_message_id(sender, domain):
+def test_message_id():
+    domain = socket.getfqdn()
     email = EmailSender(host=None, port=1234)
-    msg = email.get_message(sender=sender, subject="Some email")
-    msg2 = email.get_message(sender=sender, subject="Some email")
+    msg = email.get_message(sender="me@example.com", subject="Some email")
+    msg2 = email.get_message(sender="me@example.com", subject="Some email")
 
     message_ids = re.findall(r'(?<=Message-ID: ).+', str(msg))
     assert len(message_ids) == 1
     message_id = message_ids[0]
 
     # [0-9]{{12}}[.][0-9]{{5}}[.][0-9]{{20}}
-    assert bool(re.search(fr'<[0-9.]+{domain}>', message_id))
+    assert bool(re.search(fr'<[0-9.]+@{domain}>', message_id))
 
     # Check another email has not the same Message-ID
     message_id_2 = re.findall(r'(?<=Message-ID: ).+', str(msg2))[0]
