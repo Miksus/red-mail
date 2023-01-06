@@ -7,6 +7,7 @@ Version history
 - ``0.5.0``
 
     - Add: Now ``Message-ID`` header is always generated. Sending emails via Gmail may fail without it as of 2022. 
+    - Fix: Capitalized email headers including ``From``, ``To`` and ``Subject``.
 
 - ``0.4.2``
 
