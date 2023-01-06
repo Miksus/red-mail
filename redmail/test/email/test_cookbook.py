@@ -43,10 +43,10 @@ def test_distributions():
     msg = prune_generated_headers(str(msg))
     msg = remove_email_content_id(str(msg))
     assert msg == dedent("""
-    from: me@example.com
-    subject: Some email
-    to: me@example.com, you@example.com
-    cc: he@example.com, she@example.com
+    From: me@example.com
+    Subject: Some email
+    To: me@example.com, you@example.com
+    Cc: he@example.com, she@example.com
     Message-ID: <<message_id>>
     Date: <date>
     

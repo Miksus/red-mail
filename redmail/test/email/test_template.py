@@ -69,9 +69,9 @@ def test_jinja_env(tmpdir):
     content = prune_generated_headers(content)
     content = remove_email_content_id(content)
     assert content == dedent("""
-    from: me@example.com
-    subject: Some news
-    to: you@example.com
+    From: me@example.com
+    Subject: Some news
+    To: you@example.com
     Message-ID: <<message_id>>
     Date: <date>
     MIME-Version: 1.0
