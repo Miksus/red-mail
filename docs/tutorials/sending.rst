@@ -27,7 +27,26 @@ is configured. At minimum, sending an email requires:
     If you don't spesify the ``sender``, the sender is considered to 
     be ``email.sender``. If ``email.sender`` is also missing, the sender
     is then set to be ``email.username``. Ensure that any of these is a 
-    valid email address. 
+    valid email address.
+
+    Similar flow of logic applies to most attributes. You can set defaults on the 
+    ``email`` instance which are used in case they are not passed via the 
+    method call ``email.send(...)``.
+
+    Here is an example:
+
+    .. code-block:: python
+
+        email = EmailSender(host='localhost', port=0)
+        email.subject = "email subject"
+        email.receivers = ["you@example.com"]
+        email.send(
+            sender="me@example.com",
+            subject="important email"
+        )
+
+    The above sends an email that has ``"important email"`` as the email subject
+    and the email is sent to address ``you@example.com``.
 
 .. note::
 
@@ -121,6 +140,37 @@ You can also alias the sender and receivers:
 Alias is an alternative text that is displayed instead of 
 the actual email addresses. The receivers can still get 
 the addresses though.
+
+.. _send-headers:
+
+Sending with Custom Headers
+---------------------------
+
+Sometimes you might want to override or add custom 
+email headers to your email. For example, you 
+might want to set a custom date for the email and 
+set it as important:
+
+.. code-block:: python
+
+    import datetime
+
+    email.send(
+        subject='email subject',
+        sender="The Sender <me@example.com>",
+        receivers=['you@example.com'],
+        headers={
+            "Importance": "high",
+            "Date": datetime.datetime(2021, 1, 31, 6, 56, 46)
+        }
+    )
+
+Read more about email headers from `IANA's website <https://www.iana.org/assignments/message-headers/message-headers.xhtml>`_.
+
+.. note::
+
+    Headers passed this way can override the other headers such 
+    as ``From``, ``To``, ``Cc``, ``Bcc``, ``Date`` and ``Message-ID``.
 
 .. _send-multi:
 
