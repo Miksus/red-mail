@@ -425,26 +425,33 @@ class EmailSender:
 
     def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None, headers=None) -> EmailMessage:
         msg = EmailMessage()
-        msg["From"] = sender
-        msg["Subject"] = subject
-        
+
+        email_headers = {
+            "From": sender,
+            "Subject": subject,
+        }
+
         # To whoom the email goes
         if receivers:
-            msg["To"] = receivers
+            email_headers["To"] = receivers
         if cc:
-            msg['Cc'] = cc
+            email_headers['Cc'] = cc
         if bcc:
-            msg['Bcc'] = bcc
+            email_headers['Bcc'] = bcc
 
-        # Message-IDs could be produced by the first mail server
-        # or the program sending the email (as we are doing now).
-        # Apparently Gmail might require it as of 2022
-        msg['Message-ID'] = self.create_message_id()
-        msg['Date'] = formatdate()
+        email_headers.update({
+            # Message-IDs could be produced by the first mail server
+            # or the program sending the email (as we are doing now).
+            # Apparently Gmail might require it as of 2022
+            "Message-ID": self.create_message_id(),
+
+            "Date": formatdate(),
+        })
 
         if headers:
-            for key, val in headers.items():
-                msg[key] = val
+            email_headers.update(headers)
+        for key, val in email_headers.items():
+            msg[key] = val
         return msg
 
     def _set_content_type(self, msg:EmailMessage, has_text, has_html, has_attachments):
