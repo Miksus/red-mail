@@ -1,4 +1,5 @@
 
+import argparse
 import os, time
 import base64, logging
 from pathlib import Path
@@ -208,20 +209,37 @@ def log_simple():
     logger.info("An info record")
     logger.handlers = []
 
+def main():
+    funcs = {
+        "empty": send_empty,
+        "body_with_text": send_text,
+        "body_with_html": send_html,
+        "body_with_html_and_text": send_test_and_html,
+        "full": send_full_features,
+
+        "images": send_images,
+
+        "with_attachments": send_attachments,
+        "body_with_text_and_attachments": send_attachments_with_text,
+        "body_with_html_and_attachments": send_attachments_with_html,
+
+        "log": log_simple,
+        "log_multi": log_multi,
+    }
+
+    parser = argparse.ArgumentParser(prog="Redmail tester")
+    parser.add_argument(
+        'funcs', type=str, nargs='+',
+        help=f"Test functions to run. Allowed: {list(funcs)}"
+    )
+
+    args = parser.parse_args()
+
+    for func_name in args.funcs:
+        func = funcs[func_name]
+        func()
+        time.sleep(1)
+
 
 if __name__ == "__main__":
-    fn_bodies = [send_empty, send_text, send_html, send_test_and_html, send_full_features]
-    fn_attachments = [send_attachments, send_attachments_with_text, send_attachments_with_html]
-    fn_log = [log_simple, log_multi]
-
-    funcs = {
-        "minimal": fn_bodies[0],
-        "bodies": fn_bodies,
-        "full": fn_bodies + fn_attachments + fn_log,
-        "logging": fn_log,
-        "images": fn_imgs,
-    }[os.environ.get("EMAIL_FUNCS", "full")]
-    for func in funcs:
-        print("Running:", func.__name__)
-        time.sleep(1)
-        func()
+    main()
