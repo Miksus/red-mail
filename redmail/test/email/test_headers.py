@@ -80,6 +80,13 @@ def test_custom_headers(how):
     email = EmailSender(host=None, port=1234)
     headers = {"Importance": "high"}
 
+    if IS_PY37:
+        # Python <=3.7 has problems with domain names with UTF-8
+        # This is mostly problem with CI.
+        # We simulate realistic domain name
+        domain = "REDMAIL-1234.mail.com"
+        email.domain = domain
+
     if how == "email":
         msg = email.get_message(
             sender="me@example.com", 
