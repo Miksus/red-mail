@@ -106,7 +106,7 @@ def test_custom_headers(how):
 def test_custom_headers_override(how):
     email = EmailSender(host=None, port=1234)
     headers = {
-        "Date": "Sun, 31 Jan 2021 06:56:46 -0000",
+        "Date": datetime.datetime(2021, 1, 31, 6, 56, 46, tzinfo=datetime.timezone.utc),
         "Message-ID": "<167294165062.31860.1664530310632362057@LAPTOP-1234GML0>"
     }
 
@@ -126,6 +126,6 @@ def test_custom_headers_override(how):
     From: me@example.com
     Subject: Some email
     Message-ID: <167294165062.31860.1664530310632362057@LAPTOP-1234GML0>
-    Date: Sun, 31 Jan 2021 06:56:46 -0000
+    Date: Sun, 31 Jan 2021 06:56:46 +0000
 
     """)[1:]
