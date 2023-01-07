@@ -32,6 +32,14 @@ def test_date():
 def test_message_id():
     domain = socket.getfqdn()
     email = EmailSender(host=None, port=1234)
+
+    if IS_PY37:
+        # Python <=3.7 has problems with domain names with UTF-8
+        # This is mostly problem with CI.
+        # We simulate realistic domain name
+        domain = "REDMAIL-1234.mail.com"
+        email.domain = domain
+
     msg = email.get_message(sender="me@example.com", subject="Some email")
     msg2 = email.get_message(sender="me@example.com", subject="Some email")
 
