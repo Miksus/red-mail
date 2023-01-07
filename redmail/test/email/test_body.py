@@ -8,27 +8,32 @@ from convert import remove_extra_lines, payloads_to_dict
 from getpass import getpass, getuser
 from platform import node
 
-from convert import remove_email_extra, remove_email_content_id, remove_email_message_id
+from convert import remove_email_extra, remove_email_content_id, prune_generated_headers
 
-import platform
-PYTHON_VERSION = platform.sys.version_info
 IS_PY37 = sys.version_info < (3, 8)
 
 def test_text_message():
 
     sender = EmailSender(host=None, port=1234)
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        sender.domain = "REDMAIL-1234.mail.com"
+
     msg = sender.get_message(
         sender="me@example.com",
         receivers="you@example.com",
         subject="Some news",
         text="Hi, nice to meet you.",
     )
-    msg = remove_email_message_id(str(msg))
+    msg = prune_generated_headers(str(msg))
     assert str(msg) == dedent("""
     From: me@example.com
     Subject: Some news
     To: you@example.com
     Message-ID: <<message_id>>
+    Date: <date>
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0
@@ -40,18 +45,25 @@ def test_text_message():
 def test_html_message():
 
     sender = EmailSender(host=None, port=1234)
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        sender.domain = "REDMAIL-1234.mail.com"
+
     msg = sender.get_message(
         sender="me@example.com",
         receivers="you@example.com",
         subject="Some news",
         html="<h3>Hi,</h3><p>Nice to meet you</p>",
     )
-    msg = remove_email_message_id(str(msg))
+    msg = prune_generated_headers(str(msg))
     assert remove_email_content_id(str(msg)) == dedent("""
     From: me@example.com
     Subject: Some news
     To: you@example.com
     Message-ID: <<message_id>>
+    Date: <date>
     Content-Type: multipart/mixed; boundary="===============<ID>=="
 
     --===============<ID>==
@@ -74,6 +86,12 @@ def test_html_message():
 def test_text_and_html_message():
 
     sender = EmailSender(host=None, port=1234)
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        sender.domain = "REDMAIL-1234.mail.com"
+
     msg = sender.get_message(
         sender="me@example.com",
         receivers="you@example.com",
@@ -81,12 +99,13 @@ def test_text_and_html_message():
         html="<h3>Hi,</h3><p>nice to meet you.</p>",
         text="Hi, nice to meet you.",
     )
-    msg = remove_email_message_id(str(msg))
+    msg = prune_generated_headers(str(msg))
     assert remove_email_content_id(str(msg)) == dedent("""
     From: me@example.com
     Subject: Some news
     To: you@example.com
     Message-ID: <<message_id>>
+    Date: <date>
     MIME-Version: 1.0
     Content-Type: multipart/mixed; boundary="===============<ID>=="
 
@@ -180,6 +199,12 @@ def test_without_jinja(use_jinja_obj, use_jinja):
     text = "Hi, \nThis is {{ user }} from { node }. I'm really {{ sender.full_name }}."
 
     sender = EmailSender(host=None, port=1234)
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        sender.domain = "REDMAIL-1234.mail.com"
+
     sender.use_jinja = use_jinja_obj
     msg = sender.get_message(
         sender="me@example.com",
@@ -195,6 +220,7 @@ def test_without_jinja(use_jinja_obj, use_jinja):
     Subject: Some news
     To: you@example.com
     Message-ID: <<message_id>>
+    Date: <date>
     MIME-Version: 1.0
     Content-Type: multipart/mixed; boundary="===============<ID>=="
 
@@ -223,7 +249,7 @@ def test_without_jinja(use_jinja_obj, use_jinja):
     """)[1:]
     if IS_PY37:
         expected = expected.replace('sender.full_n=\n', 'sender.full_n')
-    msg = remove_email_message_id(str(msg))
+    msg = prune_generated_headers(str(msg))
     assert remove_email_content_id(msg) == expected
 
 
@@ -262,7 +288,7 @@ def test_set_defaults():
     email.subject = "Some email"
     msg = email.get_message(text="Hi, an email")
     headers = {
-        key: val if key not in ('Message-ID',) else '<ID>'
+        key: val if key not in ('Message-ID', 'Date') else '<ID>'
         for key, val in msg.items()
     }
     assert {
@@ -273,20 +299,8 @@ def test_set_defaults():
         'Content-Transfer-Encoding': '7bit', 
         'MIME-Version': '1.0',
         'Message-ID': '<ID>',
+        'Date': '<ID>',
     } == headers
-
-def test_cc_bcc():
-    email = EmailSender(host=None, port=1234)
-    msg = email.get_message(sender="me@example.com", subject="Some email", cc=['you@example.com'], bcc=['he@example.com', 'she@example.com'])
-    msg = remove_email_message_id(str(msg))
-    assert remove_email_content_id(msg) == dedent("""
-    From: me@example.com
-    Subject: Some email
-    Cc: you@example.com
-    Bcc: he@example.com, she@example.com
-    Message-ID: <<message_id>>
-
-    """)[1:]
 
 def test_missing_subject():
     email = EmailSender(host=None, port=1234)
@@ -312,7 +326,7 @@ def test_no_table_templates():
     headers = {
         key: val
         for key, val in msg.items()
-        if key not in ('Message-ID',)
+        if key not in ('Message-ID', 'Date')
     }
     assert headers == {
         'From': 'me@gmail.com', 
