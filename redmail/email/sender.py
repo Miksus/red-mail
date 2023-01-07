@@ -47,6 +47,11 @@ class EmailSender:
         when connecting to the SMTP server.
     user_name : str, optional
         Deprecated alias for username. Please use username instead.
+    domain : str, optional
+        Portion of the generated IDs after "@" which strengthens the uniqueness
+        of the generated IDs. Used in the Message-ID header and in the Content-IDs 
+        of the embedded imaged in the HTML body. Usually not needed to be set.
+        Defaults to the fully qualified domain name.
     **kwargs : dict
         Additional keyword arguments are passed to initiation in ``cls_smtp``.
         These are stored as attribute ``kws_smtp``
@@ -140,7 +145,15 @@ class EmailSender:
 
     attachment_encoding = 'UTF-8'
 
-    def __init__(self, host:str, port:int, username:str=None, password:str=None, cls_smtp:smtplib.SMTP=smtplib.SMTP, use_starttls:bool=True, **kwargs):
+    def __init__(self,
+                 host:str,
+                 port:int,
+                 username:str=None,
+                 password:str=None,
+                 cls_smtp:smtplib.SMTP=smtplib.SMTP,
+                 use_starttls:bool=True,
+                 domain:Optional[str]=None,
+                 **kwargs):
 
         if "user_name" in kwargs and username is None:
             warnings.warn("Argument user_name was renamed as username. Please use username instead.", FutureWarning)
@@ -164,6 +177,7 @@ class EmailSender:
         self.html_template = None
         self.text_template = None
         self.use_jinja = True
+        self.domain = domain
 
         self.use_starttls = use_starttls
         self.cls_smtp = cls_smtp
@@ -354,7 +368,8 @@ class EmailSender:
                 template=self.get_html_template(html_template),
                 table_template=self.get_html_table_template(),
                 jinja_env=self.templates_html,
-                use_jinja=use_jinja
+                use_jinja=use_jinja,
+                domain=self.domain
             )
             body.attach(
                 msg,
@@ -393,7 +408,7 @@ class EmailSender:
         return sender or self.sender or self.username
 
     def create_message_id(self) -> str:
-        return make_msgid()
+        return make_msgid(domain=self.domain)
 
     def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None) -> EmailMessage:
         msg = EmailMessage()
