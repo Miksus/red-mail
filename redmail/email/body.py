@@ -113,7 +113,7 @@ class HTMLBody(Body):
                 Extra Jinja parameters for the HTML.
         """
         if self.use_jinja:
-            domain = parseaddr(msg["from"])[1].split("@")[-1] if self.domain is None else self.domain
+            domain = self.domain
             html, cids = self.render(
                 html, 
                 images=images,

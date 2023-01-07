@@ -6,8 +6,12 @@ Version history
 
 - ``0.5.0``
 
-    - Add: Now ``Message-ID`` header is always generated. Sending emails via Gmail may fail without it as of 2022. 
+    - Add: New header, ``Message-ID: ...``. Sending emails via Gmail may fail without it as of 2022. 
+    - Add: New header, ``Date: ...``.
     - Fix: Capitalized email headers including ``From``, ``To`` and ``Subject``.
+    - Update: Content-IDs (used in the embedded images in the HTML body) now uses fully qualified domain name
+      (FQDN) by default. Can be customized by setting ``domain`` attribute in the sender.
+    - Package: Now Red Mail is built using pyproject.toml and CI pipelines were updated.
 
 - ``0.4.2``
 

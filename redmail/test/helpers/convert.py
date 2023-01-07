@@ -16,6 +16,20 @@ def remove_email_content_id(s:str, repl="<ID>"):
 def remove_email_message_id(s:str, repl="<message_id>"):
     return re.sub(r"(?<=Message-ID: <).+?(?=>)", repl, s)
 
+def remove_date(s:str, repl="<date>"):
+    regex = r'(?<=Date: )[A-Za-z]{3}, [0-9]{2} [A-Za-z]{3} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}( [+-][0-9]{4})?'
+    return re.sub(regex, repl, s)
+
+def prune_generated_headers(s:str):
+    transformers = (
+        remove_email_content_id,
+        remove_email_message_id,
+        remove_date
+    )
+    for transf in transformers:
+        s = transf(s)
+    return s
+
 def payloads_to_dict(*parts):
     data = {}
     for part in parts:
