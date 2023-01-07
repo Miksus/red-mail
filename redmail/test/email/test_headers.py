@@ -4,6 +4,8 @@ from textwrap import dedent
 import sys
 import re
 
+import pytest
+
 from redmail import EmailSender
 
 from convert import remove_email_content_id, prune_generated_headers
@@ -70,5 +72,67 @@ def test_cc_bcc():
     Bcc: he@example.com, she@example.com
     Message-ID: <<message_id>>
     Date: <date>
+
+    """)[1:]
+
+@pytest.mark.parametrize("how", ["instance", "email"])
+def test_custom_headers(how):
+    email = EmailSender(host=None, port=1234)
+    headers = {"Importance": "high"}
+
+    if IS_PY37:
+        # Python <=3.7 has problems with domain names with UTF-8
+        # This is mostly problem with CI.
+        # We simulate realistic domain name
+        domain = "REDMAIL-1234.mail.com"
+        email.domain = domain
+
+    if how == "email":
+        msg = email.get_message(
+            sender="me@example.com", 
+            subject="Some email", 
+            headers=headers
+        )
+    elif how == "instance":
+        email.headers = headers
+        msg = email.get_message(
+            sender="me@example.com", 
+            subject="Some email",
+        )
+    msg = prune_generated_headers(str(msg))
+    assert remove_email_content_id(msg) == dedent("""
+    From: me@example.com
+    Subject: Some email
+    Message-ID: <<message_id>>
+    Date: <date>
+    Importance: high
+
+    """)[1:]
+
+@pytest.mark.parametrize("how", ["instance", "email"])
+def test_custom_headers_override(how):
+    email = EmailSender(host=None, port=1234)
+    headers = {
+        "Date": datetime.datetime(2021, 1, 31, 6, 56, 46, tzinfo=datetime.timezone.utc),
+        "Message-ID": "<167294165062.31860.1664530310632362057@LAPTOP-1234GML0>"
+    }
+
+    if how == "email":
+        msg = email.get_message(
+            sender="me@example.com", 
+            subject="Some email",
+            headers=headers
+        )
+    elif how == "instance":
+        email.headers = headers
+        msg = email.get_message(
+            sender="me@example.com",
+            subject="Some email",
+        )
+    assert str(msg) == dedent("""
+    From: me@example.com
+    Subject: Some email
+    Message-ID: <167294165062.31860.1664530310632362057@LAPTOP-1234GML0>
+    Date: Sun, 31 Jan 2021 06:56:46 +0000
 
     """)[1:]

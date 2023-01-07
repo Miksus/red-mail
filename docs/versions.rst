@@ -6,6 +6,7 @@ Version history
 
 - ``0.5.0``
 
+    - Add: Option to set custom email headers.
     - Add: New header, ``Message-ID: ...``. Sending emails via Gmail may fail without it as of 2022. 
     - Add: New header, ``Date: ...``.
     - Fix: Capitalized email headers including ``From``, ``To`` and ``Subject``.

@@ -107,6 +107,10 @@ class EmailSender:
     templates_text_table : jinja2.Environment
         Jinja environment used for loading templates
         for table styling for text bodies.
+    headers : dict
+        Additional email headers. Will also override
+        the other generated email headers such as
+        ``From:``, ``To`` and ``Date:``.
     kws_smtp : dict
         Keyword arguments passed to ``cls_smtp``
         when connecting to the SMTP server.
@@ -171,6 +175,7 @@ class EmailSender:
         self.cc = None
         self.bcc = None
         self.subject = None
+        self.headers = None
 
         self.text = None
         self.html = None
@@ -191,6 +196,7 @@ class EmailSender:
              receivers:Union[List[str], str, None]=None,
              cc:Union[List[str], str, None]=None,
              bcc:Union[List[str], str, None]=None,
+             headers:Optional[Dict[str, str]]=None,
              html:Optional[str]=None,
              text:Optional[str]=None,
              html_template:Optional[str]=None,
@@ -219,6 +225,10 @@ class EmailSender:
             Blind Carbon Copy of the email.
             Additional recipients of the email that
             don't see who else got the email.
+        headers : dict, optional
+            Additional email headers. Will also override
+            the other generated email headers such as
+            ``From:``, ``To`` and ``Date:``.
         html : str, optional
             HTML body of the email. This is processed
             by Jinja and may contain loops, parametrization
@@ -294,6 +304,7 @@ class EmailSender:
             receivers=receivers,
             cc=cc,
             bcc=bcc,
+            headers=headers,
             html=html,
             text=text,
             html_template=html_template,
@@ -320,6 +331,7 @@ class EmailSender:
                   body_tables:Optional[Dict[str, 'pd.DataFrame']]=None, 
                   body_params:Optional[Dict[str, Any]]=None,
                   attachments:Optional[Dict[str, Union[str, os.PathLike, 'pd.DataFrame', bytes]]]=None,
+                  headers:Optional[Dict[str, str]]=None,
                   use_jinja=None) -> EmailMessage:
         """Get the email message"""
 
@@ -329,6 +341,7 @@ class EmailSender:
         receivers = self.get_receivers(receivers)
         cc = self.get_cc(cc)
         bcc = self.get_bcc(bcc)
+        headers = self.get_headers(headers)
 
         html = html or self.html
         text = text or self.text
@@ -345,6 +358,7 @@ class EmailSender:
             receivers=receivers,
             cc=cc,
             bcc=bcc,
+            headers=headers 
         )
         has_text = text is not None or text_template is not None
         has_html = html is not None or html_template is not None
@@ -403,6 +417,10 @@ class EmailSender:
         """Get blind carbon copy (bcc) of the email"""
         return bcc or self.bcc
 
+    def get_headers(self, headers:Union[Dict[str, str], None]):
+        """Get additional headers"""
+        return headers or self.headers
+
     def get_sender(self, sender:Union[str, None]) -> str:
         """Get sender of the email"""
         return sender or self.sender or self.username
@@ -410,25 +428,35 @@ class EmailSender:
     def create_message_id(self) -> str:
         return make_msgid(domain=self.domain)
 
-    def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None) -> EmailMessage:
+    def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None, headers=None) -> EmailMessage:
         msg = EmailMessage()
-        msg["From"] = sender
-        msg["Subject"] = subject
-        
+
+        email_headers = {
+            "From": sender,
+            "Subject": subject,
+        }
+
         # To whoom the email goes
         if receivers:
-            msg["To"] = receivers
+            email_headers["To"] = receivers
         if cc:
-            msg['Cc'] = cc
+            email_headers['Cc'] = cc
         if bcc:
-            msg['Bcc'] = bcc
+            email_headers['Bcc'] = bcc
 
-        # Message-IDs could be produced by the first mail server
-        # or the program sending the email (as we are doing now).
-        # Apparently Gmail might require it as of 2022
-        msg['Message-ID'] = self.create_message_id()
+        email_headers.update({
+            # Message-IDs could be produced by the first mail server
+            # or the program sending the email (as we are doing now).
+            # Apparently Gmail might require it as of 2022
+            "Message-ID": self.create_message_id(),
 
-        msg['Date'] = formatdate()
+            "Date": formatdate(),
+        })
+
+        if headers:
+            email_headers.update(headers)
+        for key, val in email_headers.items():
+            msg[key] = val
         return msg
 
     def _set_content_type(self, msg:EmailMessage, has_text, has_html, has_attachments):
