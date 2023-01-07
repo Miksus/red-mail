@@ -1,9 +1,10 @@
-
-from typing import Union
+import sys
 from textwrap import dedent
 from redmail import EmailSender
 
 from convert import remove_email_content_id, prune_generated_headers
+
+IS_PY37 = sys.version_info < (3, 8)
 
 def test_distributions():
     class DistrSender(EmailSender):
@@ -33,6 +34,11 @@ def test_distributions():
             'group2': ["he@example.com", "she@example.com"],
         }
     )
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        email.domain = "REDMAIL-1234.mail.com"
 
     msg = email.get_message(
         sender="me@example.com",

@@ -56,6 +56,11 @@ def test_message_id():
 
 def test_cc_bcc():
     email = EmailSender(host=None, port=1234)
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        email.domain = "REDMAIL-1234.mail.com"
     msg = email.get_message(sender="me@example.com", subject="Some email", cc=['you@example.com'], bcc=['he@example.com', 'she@example.com'])
     msg = prune_generated_headers(str(msg))
     assert remove_email_content_id(msg) == dedent("""

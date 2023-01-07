@@ -10,13 +10,17 @@ from platform import node
 
 from convert import remove_email_extra, remove_email_content_id, prune_generated_headers
 
-import platform
-PYTHON_VERSION = platform.sys.version_info
 IS_PY37 = sys.version_info < (3, 8)
 
 def test_text_message():
 
     sender = EmailSender(host=None, port=1234)
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        sender.domain = "REDMAIL-1234.mail.com"
+
     msg = sender.get_message(
         sender="me@example.com",
         receivers="you@example.com",
@@ -41,6 +45,12 @@ def test_text_message():
 def test_html_message():
 
     sender = EmailSender(host=None, port=1234)
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        sender.domain = "REDMAIL-1234.mail.com"
+
     msg = sender.get_message(
         sender="me@example.com",
         receivers="you@example.com",
@@ -76,6 +86,12 @@ def test_html_message():
 def test_text_and_html_message():
 
     sender = EmailSender(host=None, port=1234)
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        sender.domain = "REDMAIL-1234.mail.com"
+
     msg = sender.get_message(
         sender="me@example.com",
         receivers="you@example.com",
@@ -183,6 +199,12 @@ def test_without_jinja(use_jinja_obj, use_jinja):
     text = "Hi, \nThis is {{ user }} from { node }. I'm really {{ sender.full_name }}."
 
     sender = EmailSender(host=None, port=1234)
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        sender.domain = "REDMAIL-1234.mail.com"
+
     sender.use_jinja = use_jinja_obj
     msg = sender.get_message(
         sender="me@example.com",
