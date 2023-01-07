@@ -107,6 +107,10 @@ class EmailSender:
     templates_text_table : jinja2.Environment
         Jinja environment used for loading templates
         for table styling for text bodies.
+    headers : dict
+        Additional email headers. Will also override
+        the other generated email headers such as
+        ``From:``, ``To`` and ``Date:``.
     kws_smtp : dict
         Keyword arguments passed to ``cls_smtp``
         when connecting to the SMTP server.
@@ -222,8 +226,9 @@ class EmailSender:
             Additional recipients of the email that
             don't see who else got the email.
         headers : dict, optional
-            Additional email headers. Can be used to 
-            override already set headers.
+            Additional email headers. Will also override
+            the other generated email headers such as
+            ``From:``, ``To`` and ``Date:``.
         html : str, optional
             HTML body of the email. This is processed
             by Jinja and may contain loops, parametrization
