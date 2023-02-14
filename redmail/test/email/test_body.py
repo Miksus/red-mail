@@ -39,7 +39,7 @@ def test_text_message():
     MIME-Version: 1.0
 
     Hi, nice to meet you.
-    """)[1:]
+    """)[1:].replace('\n', '\r\n')
 
 
 def test_html_message():
@@ -80,7 +80,7 @@ def test_html_message():
     --===============<ID>==--
 
     --===============<ID>==--
-    """)[1:]
+    """)[1:].replace('\n', '\r\n')
 
 
 def test_text_and_html_message():
@@ -129,7 +129,7 @@ def test_text_and_html_message():
     --===============<ID>==--
 
     --===============<ID>==--
-    """)[1:]
+    """)[1:].replace('\n', '\r\n')
 
 
 @pytest.mark.parametrize(
@@ -246,7 +246,7 @@ def test_without_jinja(use_jinja_obj, use_jinja):
     --===============<ID>==--
 
     --===============<ID>==--
-    """)[1:]
+    """)[1:].replace('\n', '\r\n')
     if IS_PY37:
         expected = expected.replace('sender.full_n=\n', 'sender.full_n')
     msg = prune_generated_headers(str(msg))

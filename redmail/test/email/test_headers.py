@@ -73,7 +73,7 @@ def test_cc_bcc():
     Message-ID: <<message_id>>
     Date: <date>
 
-    """)[1:]
+    """)[1:].replace('\n', '\r\n')
 
 @pytest.mark.parametrize("how", ["instance", "email"])
 def test_custom_headers(how):
@@ -107,7 +107,7 @@ def test_custom_headers(how):
     Date: <date>
     Importance: high
 
-    """)[1:]
+    """)[1:].replace('\n', '\r\n')
 
 @pytest.mark.parametrize("how", ["instance", "email"])
 def test_custom_headers_override(how):
@@ -135,4 +135,4 @@ def test_custom_headers_override(how):
     Message-ID: <167294165062.31860.1664530310632362057@LAPTOP-1234GML0>
     Date: Sun, 31 Jan 2021 06:56:46 +0000
 
-    """)[1:]
+    """)[1:].replace('\n', '\r\n')

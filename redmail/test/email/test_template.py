@@ -103,7 +103,7 @@ def test_jinja_env(tmpdir):
     --===============<ID>==--
 
     --===============<ID>==--
-    """)[1:]
+    """)[1:].replace('\n', '\r\n')
 
 def test_body_and_template_error(tmpdir):
 
