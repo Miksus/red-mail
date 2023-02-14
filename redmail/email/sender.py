@@ -1,5 +1,6 @@
 
 from copy import copy
+import email.policy
 from email.message import EmailMessage
 from email.utils import make_msgid, formatdate
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
@@ -429,7 +430,10 @@ class EmailSender:
         return make_msgid(domain=self.domain)
 
     def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None, headers=None) -> EmailMessage:
-        msg = EmailMessage()
+        # Python's default email policy follows the Internet mail standards (RFC 5322) EXCEPT for line endings.
+        # For line endings the default policy  uses python's default LF instead of CRLF as mandated by RFC 5322.
+        # So we can manually edit this to to comply with the internet standards.
+        msg = EmailMessage(email.policy.default.clone(linesep="\r\n"))
 
         email_headers = {
             "From": sender,
