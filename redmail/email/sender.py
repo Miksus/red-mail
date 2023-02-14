@@ -1,5 +1,6 @@
 
 from copy import copy
+import email.policy
 from email.message import EmailMessage
 from email.utils import make_msgid, formatdate
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
@@ -40,16 +41,16 @@ class EmailSender:
     password : str, optional
         User password to authenticate on the server.
     cls_smtp : smtplib.SMTP
-        SMTP class to use for connection. See options 
+        SMTP class to use for connection. See options
         from :stdlib:`Python smtplib docs <smtplib.html>`.
     use_starttls : bool
-        Whether to use `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_ 
+        Whether to use `STARTTLS <https://en.wikipedia.org/wiki/Opportunistic_TLS>`_
         when connecting to the SMTP server.
     user_name : str, optional
         Deprecated alias for username. Please use username instead.
     domain : str, optional
         Portion of the generated IDs after "@" which strengthens the uniqueness
-        of the generated IDs. Used in the Message-ID header and in the Content-IDs 
+        of the generated IDs. Used in the Message-ID header and in the Content-IDs
         of the embedded imaged in the HTML body. Usually not needed to be set.
         Defaults to the fully qualified domain name.
     **kwargs : dict
@@ -80,10 +81,10 @@ class EmailSender:
         HTML body of emails if not specified
         in the send method.
     text_template : str
-        Name of the template to use as the text body of emails 
-        if not specified in the send method. 
+        Name of the template to use as the text body of emails
+        if not specified in the send method.
     html_template : str
-        Name of the template to use as the HTML body of emails 
+        Name of the template to use as the HTML body of emails
         if not specified in the send method.
     use_jinja : bool
         Use Jinja to render text/HTML. If Jinja is disabled,
@@ -116,7 +117,7 @@ class EmailSender:
         when connecting to the SMTP server.
     connection : smtplib.SMTP, None
         Connection to the SMTP server. Created and closed
-        before and after sending each email unless there 
+        before and after sending each email unless there
         is an existing connection.
 
     Examples
@@ -130,7 +131,7 @@ class EmailSender:
             receivers=["you@example.com"],
         )
     """
-    
+
     default_html_theme = "modest.html"
     default_text_theme = "pandas.txt"
 
@@ -143,7 +144,7 @@ class EmailSender:
     # Set globals
     templates_html_table.globals["get_span"] = get_span
     templates_text_table.globals["get_span"] = get_span
-    
+
     templates_html_table.globals["is_last_group_row"] = is_last_group_row
     templates_text_table.globals["is_last_group_row"] = is_last_group_row
 
@@ -187,7 +188,7 @@ class EmailSender:
         self.use_starttls = use_starttls
         self.cls_smtp = cls_smtp
         self.kws_smtp = kwargs
-        
+
         self.connection = None
 
     def send(self,
@@ -201,8 +202,8 @@ class EmailSender:
              text:Optional[str]=None,
              html_template:Optional[str]=None,
              text_template:Optional[str]=None,
-             body_images:Optional[Dict[str, Union[str, bytes, 'plt.Figure', 'Image']]]=None, 
-             body_tables:Optional[Dict[str, 'pd.DataFrame']]=None, 
+             body_images:Optional[Dict[str, Union[str, bytes, 'plt.Figure', 'Image']]]=None,
+             body_tables:Optional[Dict[str, 'pd.DataFrame']]=None,
              body_params:Optional[Dict[str, Any]]=None,
              attachments:Optional[Dict[str, Union[str, os.PathLike, 'pd.DataFrame', bytes]]]=None) -> EmailMessage:
         """Send an email.
@@ -213,8 +214,8 @@ class EmailSender:
             Subject of the email.
         sender : str, optional
             Email address the email is sent from.
-            Note that some email services might not 
-            respect changing sender address 
+            Note that some email services might not
+            respect changing sender address
             (for example Gmail).
         receivers : list, optional
             Receivers of the email.
@@ -244,27 +245,27 @@ class EmailSender:
             Name of the text template loaded using Jinja environment specified
             in ``templates_text`` attribute. Specify either ``text`` or ``text_template``.
         body_images : dict of bytes, dict of path-like, dict of plt Figure, dict of PIL Image, optional
-            HTML images to embed with the html. The key should be 
+            HTML images to embed with the html. The key should be
             as Jinja variables in the html and the values represent
             images (path to an image, bytes of an image or image object).
         body_tables : dict of Pandas dataframes, optional
-            HTML tables to embed with the html. The key should be 
+            HTML tables to embed with the html. The key should be
             as Jinja variables in the html and the values are Pandas
             DataFrames.
         body_params : dict, optional
             Extra Jinja parameters passed to the HTML and text bodies.
         use_jinja : bool
-            Use Jinja to render text/HTML. If Jinja is disabled, body content cannot be 
+            Use Jinja to render text/HTML. If Jinja is disabled, body content cannot be
             embedded, templates have no effect and body parameters do nothing.
         attachments : dict, optional
             Attachments of the email. If dict value is string, the attachment content
             is the string itself. If path, the attachment is the content of the path's file.
-            If dataframe, the dataframe is turned to bytes or text according to the 
+            If dataframe, the dataframe is turned to bytes or text according to the
             file extension in dict key.
 
         Examples
         --------
-        
+
             Simple example:
 
             .. code-block:: python
@@ -272,9 +273,9 @@ class EmailSender:
                 from redmail import EmailSender
 
                 email = EmailSender(
-                    host='localhost', 
-                    port=0, 
-                    username='me@example.com', 
+                    host='localhost',
+                    port=0,
+                    username='me@example.com',
                     password='<PASSWORD>'
                 )
                 email.send(
@@ -295,7 +296,7 @@ class EmailSender:
         Notes
         -----
             See also `Jinja documentation <https://jinja.palletsprojects.com>`_
-            for utilizing Jinja in ``html`` and ``text`` arguments or for using 
+            for utilizing Jinja in ``html`` and ``text`` arguments or for using
             Jinja templates with  ``html_template`` and ``text_template`` arguments.
         """
         msg = self.get_message(
@@ -316,8 +317,8 @@ class EmailSender:
         )
         self.send_message(msg)
         return msg
-        
-    def get_message(self, 
+
+    def get_message(self,
                   subject:Optional[str]=None,
                   sender:Optional[str]=None,
                   receivers:Union[List[str], str, None]=None,
@@ -327,8 +328,8 @@ class EmailSender:
                   text:Optional[str]=None,
                   html_template:Optional[str]=None,
                   text_template:Optional[str]=None,
-                  body_images:Optional[Dict[str, Union[str, bytes, 'plt.Figure', 'Image']]]=None, 
-                  body_tables:Optional[Dict[str, 'pd.DataFrame']]=None, 
+                  body_images:Optional[Dict[str, Union[str, bytes, 'plt.Figure', 'Image']]]=None,
+                  body_tables:Optional[Dict[str, 'pd.DataFrame']]=None,
                   body_params:Optional[Dict[str, Any]]=None,
                   attachments:Optional[Dict[str, Union[str, os.PathLike, 'pd.DataFrame', bytes]]]=None,
                   headers:Optional[Dict[str, str]]=None,
@@ -353,12 +354,12 @@ class EmailSender:
             raise ValueError("Email must have a subject")
 
         msg = self._create_body(
-            subject=subject, 
-            sender=sender, 
+            subject=subject,
+            sender=sender,
             receivers=receivers,
             cc=cc,
             bcc=bcc,
-            headers=headers 
+            headers=headers
         )
         has_text = text is not None or text_template is not None
         has_html = html is not None or html_template is not None
@@ -371,8 +372,8 @@ class EmailSender:
                 use_jinja=use_jinja
             )
             body.attach(
-                msg, 
-                text, 
+                msg,
+                text,
                 tables=body_tables,
                 jinja_params=self.get_text_params(extra=body_params, sender=sender),
             )
@@ -392,7 +393,7 @@ class EmailSender:
                 tables=body_tables,
                 jinja_params=self.get_html_params(extra=body_params, sender=sender)
             )
-        
+
         self._set_content_type(
             msg,
             has_text=has_text,
@@ -429,7 +430,10 @@ class EmailSender:
         return make_msgid(domain=self.domain)
 
     def _create_body(self, subject, sender, receivers=None, cc=None, bcc=None, headers=None) -> EmailMessage:
-        msg = EmailMessage()
+        # Python's default email policy follows the Internet mail standards (RFC 5322) EXCEPT for line endings.
+        # For line endings the default policy  uses python's default LF instead of CRLF as mandated by RFC 5322.
+        # So we can manually edit this to to comply with the internet standards.
+        msg = EmailMessage(email.policy.default.clone(linesep="\r\n"))
 
         email_headers = {
             "From": sender,
@@ -481,7 +485,7 @@ class EmailSender:
             # thus it is also closed with this message
             with self:
                 self.connection.send_message(msg)
-    
+
     def __enter__(self):
         self.connect()
 
@@ -502,7 +506,7 @@ class EmailSender:
         "Connect and get the SMTP Server"
         user = self.username
         password = self.password
-        
+
         server = self.cls_smtp(self.host, self.port, **self.kws_smtp)
         if self.use_starttls:
             server.starttls()
@@ -572,13 +576,13 @@ class EmailSender:
             return None
         return self.templates_text.get_template(layout)
 
-    def set_template_paths(self, 
-                           html:Union[str, os.PathLike, None]=None, 
-                           text:Union[str, os.PathLike, None]=None, 
-                           html_table:Union[str, os.PathLike, None]=None, 
+    def set_template_paths(self,
+                           html:Union[str, os.PathLike, None]=None,
+                           text:Union[str, os.PathLike, None]=None,
+                           html_table:Union[str, os.PathLike, None]=None,
                            text_table:Union[str, os.PathLike, None]=None):
         """Create Jinja envs for body templates using given paths
-        
+
         This is a shortcut for manually setting them:
 
         .. code-block:: python
