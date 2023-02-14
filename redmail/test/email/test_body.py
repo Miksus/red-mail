@@ -248,7 +248,7 @@ def test_without_jinja(use_jinja_obj, use_jinja):
     --===============<ID>==--
     """)[1:].replace('\n', '\r\n')
     if IS_PY37:
-        expected = expected.replace('sender.full_n=\n', 'sender.full_n')
+        expected = expected.replace('sender.full_n=\r\n', 'sender.full_n')
     msg = prune_generated_headers(str(msg))
     assert remove_email_content_id(msg) == expected
 
