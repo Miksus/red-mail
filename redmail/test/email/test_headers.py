@@ -21,10 +21,10 @@ def test_date():
     before = datetime.datetime.now(datetime.timezone.utc)
     msg = email.get_message(sender="me@example.com", subject="Some email")
     after = datetime.datetime.now(datetime.timezone.utc)
-    date_strings = re.findall(r'(?<=Date: ).+', str(msg))
+    date_strings = re.findall(r'(?<=Date: ).+', msg.as_string(policy=msg.policy.clone(linesep=)))
     assert len(date_strings) == 1
     for dt_string in date_strings:
-    
+
         # Validate the Date fits to the format
         datetime.datetime.strptime(dt_string, format)
 
@@ -45,7 +45,7 @@ def test_message_id():
     msg = email.get_message(sender="me@example.com", subject="Some email")
     msg2 = email.get_message(sender="me@example.com", subject="Some email")
 
-    message_ids = re.findall(r'(?<=Message-ID: ).+', str(msg))
+    message_ids = re.findall(r'(?<=Message-ID: )[^\r\n]+', str(msg))
     assert len(message_ids) == 1
     message_id = message_ids[0]
 
@@ -89,14 +89,14 @@ def test_custom_headers(how):
 
     if how == "email":
         msg = email.get_message(
-            sender="me@example.com", 
-            subject="Some email", 
+            sender="me@example.com",
+            subject="Some email",
             headers=headers
         )
     elif how == "instance":
         email.headers = headers
         msg = email.get_message(
-            sender="me@example.com", 
+            sender="me@example.com",
             subject="Some email",
         )
     msg = prune_generated_headers(str(msg))
@@ -119,7 +119,7 @@ def test_custom_headers_override(how):
 
     if how == "email":
         msg = email.get_message(
-            sender="me@example.com", 
+            sender="me@example.com",
             subject="Some email",
             headers=headers
         )
