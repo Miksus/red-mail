@@ -77,3 +77,67 @@ if you wish to make your own table prettifying:
 
 The templates get parameter ``df`` which is the dataframe
 to be prettified.
+
+Using Pandas Styler
+-------------------
+
+You may also pass a Pandas style object to the body tables. 
+This feature depends on `css_inline <https://pypi.org/project/css-inline/>`_
+and you need to install this dependency in order to use this feature.
+
+First we make a Pandas style object:
+
+.. code-block:: python
+
+    import pandas as pd
+
+    # Specify CSS style
+    styles = [
+        dict(
+            selector="th", 
+            props=[
+                ("font-weight", "bold"),
+                ("padding", "0.5em 0.5em"),
+                ("border-bottom", "1px solid black")
+            ]
+        ),
+        dict(
+            selector="tr:nth-child(even)", 
+            props=[("background-color", "#f5f5f5")]
+        ),
+        dict(
+            selector="tr:nth-child(odd)", 
+            props=[("background-color", "#FFFFFF")]
+        ),
+    ]
+
+    # Create a dataframe
+    df = pd.DataFrame({
+        'nums': [1,2,3],
+        'strings': ['yes', 'no', 'yes'],
+    })
+
+    # Set the style
+    style = (
+        df.style
+        .set_table_styles(styles)
+        .hide(axis="index")
+    )
+
+Then to send the email:
+
+.. code-block:: python
+
+    email.send(
+        subject='A prettified table',
+        receivers=['first.last@example.com'],
+        html="<h1>This is a table:</h1> {{ mytable }}",
+        body_tables={
+            'mytable': style, 
+        }
+    )
+
+The result looks like the following:
+
+.. image:: /imgs/table_with_styler.png
+    :align: left
