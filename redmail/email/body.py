@@ -14,8 +14,6 @@ from jinja2.environment import Template, Environment
 
 from markupsafe import Markup
 
-from pandas.io.formats.style import Styler
-
 # We try to import matplotlib and PIL but if fails, they will be None
 from .utils import PIL, plt, pd, css_inline
 
