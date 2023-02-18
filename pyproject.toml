@@ -59,6 +59,7 @@ test = [
     'matplotlib',
     'Pillow',
     'openpyxl',
+    'css_inline',
 ]
 docs = [
     'sphinx >= 1.7.5',
