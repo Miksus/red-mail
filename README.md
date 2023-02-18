@@ -16,14 +16,14 @@ Red Mail is an advanced email sender library.
 It is a sister library for [Red Box, advanced email reader](https://github.com/Miksus/red-box).
 It makes sending emails trivial and has a lot of advanced features such as:
 
-- [Attachments](https://red-mail.readthedocs.io/en/latest/tutorials/attachments.html)
-- [Templating (with Jinja)](https://red-mail.readthedocs.io/en/latest/tutorials/jinja_support.html)
-- [Embedded images](https://red-mail.readthedocs.io/en/latest/tutorials/body_content.html#embedded-images)
-- [Prettified tables](https://red-mail.readthedocs.io/en/latest/tutorials/body_content.html#embedded-tables)
-- [Send as cc or bcc](https://red-mail.readthedocs.io/en/latest/tutorials/sending.html#sending-email-with-cc-and-bcc)
-- [Gmail preconfigured](https://red-mail.readthedocs.io/en/latest/tutorials/config.html#gmail)
+- [Attachments](https://red-mail.readthedocs.io/en/stable/tutorials/attachments.html)
+- [Templating (with Jinja)](https://red-mail.readthedocs.io/en/stable/tutorials/jinja_support.html)
+- [Embedded images](https://red-mail.readthedocs.io/en/stable/tutorials/body_content.html#embedded-images)
+- [Prettified tables](https://red-mail.readthedocs.io/en/stable/tutorials/body_content.html#embedded-tables)
+- [Send as cc or bcc](https://red-mail.readthedocs.io/en/stable/tutorials/sending.html#sending-email-with-cc-and-bcc)
+- [Gmail preconfigured](https://red-mail.readthedocs.io/en/stable/tutorials/config.html#gmail)
 
-See more from the [documentations](https://red-mail.readthedocs.io/en/latest/)
+See more from the [documentations](https://red-mail.readthedocs.io)
 or see [release from PyPI](https://pypi.org/project/redmail/).
 
 Install it from PyPI:
@@ -75,13 +75,13 @@ email.send(
 ```
 
 More examples:
-- [simple example](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#simple-example)
-- [email with attachments](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#attachments)
-- [email with embedded images](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#embedded-images)
-- [email with embedded plots](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#embedded-plots)
-- [email with body parameters](https://red-mail.readthedocs.io/en/latest/tutorials/example.html#parametrization)
+- [simple example](https://red-mail.readthedocs.io/en/stable/tutorials/example.html#simple-example)
+- [email with attachments](https://red-mail.readthedocs.io/en/stable/tutorials/example.html#attachments)
+- [email with embedded images](https://red-mail.readthedocs.io/en/stable/tutorials/example.html#embedded-images)
+- [email with embedded plots](https://red-mail.readthedocs.io/en/stable/tutorials/example.html#embedded-plots)
+- [email with body parameters](https://red-mail.readthedocs.io/en/stable/tutorials/example.html#parametrization)
 
-See practical examples from the [cookbook](https://red-mail.readthedocs.io/en/latest/tutorials/cookbook.html).
+See practical examples from the [cookbook](https://red-mail.readthedocs.io/en/stable/tutorials/cookbook.html).
 
 ---
 

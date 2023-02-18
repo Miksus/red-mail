@@ -76,6 +76,12 @@ server pre-configured:
         text="Hi, this is an email."
     )
 
+.. note::
+
+    Gmail requires emails sent via its API 
+    to be `RFC 2822 <https://www.rfc-editor.org/rfc/rfc2822>`_
+    compliant. Messages without ``Message-ID`` headers may
+    fail as of 2022. Red Mail always generates a unique message ID.
 
 .. _config-outlook:
 

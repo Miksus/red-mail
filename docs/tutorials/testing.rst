@@ -40,9 +40,11 @@ in tests:
         text="Hi, this is an email.",
     )
 
-    assert str(msg) == """from: me@example.com
-    subject: Some news
-    to: you@example.com
+    assert str(msg) == """From: me@example.com
+    Subject: Some news
+    To: you@example.com
+    Message-ID: <167294165062.31860.1664530310632362057@LAPTOP-1234GML0>
+    Date: Sun, 31 Jan 2021 06:56:46 -0000
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0
@@ -108,9 +110,11 @@ Then to use this mock:
     )
 
     msgs = MockServer.messages
-    assert msgs == ["""from: me@example.com
-    subject: Some news
-    to: you@example.com
+    assert msgs == ["""From: me@example.com
+    Subject: Some news
+    To: you@example.com
+    Message-ID: <167294165062.31860.1664530310632362057@LAPTOP-1234GML0>
+    Date: Sun, 31 Jan 2021 06:56:46 -0000
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0
@@ -155,9 +159,11 @@ Then to use this class:
     )
 
     msgs = email.messages
-    assert msgs == ["""from: me@example.com
-    subject: Some news
-    to: you@example.com
+    assert msgs == ["""From: me@example.com
+    Subject: Some news
+    To: you@example.com
+    Message-ID: <167294165062.31860.1664530310632362057@LAPTOP-1234GML0>
+    Date: Sun, 31 Jan 2021 06:56:46 -0000
     Content-Type: text/plain; charset="utf-8"
     Content-Transfer-Encoding: 7bit
     MIME-Version: 1.0

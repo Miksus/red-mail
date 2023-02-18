@@ -62,11 +62,15 @@ def test_with_image_file(get_image_obj, dummy_png):
     compare_image_mime(mime_image, mime_html, orig_image=dummy_bytes)
 
     # Test receivers etc.
-    headers = dict(msg.items())
+    headers = {
+        key: val
+        for key, val in msg.items()
+        if key not in ('Message-ID', 'Date')
+    }
     assert {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
+        'From': 'me@gmail.com', 
+        'Subject': 'Some news', 
+        'To': 'you@gmail.com', 
         #'MIME-Version': '1.0', 
         'Content-Type': 'multipart/mixed'
     } == headers
@@ -110,11 +114,15 @@ def test_with_image_dict_jpeg():
     compare_image_mime(mime_image, mime_html, orig_image=img_bytes, type_="image/jpg")
 
     # Test receivers etc.
-    headers = dict(msg.items())
+    headers = {
+        key: val
+        for key, val in msg.items()
+        if key not in ('Message-ID', 'Date')
+    }
     assert {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
+        'From': 'me@gmail.com', 
+        'Subject': 'Some news', 
+        'To': 'you@gmail.com', 
         #'MIME-Version': '1.0', 
         'Content-Type': 'multipart/mixed'
     } == headers
@@ -148,11 +156,15 @@ def test_with_image_obj(get_image_obj):
     compare_image_mime(mime_image, mime_html, orig_image=image_bytes)
 
     # Test receivers etc.
-    headers = dict(msg.items())
+    headers = {
+        key: val
+        for key, val in msg.items()
+        if key not in ('Message-ID', 'Date')
+    }
     assert {
-        'from': 'me@gmail.com', 
-        'subject': 'Some news', 
-        'to': 'you@gmail.com', 
+        'From': 'me@gmail.com', 
+        'Subject': 'Some news', 
+        'To': 'you@gmail.com', 
         #'MIME-Version': '1.0', 
         'Content-Type': 'multipart/mixed'
     } == headers

@@ -1,13 +1,13 @@
+import sys
 from textwrap import dedent
 from jinja2 import Environment
 from redmail import EmailSender
 
 import pytest
 
-from convert import remove_email_extra, remove_email_content_id
-from getpass import getpass, getuser
-from platform import node
+from convert import remove_email_extra, remove_email_content_id, prune_generated_headers
 
+IS_PY37 = sys.version_info < (3, 8)
 
 def test_template(tmpdir):
     
@@ -54,6 +54,12 @@ def test_template(tmpdir):
 def test_jinja_env(tmpdir):
 
     sender = EmailSender(host=None, port=1234)
+    if IS_PY37:
+        # CI has FQDN that has UTF-8 chars and goes to new line
+        # for Python <=3.7. We set a realistic looking domain
+        # name for easier testing
+        sender.domain = "REDMAIL-1234.mail.com"
+
     env = Environment()
     env.globals["my_param"] = "<a value>"
     sender.templates_text = env
@@ -66,11 +72,14 @@ def test_jinja_env(tmpdir):
         html="<h1>A param: {{ my_param }}</h1>"
     )
     content = str(msg)
+    content = prune_generated_headers(content)
     content = remove_email_content_id(content)
     assert content == dedent("""
-    from: me@example.com
-    subject: Some news
-    to: you@example.com
+    From: me@example.com
+    Subject: Some news
+    To: you@example.com
+    Message-ID: <<message_id>>
+    Date: <date>
     MIME-Version: 1.0
     Content-Type: multipart/mixed; boundary="===============<ID>=="
 
