@@ -301,3 +301,27 @@ def test_embed_tables_pandas_missing():
             )
     finally:
         body.pd = pd_mdl
+
+def test_styled_tables_dependency_missing():
+    pd = pytest.importorskip("pandas")
+
+    sender = EmailSender(host=None, port=1234)
+
+    from redmail.email import body
+    mdl = body.css_inline # This may be already None if env does not have Pandas
+    try:
+        # src uses this to reference Pandas (if missing --> None)
+        body.css_inline = None
+        style = pd.DataFrame(
+            {"col1": ["a", "b", "c"], "col2": [1, 2, 3]}
+        ).style.set_caption("A caption")
+        with pytest.raises(ImportError):
+            msg = sender.get_message(
+                sender="me@gmail.com",
+                receivers="you@gmail.com",
+                subject="Some news",
+                html='The table {{my_table}}',
+                body_tables={"my_table": style}
+            )
+    finally:
+        body.css_inline = mdl
