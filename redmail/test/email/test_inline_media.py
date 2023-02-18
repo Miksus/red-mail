@@ -242,6 +242,14 @@ def test_with_image_error():
         ),
         pytest.param(
             lambda: pd.DataFrame(
+                [[1, 2], [4, 5]],
+                columns=pd.MultiIndex.from_tuples([("col a", "child b", "subchild a"), ("col a", "child b", "subchild a")]),
+                index=pd.MultiIndex.from_tuples([("row a", "child b", "subchild a"), ("row a", "child b", "subchild a")]),
+            ).style.set_caption("A caption"), 
+            id="With styler"
+        ),
+        pytest.param(
+            lambda: pd.DataFrame(
                 [],
                 columns=pd.Index(["first", "second", "third"]),
             ), 
