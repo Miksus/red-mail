@@ -4,8 +4,6 @@ from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, Union, ByteString
 from pathlib import Path
-from css_inline import CSSInliner
-
 
 from redmail.utils import is_bytes
 from redmail.utils import import_from_string
@@ -19,7 +17,7 @@ from markupsafe import Markup
 from pandas.io.formats.style import Styler
 
 # We try to import matplotlib and PIL but if fails, they will be None
-from .utils import PIL, plt, pd
+from .utils import PIL, plt, pd, css_inline
 
 if TYPE_CHECKING:
     # For type hinting
@@ -65,12 +63,16 @@ class Body:
         if pd is None:
             raise ImportError("Missing package 'pandas'. Prettifying tables requires Pandas.")
         
+        from pandas.io.formats.style import Styler
+
         extra = {} if extra is None else extra
 
         # Allow for pandas styler object, convert to inline CSS for email client rendering
         # https://pandas.pydata.org/docs/reference/api/pandas.io.formats.style.Styler.html
         if isinstance(tbl, Styler):
-            inliner = CSSInliner()
+            if css_inline is None:
+                raise ImportError("Missing package 'css_inline'. Prettifying tables with Pandas styler requires css_inline.")
+            inliner = css_inline.CSSInliner()
             return inliner.inline(tbl.to_html())
 
         df = pd.DataFrame(tbl)
