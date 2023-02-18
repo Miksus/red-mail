@@ -10,3 +10,4 @@ pandas
 matplotlib
 Pillow
 openpyxl
+css_inline
