@@ -82,8 +82,13 @@ Using Pandas Styler
 -------------------
 
 You may also pass a Pandas style object to the body tables. 
-This feature depends on `css_inline <https://pypi.org/project/css-inline/>`_
-and you need to install this dependency in order to use this feature.
+This feature depends on `css_inline <https://pypi.org/project/css-inline/>`_.
+
+You may install the requirements:
+
+.. code-block:: shell
+
+    pip install redmail[style]
 
 First we make a Pandas style object:
 
