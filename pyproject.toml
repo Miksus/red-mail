@@ -69,6 +69,10 @@ docs = [
     'sphinx_book_theme',
 ]
 
+style = [
+    'css_inline',
+]
+
 [tool.coverage.run]
 source = ["redmail"]
 branch = false
