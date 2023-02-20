@@ -4,6 +4,10 @@
 Version history
 ===============
 
+- ``0.6.0``
+
+    - Add: Support for Pandas styler (thanks ejbills!)
+
 - ``0.5.0``
 
     - Add: Option to set custom email headers.

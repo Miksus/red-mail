@@ -59,6 +59,7 @@ test = [
     'matplotlib',
     'Pillow',
     'openpyxl',
+    'css_inline',
 ]
 docs = [
     'sphinx >= 1.7.5',
@@ -66,6 +67,10 @@ docs = [
     'sphinx_material',
     'sphinx-copybutton',
     'sphinx_book_theme',
+]
+
+style = [
+    'css_inline',
 ]
 
 [tool.coverage.run]
