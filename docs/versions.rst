@@ -6,6 +6,7 @@ Version history
 
 - ``0.6.0``
 
+    - Fix: Line breaks according to RFC 5322 (credit Waghabond)
     - Add: Support for Pandas styler (thanks ejbills!)
 
 - ``0.5.0``

@@ -56,4 +56,4 @@ def test_distributions():
     Message-ID: <<message_id>>
     Date: <date>
     
-    """)[1:]
+    """)[1:].replace('\n', '\r\n')
