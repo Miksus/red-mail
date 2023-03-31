@@ -57,7 +57,7 @@ well CSS.
 .. warning::
 
     Red Email Pandas templating should work on various 
-    dataframe strucutres (empty, multi-indexed etc.) but
+    dataframe structures (empty, multi-indexed etc.) but
     sometimes the rendering may be off if the dataframe
     is especially complex in structural sense. There are
     plans to make it even more better.
