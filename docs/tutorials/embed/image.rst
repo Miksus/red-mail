@@ -131,7 +131,7 @@ You may also include images using the dict format:
         """,
         body_images={
             'myimage': { 
-                'myimage': data_as_bytes,
+                'content': data_as_bytes,
                 'subtype': 'png'
             }
         }
