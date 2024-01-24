@@ -89,7 +89,7 @@ You may also pass the image as bytes:
     data = 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
     data_as_bytes = base64.b64decode(data_as_base64)
 
-    gmail.send(
+    email.send(
         subject='An image',
         receivers=['first.last@example.com'],
         html="""
@@ -122,7 +122,7 @@ You may also include images using the dict format:
     data = 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
     data_as_bytes = base64.b64decode(data_as_base64)
 
-    gmail.send(
+    email.send(
         subject='An image',
         receivers=['first.last@example.com'],
         html="""
